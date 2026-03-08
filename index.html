@@ -629,29 +629,14 @@
       </div>
 
       <div id="pinSection" style="display:none;">
-        <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;">Enter PIN</label>
-        <div class="pin-display">
-          <div class="pin-dot" id="d0"></div>
-          <div class="pin-dot" id="d1"></div>
-          <div class="pin-dot" id="d2"></div>
-          <div class="pin-dot" id="d3"></div>
+        <div class="form-group" style="margin-top:8px;">
+          <label>Enter PIN</label>
+          <input type="password" id="pinInput" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+            placeholder="••••"
+            style="letter-spacing:8px;font-size:22px;text-align:center;"
+            oninput="onPinInput(this.value)"
+            autocomplete="off" />
         </div>
-
-        <div class="pin-keypad">
-          <div class="key" onclick="pressKey('1')">1</div>
-          <div class="key" onclick="pressKey('2')">2</div>
-          <div class="key" onclick="pressKey('3')">3</div>
-          <div class="key" onclick="pressKey('4')">4</div>
-          <div class="key" onclick="pressKey('5')">5</div>
-          <div class="key" onclick="pressKey('6')">6</div>
-          <div class="key" onclick="pressKey('7')">7</div>
-          <div class="key" onclick="pressKey('8')">8</div>
-          <div class="key" onclick="pressKey('9')">9</div>
-          <div class="key empty"></div>
-          <div class="key" onclick="pressKey('0')">0</div>
-          <div class="key del" onclick="deleteKey()">⌫</div>
-        </div>
-
         <p class="error-msg" id="pinError">❌ Galat PIN. Dobara try karein.</p>
       </div>
     </div>
@@ -731,7 +716,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqY2rpRf3rmLV_Dgxwg8BBnaILc5Wj7X3JgYxz4G8x8KORSQk4Rjn2tZDDUTkUjDrNYA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
 
 // ✅ 2 ALAG FORMS
 const CHECKIN_FORM  = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
@@ -784,27 +769,19 @@ updateClock();
 document.getElementById("empSelect").addEventListener("change", function() {
   document.getElementById("pinSection").style.display = this.value ? "block" : "none";
   enteredPin = "";
-  updatePinDots();
+  const inp = document.getElementById("pinInput");
+  if (inp) inp.value = "";
   document.getElementById("pinError").classList.remove("show");
+  if (this.value) setTimeout(() => { const i = document.getElementById("pinInput"); if(i) i.focus(); }, 150);
 });
 
-// ── PIN ───────────────────────────────────────
-function pressKey(k) {
-  if (enteredPin.length >= 4) return;
-  enteredPin += k;
-  updatePinDots();
-  if (enteredPin.length === 4) setTimeout(verifyPin, 200);
-}
-
-function deleteKey() {
-  enteredPin = enteredPin.slice(0, -1);
-  updatePinDots();
+// ── PIN input from keyboard ───────────────────
+function onPinInput(val) {
+  const clean = val.replace(/[^0-9]/g, "").slice(0, 4);
+  document.getElementById("pinInput").value = clean;
+  enteredPin = clean;
   document.getElementById("pinError").classList.remove("show");
-}
-
-function updatePinDots() {
-  for (let i = 0; i < 4; i++)
-    document.getElementById("d" + i).classList.toggle("filled", i < enteredPin.length);
+  if (clean.length === 4) setTimeout(verifyPin, 300);
 }
 
 function verifyPin() {
@@ -817,7 +794,7 @@ function verifyPin() {
   } else {
     document.getElementById("pinError").classList.add("show");
     enteredPin = "";
-    updatePinDots();
+    document.getElementById("pinInput").value = "";
     const card = document.querySelector(".pin-card");
     card.style.transform = "translateX(-8px)";
     setTimeout(() => { card.style.transform = "translateX(8px)"; }, 80);
@@ -854,7 +831,8 @@ function logout() {
   currentEmployee = null; enteredPin = "";
   document.getElementById("empSelect").value = "";
   document.getElementById("pinSection").style.display = "none";
-  updatePinDots();
+  const inp = document.getElementById("pinInput");
+  if (inp) inp.value = "";
   showScreen("screen-pin");
 }
 
