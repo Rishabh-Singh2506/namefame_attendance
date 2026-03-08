@@ -964,7 +964,7 @@ function sendData() {
   if (!photoDataUrl) { showToast("❌ Pehle selfie lo!", "error"); return; }
   if (!gpsData.lat)  { showToast("❌ Location nahi mili!", "error"); return; }
 
-  showLoading("Photo & location save ho raha hai...", "Please wait");
+  showLoading("Photo save ho rahi hai...", "Please wait");
 
   const mapLink   = "https://www.google.com/maps?q=" + gpsData.lat + "," + gpsData.lng;
   const timestamp = new Date().toLocaleString("en-IN");
@@ -975,7 +975,9 @@ function sendData() {
     checkinCoords = { lat: gpsData.lat, lng: gpsData.lng };
   }
 
-  // Apps Script ko photo + data bhejo (Drive mein save hoga)
+  // Photo compress karo pehle (size kam karo)
+  const compressedPhoto = compressPhoto(photoDataUrl, 0.5);
+
   const payload = {
     action:      currentAction,
     name:        currentEmployee.name,
@@ -986,43 +988,74 @@ function sendData() {
     lng:         gpsData.lng,
     mapLink:     mapLink,
     timestamp:   timestamp,
-    photo:       photoDataUrl
+    photo:       compressedPhoto
   };
 
+  // ✅ no-cors HATAYA — ab properly bhejega
   fetch(SCRIPT_URL, {
     method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(payload),
-    mode:    "no-cors"
+    headers: { "Content-Type": "text/plain" }, // text/plain = no preflight, no-cors nahi chahiye
+    body:    JSON.stringify(payload)
   })
-  .then(()  => { hideLoading(); openGoogleForm(mapLink); })
-  .catch(()  => { hideLoading(); openGoogleForm(mapLink); });
+  .then(res => res.text())
+  .then(text => {
+    hideLoading();
+    try {
+      const result = JSON.parse(text);
+      if (result.photoUrl && result.photoUrl.startsWith("http")) {
+        showToast("✅ Photo Drive mein save hui!", "success");
+      }
+    } catch(e) {}
+    openGoogleForm(mapLink);
+  })
+  .catch(err => {
+    console.log("Fetch error:", err);
+    hideLoading();
+    // Error aaye tab bhi form kholo
+    openGoogleForm(mapLink);
+  });
+}
+
+// Photo compress karo — Drive upload ke liye size kam karo
+function compressPhoto(dataUrl, quality) {
+  try {
+    const canvas = document.createElement("canvas");
+    const img = new Image();
+    img.src = dataUrl;
+    // Max 800px width
+    const maxW = 800;
+    const scale = img.width > maxW ? maxW / img.width : 1;
+    canvas.width  = img.width  * scale;
+    canvas.height = img.height * scale;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", quality || 0.5);
+  } catch(e) {
+    return dataUrl; // fallback
+  }
 }
 
 // ── Open Google Form ──────────────────────────
 function openGoogleForm(mapLink) {
-  const emp     = currentEmployee;
-  const locNote = "📍 " + gpsData.lat.toFixed(6) + ", " + gpsData.lng.toFixed(6) + " | " + mapLink;
+  const emp = currentEmployee;
 
   stopCamera();
 
   if (currentAction === "checkin") {
-    // ✅ Check-In Form — Name prefill, Notes mein location
+    // ✅ Sirf Name prefill — location Notes mein nahi, Apps Script ne already sheet mein save kar di
     const url = CHECKIN_FORM
-      + "&" + CI.name  + "=" + encodeURIComponent(emp.name)
-      + "&" + CI.notes + "=" + encodeURIComponent(locNote);
+      + "&" + CI.name + "=" + encodeURIComponent(emp.name);
 
     window.open(url, "_blank");
-    showToast("✅ Check-In form khul gaya! Baaki details fill karein.", "success");
+    showToast("✅ Check-In form khul gaya! Details fill karein.", "success");
     showScreen("screen-menu");
     document.getElementById("checkoutBtn").classList.remove("disabled");
     document.getElementById("rangeWarning").classList.remove("show");
 
   } else {
-    // ✅ Check-Out Form — Name prefill, Notes mein location
+    // ✅ Sirf Name prefill — location Notes mein nahi
     const url = CHECKOUT_FORM
-      + "&" + CO.name  + "=" + encodeURIComponent(emp.name)
-      + "&" + CO.notes + "=" + encodeURIComponent(locNote);
+      + "&" + CO.name + "=" + encodeURIComponent(emp.name);
 
     window.open(url, "_blank");
     showToast("✅ Check-Out form khul gaya! Submit karein.", "success");
