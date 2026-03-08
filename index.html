@@ -731,81 +731,69 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// =============================================
-// CONFIG — Yahan apna Google Apps Script URL dalna
-// =============================================
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqY2rpRf3rmLV_Dgxwg8BBnaILc5Wj7X3JgYxz4G8x8KORSQk4Rjn2tZDDUTkUjDrNYA/exec";
 
-const FORM_BASE = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
+// ✅ 2 ALAG FORMS
+const CHECKIN_FORM  = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
+const CHECKOUT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScONIbe7d_yOLZCdF56AocltjcThmQzPve2XBndI2fsR4c5kw/viewform?usp=pp_url";
 
-// Entry IDs
-const ENTRY = {
-  name:        "entry.159740295",
-  shopName:    "entry.679895169",
-  shopkeeperName: "entry.1366585725",
-  shopkeeperContact: "entry.855855886",
-  area:        "entry.1384815262",
-  notes:       "entry.38074973"
+// ✅ Check-In Entry IDs
+const CI = {
+  name:              "entry.1855905436",
+  shopName:          "entry.1139461100",
+  shopkeeperName:    "entry.1206032357",
+  shopkeeperContact: "entry.937160659",
+  area:              "entry.1516065360",
+  notes:             "entry.512401051"
 };
 
-// Employee PINs — yahan employees add karo
-// Format: "EmployeeName": { pin: "XXXX", contact: "...", designation: "...", address: "..." }
+// ✅ Check-Out Entry IDs
+const CO = {
+  name:  "entry.1905643927",
+  area:  "entry.1007887376",
+  notes: "entry.841576993"
+};
+
+// ✅ EMPLOYEES — Name aur PIN
 const EMPLOYEES = {
-  "Rajesh": {
-    pin: "1234",
-    contact: "9876543210",
-    designation: "Sales Executive",
-    address: "Prayagraj, UP"
-  }
-  // Baad mein aur add karo:
-  // "Ramesh": { pin: "5678", contact: "...", designation: "...", address: "..." }
+  "Rajesh": { pin: "1234", contact: "9876543210", designation: "Sales Executive", address: "Prayagraj, UP" }
+  // Naya employee:
+  // "Ramesh": { pin: "5678", contact: "9999999999", designation: "Sales Executive", address: "Pratapgarh, UP" }
 };
 
-// =============================================
 // State
-// =============================================
 let currentEmployee = null;
-let currentAction = null; // 'checkin' or 'checkout'
-let enteredPin = "";
-let gpsData = { lat: null, lng: null, address: "" };
-let checkinCoords = null; // stored after checkin
-let photoDataUrl = null;
-let videoStream = null;
+let currentAction   = null;
+let enteredPin      = "";
+let gpsData         = { lat: null, lng: null };
+let checkinCoords   = null;
+let photoDataUrl    = null;
+let videoStream     = null;
 
-// =============================================
-// Clock & Date
-// =============================================
+// ── Clock ─────────────────────────────────────
 function updateClock() {
   const now = new Date();
-  const opts = { weekday:'long', day:'numeric', month:'long', year:'numeric' };
-  document.getElementById("currentDateTime").textContent = now.toLocaleDateString("en-IN", opts);
+  document.getElementById("currentDateTime").textContent =
+    now.toLocaleDateString("en-IN", { weekday:'long', day:'numeric', month:'long', year:'numeric' });
   document.getElementById("liveClock").textContent = now.toLocaleTimeString("en-IN");
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// =============================================
-// PIN Logic
-// =============================================
+// ── Employee Select ───────────────────────────
 document.getElementById("empSelect").addEventListener("change", function() {
-  const val = this.value;
-  document.getElementById("pinSection").style.display = val ? "block" : "none";
+  document.getElementById("pinSection").style.display = this.value ? "block" : "none";
   enteredPin = "";
   updatePinDots();
   document.getElementById("pinError").classList.remove("show");
 });
 
+// ── PIN ───────────────────────────────────────
 function pressKey(k) {
   if (enteredPin.length >= 4) return;
   enteredPin += k;
   updatePinDots();
-  // visual feedback
-  event.currentTarget && event.currentTarget.classList.add("pressed");
-  setTimeout(() => event.currentTarget && event.currentTarget.classList.remove("pressed"), 150);
-
-  if (enteredPin.length === 4) {
-    setTimeout(verifyPin, 200);
-  }
+  if (enteredPin.length === 4) setTimeout(verifyPin, 200);
 }
 
 function deleteKey() {
@@ -815,10 +803,8 @@ function deleteKey() {
 }
 
 function updatePinDots() {
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById("d" + i);
-    dot.classList.toggle("filled", i < enteredPin.length);
-  }
+  for (let i = 0; i < 4; i++)
+    document.getElementById("d" + i).classList.toggle("filled", i < enteredPin.length);
 }
 
 function verifyPin() {
@@ -832,139 +818,106 @@ function verifyPin() {
     document.getElementById("pinError").classList.add("show");
     enteredPin = "";
     updatePinDots();
-    // shake effect
     const card = document.querySelector(".pin-card");
-    card.style.animation = "none";
     card.style.transform = "translateX(-8px)";
     setTimeout(() => { card.style.transform = "translateX(8px)"; }, 80);
-    setTimeout(() => { card.style.transform = "translateX(0)"; card.style.animation = ""; }, 160);
+    setTimeout(() => { card.style.transform = "translateX(0)";   }, 160);
   }
 }
 
-// =============================================
-// Menu
-// =============================================
+// ── Menu ──────────────────────────────────────
 function showMenu() {
   showScreen("screen-menu");
   document.getElementById("greetName").textContent = "Hello, " + currentEmployee.name + "!";
-
-  // Check if checkin exists in session
-  const savedCheckin = sessionStorage.getItem("checkin_" + currentEmployee.name);
-  if (!savedCheckin) {
-    // No checkin yet — disable checkout
+  const saved = sessionStorage.getItem("checkin_" + currentEmployee.name);
+  if (!saved) {
     document.getElementById("checkoutBtn").classList.add("disabled");
+    document.getElementById("rangeWarning").classList.remove("show");
   } else {
-    checkinCoords = JSON.parse(savedCheckin);
+    checkinCoords = JSON.parse(saved);
     document.getElementById("checkoutBtn").classList.remove("disabled");
   }
 }
 
 function startAction(action) {
   currentAction = action;
-  if (action === "checkout" && checkinCoords) {
-    // Will verify range when location is obtained during camera step
-  }
   showScreen("screen-camera");
-  document.getElementById("cameraTitle").textContent = action === "checkin" ? "📸 Check-In Selfie" : "📸 Check-Out Selfie";
-  document.getElementById("cameraSubtitle").textContent = "Apni selfie lo aur location confirm karein";
+  document.getElementById("cameraTitle").textContent    = action === "checkin" ? "📸 Check-In Selfie" : "📸 Check-Out Selfie";
+  document.getElementById("cameraSubtitle").textContent = "Selfie lo — location photo pe stamp ho jaayegi";
   startCamera();
   getLocation();
 }
 
-function backToMenu() {
-  stopCamera();
-  showScreen("screen-menu");
-}
+function backToMenu() { stopCamera(); showScreen("screen-menu"); }
 
 function logout() {
-  currentEmployee = null;
-  enteredPin = "";
+  currentEmployee = null; enteredPin = "";
   document.getElementById("empSelect").value = "";
   document.getElementById("pinSection").style.display = "none";
   updatePinDots();
   showScreen("screen-pin");
 }
 
-// =============================================
-// Camera
-// =============================================
+// ── Camera ────────────────────────────────────
 async function startCamera() {
   photoDataUrl = null;
-  document.getElementById("video").style.display = "block";
-  document.getElementById("photoPreview").style.display = "none";
-  document.getElementById("btnCapture").style.display = "flex";
-  document.getElementById("btnBack").style.display = "flex";
+  document.getElementById("video").style.display          = "block";
+  document.getElementById("photoPreview").style.display   = "none";
+  document.getElementById("btnCapture").style.display     = "flex";
+  document.getElementById("btnBack").style.display        = "flex";
   document.getElementById("btnSend").classList.remove("visible");
   document.getElementById("btnRetake").classList.remove("visible");
-
   try {
     videoStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
+      video: { facingMode: { ideal: "user" } }, audio: false
     });
     document.getElementById("video").srcObject = videoStream;
   } catch(e) {
-    showToast("❌ Camera access denied!", "error");
+    showToast("❌ Camera allow karein browser settings mein!", "error");
     backToMenu();
   }
 }
 
 function stopCamera() {
-  if (videoStream) {
-    videoStream.getTracks().forEach(t => t.stop());
-    videoStream = null;
-  }
+  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
 }
 
 function capturePhoto() {
-  const video = document.getElementById("video");
+  const video  = document.getElementById("video");
   const canvas = document.getElementById("canvas");
-  canvas.width = video.videoWidth || 640;
+  canvas.width  = video.videoWidth  || 640;
   canvas.height = video.videoHeight || 480;
   const ctx = canvas.getContext("2d");
 
-  // Mirror flip for selfie
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
+  // selfie mirror
+  ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
 
-  // Overlay location text on photo
+  // location stamp
   if (gpsData.lat) {
-    ctx.scale(-1, 1);
-    ctx.translate(-canvas.width, 0);
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-    ctx.fillStyle = "#00e676";
-    ctx.font = "bold 13px Arial";
-    ctx.fillText("📍 " + gpsData.lat.toFixed(5) + ", " + gpsData.lng.toFixed(5), 10, canvas.height - 28);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "11px Arial";
-    const dt = new Date().toLocaleString("en-IN");
-    ctx.fillText(currentEmployee.name + "  |  " + dt, 10, canvas.height - 10);
+    ctx.scale(-1, 1); ctx.translate(-canvas.width, 0);
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(0, canvas.height - 56, canvas.width, 56);
+    ctx.fillStyle = "#00e676"; ctx.font = "bold 14px Arial";
+    ctx.fillText("📍 " + gpsData.lat.toFixed(6) + ",  " + gpsData.lng.toFixed(6), 10, canvas.height - 32);
+    ctx.fillStyle = "#fff"; ctx.font = "12px Arial";
+    ctx.fillText(currentEmployee.name + "  |  " + new Date().toLocaleString("en-IN"), 10, canvas.height - 11);
   }
 
-  photoDataUrl = canvas.toDataURL("image/jpeg", 0.75);
-
-  // Show preview
-  document.getElementById("photoPreview").src = photoDataUrl;
-  document.getElementById("photoPreview").style.display = "block";
-  document.getElementById("video").style.display = "none";
-  document.getElementById("btnCapture").style.display = "none";
-  document.getElementById("btnBack").style.display = "none";
+  photoDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+  document.getElementById("photoPreview").src            = photoDataUrl;
+  document.getElementById("photoPreview").style.display  = "block";
+  document.getElementById("video").style.display         = "none";
+  document.getElementById("btnCapture").style.display    = "none";
+  document.getElementById("btnBack").style.display       = "none";
   document.getElementById("btnSend").classList.add("visible");
   document.getElementById("btnRetake").classList.add("visible");
-
   stopCamera();
 }
 
-function retakePhoto() {
-  startCamera();
-  getLocation();
-}
+function retakePhoto() { startCamera(); getLocation(); }
 
-// =============================================
-// GPS
-// =============================================
+// ── GPS ───────────────────────────────────────
 function getLocation() {
   document.getElementById("locationBadge").classList.add("visible");
   document.getElementById("locationText").textContent = "Locating...";
@@ -973,22 +926,23 @@ function getLocation() {
     (pos) => {
       gpsData.lat = pos.coords.latitude;
       gpsData.lng = pos.coords.longitude;
-      gpsData.address = gpsData.lat.toFixed(5) + ", " + gpsData.lng.toFixed(5);
-      document.getElementById("locationText").textContent = gpsData.address;
+      document.getElementById("locationText").textContent =
+        gpsData.lat.toFixed(5) + ", " + gpsData.lng.toFixed(5);
 
-      // Checkout range check
+      // geofence check for checkout
       if (currentAction === "checkout" && checkinCoords) {
         const dist = getDistance(gpsData.lat, gpsData.lng, checkinCoords.lat, checkinCoords.lng);
         if (dist > 300) {
-          document.getElementById("rangeWarning").classList.add("show");
-          showToast("⚠️ 300m range ke bahar hain!", "error");
+          const warn = document.getElementById("rangeWarning");
+          warn.textContent = "⚠️ Aap checkin location se " + Math.round(dist) + "m door hain! 300m ke andar check-out karein.";
+          warn.classList.add("show");
+          showToast("300m se bahar hain! (" + Math.round(dist) + "m)", "error");
           stopCamera();
           showScreen("screen-menu");
-          return;
         }
       }
     },
-    (err) => {
+    () => {
       showToast("❌ Location allow karein!", "error");
       document.getElementById("locationText").textContent = "Location unavailable";
     },
@@ -1000,82 +954,78 @@ function getDistance(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// =============================================
-// Send Data
-// =============================================
+// ── Send Data ─────────────────────────────────
 function sendData() {
-  if (!photoDataUrl) { showToast("❌ Pehle photo lo!", "error"); return; }
-  if (!gpsData.lat) { showToast("❌ Location nahi mili!", "error"); return; }
+  if (!photoDataUrl) { showToast("❌ Pehle selfie lo!", "error"); return; }
+  if (!gpsData.lat)  { showToast("❌ Location nahi mili!", "error"); return; }
 
-  showLoading("Sending data...", "Please wait");
+  showLoading("Photo & location save ho raha hai...", "Please wait");
 
-  const mapLink = "https://www.google.com/maps?q=" + gpsData.lat + "," + gpsData.lng;
+  const mapLink   = "https://www.google.com/maps?q=" + gpsData.lat + "," + gpsData.lng;
   const timestamp = new Date().toLocaleString("en-IN");
 
-  // Save checkin coords in session for geofence check
   if (currentAction === "checkin") {
-    sessionStorage.setItem("checkin_" + currentEmployee.name, JSON.stringify({ lat: gpsData.lat, lng: gpsData.lng }));
+    sessionStorage.setItem("checkin_" + currentEmployee.name,
+      JSON.stringify({ lat: gpsData.lat, lng: gpsData.lng }));
     checkinCoords = { lat: gpsData.lat, lng: gpsData.lng };
   }
 
-  // Send to Apps Script (photo + location data)
+  // Apps Script ko photo + data bhejo (Drive mein save hoga)
   const payload = {
-    action: currentAction,
-    name: currentEmployee.name,
-    contact: currentEmployee.contact,
+    action:      currentAction,
+    name:        currentEmployee.name,
+    contact:     currentEmployee.contact,
     designation: currentEmployee.designation,
-    address: currentEmployee.address,
-    lat: gpsData.lat,
-    lng: gpsData.lng,
-    mapLink: mapLink,
-    timestamp: timestamp,
-    photo: photoDataUrl
+    address:     currentEmployee.address,
+    lat:         gpsData.lat,
+    lng:         gpsData.lng,
+    mapLink:     mapLink,
+    timestamp:   timestamp,
+    photo:       photoDataUrl
   };
 
   fetch(SCRIPT_URL, {
-    method: "POST",
+    method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    mode: "no-cors"
+    body:    JSON.stringify(payload),
+    mode:    "no-cors"
   })
-  .then(() => {
-    hideLoading();
-    openGoogleForm(mapLink, timestamp);
-  })
-  .catch(() => {
-    hideLoading();
-    // Still open form even if script fails
-    openGoogleForm(mapLink, timestamp);
-  });
+  .then(()  => { hideLoading(); openGoogleForm(mapLink); })
+  .catch(()  => { hideLoading(); openGoogleForm(mapLink); });
 }
 
-function openGoogleForm(mapLink, timestamp) {
-  const emp = currentEmployee;
+// ── Open Google Form ──────────────────────────
+function openGoogleForm(mapLink) {
+  const emp     = currentEmployee;
+  const locNote = "📍 " + gpsData.lat.toFixed(6) + ", " + gpsData.lng.toFixed(6) + " | " + mapLink;
+
+  stopCamera();
 
   if (currentAction === "checkin") {
-    const formURL = FORM_BASE
-      + "&" + ENTRY.name + "=" + encodeURIComponent(emp.name)
-      + "&" + ENTRY.area + "=" + encodeURIComponent("")
-      + "&" + ENTRY.notes + "=" + encodeURIComponent("Location: " + gpsData.lat + "," + gpsData.lng);
+    // ✅ Check-In Form — Name prefill, Notes mein location
+    const url = CHECKIN_FORM
+      + "&" + CI.name  + "=" + encodeURIComponent(emp.name)
+      + "&" + CI.notes + "=" + encodeURIComponent(locNote);
 
-    stopCamera();
-    window.open(formURL, "_blank");
-    showToast("✅ Check-In form khul gaya!", "success");
+    window.open(url, "_blank");
+    showToast("✅ Check-In form khul gaya! Baaki details fill karein.", "success");
     showScreen("screen-menu");
     document.getElementById("checkoutBtn").classList.remove("disabled");
     document.getElementById("rangeWarning").classList.remove("show");
-  } else {
-    const formURL = FORM_BASE
-      + "&" + ENTRY.name + "=" + encodeURIComponent(emp.name)
-      + "&" + ENTRY.notes + "=" + encodeURIComponent("Check-Out | Location: " + gpsData.lat + "," + gpsData.lng);
 
-    stopCamera();
-    window.open(formURL, "_blank");
-    showToast("✅ Check-Out complete!", "success");
+  } else {
+    // ✅ Check-Out Form — Name prefill, Notes mein location
+    const url = CHECKOUT_FORM
+      + "&" + CO.name  + "=" + encodeURIComponent(emp.name)
+      + "&" + CO.notes + "=" + encodeURIComponent(locNote);
+
+    window.open(url, "_blank");
+    showToast("✅ Check-Out form khul gaya! Submit karein.", "success");
     sessionStorage.removeItem("checkin_" + emp.name);
     checkinCoords = null;
     showScreen("screen-menu");
@@ -1083,29 +1033,24 @@ function openGoogleForm(mapLink, timestamp) {
   }
 }
 
-// =============================================
-// Helpers
-// =============================================
+// ── Helpers ───────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
-
 function showLoading(text, sub) {
-  document.getElementById("loadingText").textContent = text;
+  document.getElementById("loadingText").textContent    = text;
   document.getElementById("loadingSubtext").textContent = sub;
   document.getElementById("loadingOverlay").classList.add("visible");
 }
-
 function hideLoading() {
   document.getElementById("loadingOverlay").classList.remove("visible");
 }
-
 function showToast(msg, type = "info") {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast " + type + " show";
-  setTimeout(() => t.classList.remove("show"), 3500);
+  t.textContent  = msg;
+  t.className    = "toast " + type + " show";
+  setTimeout(() => t.classList.remove("show"), 4000);
 }
 </script>
 </body>
