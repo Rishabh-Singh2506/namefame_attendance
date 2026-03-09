@@ -2,1066 +2,656 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Field Attendance</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --surface2: #1c1c28;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --green: #00e676;
-    --yellow: #ffd740;
-    --text: #f0f0f5;
-    --muted: #7a7a9a;
-    --border: #2a2a3a;
-    --radius: 18px;
-    --shadow: 0 8px 32px rgba(108,99,255,0.15);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Animated background */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 20% 20%, rgba(108,99,255,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(255,101,132,0.06) 0%, transparent 50%);
-    animation: bgPulse 8s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  @keyframes bgPulse {
-    0% { transform: scale(1) rotate(0deg); }
-    100% { transform: scale(1.1) rotate(3deg); }
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 24px 16px 40px;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 32px;
-    animation: slideDown 0.6s ease;
-  }
-
-  @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .logo {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    font-size: 28px;
-    box-shadow: 0 8px 24px rgba(108,99,255,0.4);
-  }
-
-  .header h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #fff 30%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .header p {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 6px;
-  }
-
-  /* Time display */
-  .time-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    font-size: 13px;
-  }
-
-  .time-bar .live {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--green);
-    font-weight: 500;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    animation: blink 1.2s infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.2; }
-  }
-
-  /* Screens */
-  .screen { display: none; animation: fadeIn 0.4s ease; }
-  .screen.active { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* PIN Screen */
-  .pin-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 24px;
-  }
-
-  .pin-card h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  .pin-card p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
-
-  .form-group { margin-bottom: 16px; }
-
-  .form-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 8px;
-  }
-
-  .form-group select,
-  .form-group input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  .form-group select:focus,
-  .form-group input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
-  }
-
-  .select-wrap {
-    position: relative;
-  }
-
-  .select-wrap::after {
-    content: '▾';
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    pointer-events: none;
-    font-size: 16px;
-  }
-
-  /* PIN dots */
-  .pin-display {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 20px 0 16px;
-  }
-
-  .pin-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    transition: all 0.2s;
-  }
-
-  .pin-dot.filled {
-    background: var(--accent);
-    border-color: var(--accent);
-    transform: scale(1.2);
-  }
-
-  .pin-keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .key {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .key:active, .key.pressed {
-    background: var(--accent);
-    border-color: var(--accent);
-    transform: scale(0.94);
-  }
-
-  .key.del {
-    font-size: 18px;
-    color: var(--accent2);
-  }
-
-  .key.empty { visibility: hidden; }
-
-  /* Main menu */
-  .greeting-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,230,118,0.1);
-    border: 1px solid rgba(0,230,118,0.25);
-    color: var(--green);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 20px;
-  }
-
-  .menu-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-
-  .menu-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s;
-    text-decoration: none;
-    color: var(--text);
-    display: block;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .menu-btn:hover, .menu-btn:active {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow);
-  }
-
-  .menu-btn .icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .menu-btn .label {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .menu-btn .sublabel {
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .menu-btn.checkin { border-color: rgba(0,230,118,0.3); }
-  .menu-btn.checkin:hover { background: rgba(0,230,118,0.08); border-color: var(--green); }
-  .menu-btn.checkout { border-color: rgba(255,101,132,0.3); }
-  .menu-btn.checkout:hover { background: rgba(255,101,132,0.08); border-color: var(--accent2); }
-  .menu-btn.order {
-    grid-column: 1 / -1;
-    border-color: rgba(255,215,64,0.3);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    text-align: left;
-    padding: 20px 24px;
-  }
-  .menu-btn.order:hover { background: rgba(255,215,64,0.08); border-color: var(--yellow); }
-  .menu-btn.order .icon { margin-bottom: 0; font-size: 28px; }
-
-  /* Camera screen */
-  .camera-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .camera-header {
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .camera-header h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .camera-header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-  .video-wrap {
-    position: relative;
-    background: #000;
-    aspect-ratio: 4/3;
-  }
-
-  #video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  #canvas { display: none; }
-
-  .photo-preview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-  }
-
-  .camera-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .camera-overlay::before,
-  .camera-overlay::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-color: rgba(255,255,255,0.6);
-    border-style: solid;
-  }
-
-  .camera-overlay::before {
-    top: 12px; left: 12px;
-    border-width: 2px 0 0 2px;
-  }
-
-  .camera-overlay::after {
-    bottom: 12px; right: 12px;
-    border-width: 0 2px 2px 0;
-  }
-
-  .location-badge {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(8px);
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 11px;
-    color: #fff;
-    display: none;
-  }
-
-  .location-badge.visible { display: block; }
-
-  .location-badge strong { color: var(--green); }
-
-  .camera-controls {
-    padding: 16px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .btn {
-    flex: 1;
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .btn-capture {
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: #fff;
-    flex: 2;
-  }
-
-  .btn-capture:active { transform: scale(0.97); }
-
-  .btn-back {
-    background: var(--surface2);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    flex: 1;
-  }
-
-  .btn-send {
-    background: linear-gradient(135deg, var(--green), #00bfa5);
-    color: #000;
-    font-weight: 800;
-    flex: 2;
-    display: none;
-  }
-
-  .btn-retake {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid var(--border);
-    flex: 1;
-    display: none;
-  }
-
-  .btn-send.visible, .btn-retake.visible { display: flex; align-items: center; justify-content: center; gap: 6px; }
-
-  /* Status / loading */
-  .status-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,15,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .status-overlay.visible { display: flex; }
-
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .status-overlay p {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .status-overlay small { color: var(--muted); font-size: 13px; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 200;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-    max-width: 90vw;
-  }
-
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--green); color: var(--green); }
-  .toast.error { border-color: var(--accent2); color: var(--accent2); }
-  .toast.info { border-color: var(--accent); color: var(--accent); }
-
-  /* Error state */
-  .error-msg {
-    color: var(--accent2);
-    font-size: 12px;
-    margin-top: 6px;
-    display: none;
-  }
-
-  .error-msg.show { display: block; }
-
-  /* Logout */
-  .logout-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    border-radius: 10px;
-    padding: 8px 16px;
-    font-size: 13px;
-    cursor: pointer;
-    margin-top: 20px;
-    width: 100%;
-    transition: all 0.2s;
-  }
-
-  .logout-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  /* Range warning */
-  .range-warning {
-    background: rgba(255,101,132,0.1);
-    border: 1px solid rgba(255,101,132,0.3);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: var(--accent2);
-    margin-top: 12px;
-    display: none;
-    text-align: center;
-  }
-
-  .range-warning.show { display: block; }
-
-  /* Checkout disabled */
-  .menu-btn.checkout.disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  @media (max-width: 360px) {
-    .menu-grid { gap: 10px; }
-    .menu-btn { padding: 18px 12px; }
-  }
+:root {
+  --bg:#080c14; --card:#0f1623; --card2:#161f30; --border:#1e2d45;
+  --accent:#3b82f6; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b;
+  --purple:#a855f7; --text:#e8eef8; --muted:#64748b; --radius:16px;
+  font-family:'Outfit',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
+
+.screen{position:fixed;inset:0;overflow-y:auto;display:none;flex-direction:column;background:var(--bg);}
+.screen.active{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 16px 0;position:sticky;top:0;z-index:10;background:var(--bg);}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.topbar-title{font-size:16px;font-weight:600;flex:1;}
+.lang-btn{background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:0 16px 14px;}
+
+/* LANDING */
+#screen-landing{align-items:center;justify-content:center;padding:24px;}
+.brand-logo{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 0 40px rgba(59,130,246,.3);}
+.brand-title{font-size:28px;font-weight:800;text-align:center;margin-bottom:6px;}
+.brand-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:36px;}
+.start-btn{width:100%;padding:18px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(59,130,246,.35);transition:transform .15s;}
+.start-btn:active{transform:scale(.97);}
+.lang-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
+.lang-chip{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .2s;}
+.lang-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* CAMERA */
+#screen-camera{background:#000;}
+.video-wrap{position:relative;flex:1;min-height:0;overflow:hidden;}
+#video{width:100%;height:100%;object-fit:cover;display:block;}
+#canvas{display:none;}
+#photoPreview{width:100%;height:100%;object-fit:cover;display:none;}
+.cc{position:absolute;width:22px;height:22px;border-color:rgba(255,255,255,.7);border-style:solid;}
+.cc.tl{top:12px;left:12px;border-width:2px 0 0 2px;}
+.cc.br{bottom:12px;right:12px;border-width:0 2px 2px 0;}
+.gps-badge{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border-radius:10px;padding:8px 12px;font-size:11px;color:#fff;display:none;}
+.gps-badge.show{display:block;}
+.gps-badge strong{color:var(--green);}
+.cam-bar{display:flex;gap:10px;padding:12px 14px;background:rgba(0,0,0,.85);align-items:center;}
+.btn-flip{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-cap{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-send-cam{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:none;}
+.btn-re{flex:0 0 auto;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;font-family:inherit;display:none;}
+.show-cam{display:block!important;} .hide-cam{display:none!important;}
+
+/* INPUTS */
+.flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block;}
+.sel-wrap{position:relative;}
+.sel-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+select,input{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:15px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s;}
+select:focus,input:focus{border-color:var(--accent);}
+.fgroup{margin-bottom:14px;}
+.err{color:var(--red);font-size:12px;margin-top:6px;display:none;text-align:center;}
+.err.show{display:block;}
+
+/* DASHBOARD */
+#screen-dash{padding-bottom:32px;}
+.stat-bar{margin:14px 16px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
+.stat-live{display:flex;align-items:center;gap:8px;font-size:13px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
+.dot.g{background:var(--green);animation:p 1.5s infinite;}
+@keyframes p{0%,100%{opacity:1;}50%{opacity:.3;}}
+.clock{font-size:18px;font-weight:700;}
+
+.timer-bar{margin:10px 16px 0;background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.2);border-radius:var(--radius);padding:13px 16px;display:none;}
+.timer-bar.show{display:block;}
+.timer-row{display:flex;justify-content:space-between;align-items:center;}
+.timer-lbl{font-size:12px;color:var(--green);}
+.timer-val{font-size:22px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;}
+.timer-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+.greet{font-size:21px;font-weight:800;margin:14px 16px 3px;}
+.greet span{color:var(--accent);}
+.sub{font-size:13px;color:var(--muted);margin:0 16px 14px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 16px;}
+.abtn{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.abtn.dis{opacity:.35;pointer-events:none;}
+.abtn:not(.dis):active{transform:scale(.97);}
+.abtn .ai{font-size:26px;margin-bottom:7px;display:block;}
+.abtn .al{font-size:13px;font-weight:700;display:block;}
+.abtn .as{font-size:10px;color:var(--muted);margin-top:2px;display:block;}
+.abtn.ci{border-color:rgba(34,197,94,.3);}
+.abtn.ci:not(.dis){background:rgba(34,197,94,.06);}
+.abtn.co{border-color:rgba(239,68,68,.3);}
+.abtn.co:not(.dis){background:rgba(239,68,68,.06);}
+.abtn.or{border-color:rgba(245,158,11,.3);}
+.abtn.or:not(.dis){background:rgba(245,158,11,.06);}
+.abtn.py{border-color:rgba(168,85,247,.3);}
+.abtn.py:not(.dis){background:rgba(168,85,247,.06);}
+.cdown{position:absolute;top:6px;right:6px;background:rgba(239,68,68,.2);border-radius:6px;padding:2px 6px;font-size:10px;color:var(--red);display:none;}
+.cdown.show{display:block;}
+
+.fbtn{margin:10px 16px 0;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:15px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.fbtn.dis{opacity:.35;pointer-events:none;}
+.fbtn:not(.dis):active{transform:scale(.98);}
+.fbtn .fi{font-size:22px;}
+.fbtn .fl{font-size:14px;font-weight:700;}
+.fbtn .fs{font-size:11px;color:var(--muted);}
+.fbtn.fc{border-color:rgba(59,130,246,.3);}
+.fbtn.fc:not(.dis){background:rgba(59,130,246,.06);}
+
+.range-w{margin:10px 16px 0;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:11px 14px;font-size:12px;color:var(--red);display:none;text-align:center;}
+.range-w.show{display:block;}
+.logout-b{margin:14px 16px 0;width:calc(100% - 32px);background:none;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;cursor:pointer;transition:all .2s;}
+.logout-b:hover{border-color:var(--red);color:var(--red);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;z-index:999;transition:transform .3s;white-space:nowrap;max-width:92vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:var(--red);}
+.toast.info{border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body>
 
-<div class="container">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">🏢</div>
-    <h1>Field Attendance</h1>
-    <p id="currentDateTime">Loading...</p>
+<!-- SCREEN 1: LANDING -->
+<div class="screen active" id="s-land">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+    <div class="brand-logo">🏢</div>
+    <h1 class="brand-title" data-t="appName">Field Attendance</h1>
+    <p class="brand-sub" data-t="appSub">Track visits • Manage orders • Stay connected</p>
+    <button class="start-btn" onclick="startApp()" data-t="getStarted">Get Started →</button>
+    <div class="lang-bar">
+      <div class="lang-chip active" onclick="setLang('en')">English</div>
+      <div class="lang-chip" onclick="setLang('hi')">हिन्दी</div>
+      <div class="lang-chip" onclick="setLang('ur')">اردو</div>
+      <div class="lang-chip" onclick="setLang('bho')">भोजपुरी</div>
+    </div>
   </div>
+</div>
 
-  <!-- Time bar -->
-  <div class="time-bar">
-    <span class="live"><span class="dot"></span> Live Session</span>
-    <span id="liveClock" style="font-weight:600; font-size:15px;">--:--:--</span>
+<!-- SCREEN 2: CAMERA -->
+<div class="screen" id="s-cam">
+  <div class="topbar" style="background:rgba(0,0,0,.75);position:absolute;z-index:5;width:100%;">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="topbar-title" id="camTitle">📸 Take Selfie</span>
+    <button class="btn-flip" onclick="flipCam()">🔄</button>
   </div>
+  <div class="video-wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas"></canvas>
+    <img id="photoPreview" alt="" />
+    <div class="cc tl"></div><div class="cc br"></div>
+    <div class="gps-badge" id="gpsBadge">📍 <strong id="gpsText">Locating...</strong></div>
+  </div>
+  <div class="cam-bar">
+    <button class="btn-cap" id="btnCap" onclick="capturePhoto()">📷 Capture</button>
+    <button class="btn-re" id="btnRe" onclick="retakePhoto()">🔄 Retake</button>
+    <button class="btn-send-cam" id="btnNext" onclick="goToPin()">Next →</button>
+  </div>
+</div>
 
-  <!-- SCREEN 1: Employee Select + PIN -->
-  <div class="screen active" id="screen-pin">
-    <div class="pin-card">
-      <h2>👋 Welcome Back</h2>
-      <p>Select your name and enter your PIN to continue</p>
-
-      <div class="form-group">
-        <label>Employee Name</label>
-        <div class="select-wrap">
-          <select id="empSelect">
-            <option value="">— Select Name —</option>
-            <option value="Rajesh" data-pin="1234">Rajesh</option>
-            <!-- Add more employees here with data-pin -->
+<!-- SCREEN 3: PIN -->
+<div class="screen" id="s-pin">
+  <div class="topbar">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <span class="topbar-title" data-t="verifyId">Verify Identity</span>
+    <button class="lang-btn" onclick="cycleLang()">🌐</button>
+  </div>
+  <div style="padding:20px 0 24px;">
+    <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;">👤</div>
+    <div class="card">
+      <div class="fgroup">
+        <label class="flabel" data-t="selName">Select Your Name</label>
+        <div class="sel-wrap">
+          <select id="empSel">
+            <option value="">— Select —</option>
+            <option value="Rajesh">Rajesh</option>
+            <!-- Add more employees here -->
           </select>
         </div>
       </div>
-
-      <div id="pinSection" style="display:none;">
-        <div class="form-group" style="margin-top:8px;">
-          <label>Enter PIN</label>
-          <input type="password" id="pinInput" inputmode="numeric" pattern="[0-9]*" maxlength="4"
-            placeholder="••••"
-            style="letter-spacing:8px;font-size:22px;text-align:center;"
-            oninput="onPinInput(this.value)"
-            autocomplete="off" />
-        </div>
-        <p class="error-msg" id="pinError">❌ Galat PIN. Dobara try karein.</p>
+      <div class="fgroup">
+        <label class="flabel" data-t="enterPin">Enter PIN</label>
+        <input type="password" id="pinIn" inputmode="numeric" maxlength="4"
+          placeholder="••••" style="letter-spacing:10px;font-size:22px;text-align:center;"
+          oninput="onPin(this.value)" autocomplete="off" />
+        <p class="err" id="pinErr" data-t="wrongPin">❌ Wrong PIN. Try again.</p>
       </div>
     </div>
   </div>
-
-  <!-- SCREEN 2: Main Menu -->
-  <div class="screen" id="screen-menu">
-    <div class="greeting-tag">
-      <span class="dot"></span>
-      <span id="greetName">Hello!</span>
-    </div>
-
-    <div class="menu-grid">
-      <div class="menu-btn checkin" onclick="startAction('checkin')">
-        <span class="icon">🟢</span>
-        <span class="label">Check-In</span>
-        <span class="sublabel">Start your day</span>
-      </div>
-      <div class="menu-btn checkout" id="checkoutBtn" onclick="startAction('checkout')">
-        <span class="icon">🔴</span>
-        <span class="label">Check-Out</span>
-        <span class="sublabel">End your day</span>
-      </div>
-      <a href="order.html" class="menu-btn order">
-        <span class="icon">📋</span>
-        <div>
-          <span class="label">Take Order</span>
-          <span class="sublabel">Open order form</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="range-warning" id="rangeWarning">
-      ⚠️ Check-Out sirf 300m range ke andar ho sakta hai jahan aapne Check-In kiya tha.
-    </div>
-
-    <button class="logout-btn" onclick="logout()">🚪 Logout / Change Employee</button>
-  </div>
-
-  <!-- SCREEN 3: Camera (Check-in) -->
-  <div class="screen" id="screen-camera">
-    <div class="camera-card">
-      <div class="camera-header">
-        <h2 id="cameraTitle">📸 Check-In Selfie</h2>
-        <p id="cameraSubtitle">Apni selfie lo aur location confirm karein</p>
-      </div>
-
-      <div class="video-wrap">
-        <video id="video" autoplay playsinline muted></video>
-        <canvas id="canvas"></canvas>
-        <img id="photoPreview" class="photo-preview" alt="Preview" />
-        <div class="camera-overlay"></div>
-        <div class="location-badge" id="locationBadge">
-          📍 <strong id="locationText">Locating...</strong>
-        </div>
-      </div>
-
-      <div class="camera-controls">
-        <button class="btn btn-back" id="btnBack" onclick="backToMenu()">← Back</button>
-        <button class="btn btn-capture" id="btnCapture" onclick="capturePhoto()">📷 Capture</button>
-        <button class="btn btn-retake" id="btnRetake" onclick="retakePhoto()">🔄 Retake</button>
-        <button class="btn btn-send" id="btnSend" onclick="sendData()">✅ Send</button>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- Loading overlay -->
-<div class="status-overlay" id="loadingOverlay">
-  <div class="spinner"></div>
-  <p id="loadingText">Processing...</p>
-  <small id="loadingSubtext">Please wait</small>
+<!-- SCREEN 4: DASHBOARD -->
+<div class="screen" id="s-dash">
+  <div class="topbar">
+    <div style="flex:1;">
+      <div style="font-size:11px;color:var(--muted)" data-t="loggedAs">Logged in as</div>
+      <div style="font-size:16px;font-weight:700;" id="dName">—</div>
+    </div>
+    <button class="lang-btn" onclick="cycleLang()">🌐</button>
+  </div>
+
+  <div class="stat-bar">
+    <div class="stat-live">
+      <div class="dot" id="sDot"></div>
+      <span id="sTxt" data-t="notIn">Not checked in</span>
+    </div>
+    <div class="clock" id="lClock">--:--</div>
+  </div>
+
+  <div class="timer-bar" id="tBar">
+    <div class="timer-row">
+      <span class="timer-lbl" data-t="onField">⏱ Time on Field</span>
+      <span class="timer-val" id="tDisp">00:00:00</span>
+    </div>
+    <div class="timer-sub" id="tSub"></div>
+  </div>
+
+  <div class="range-w" id="rWarn"></div>
+
+  <div class="greet" data-t="hello">Hello, <span id="gName"></span>!</div>
+  <p class="sub" id="dDate"></p>
+
+  <div class="grid2">
+    <div class="abtn ci" id="bCI" onclick="doCheckin()">
+      <span class="ai">🟢</span>
+      <span class="al" data-t="checkIn">Check-In</span>
+      <span class="as" data-t="startDay">Start your day</span>
+    </div>
+    <div class="abtn co dis" id="bCO" onclick="doCheckout()">
+      <span class="ai">🔴</span>
+      <span class="al" data-t="checkOut">Check-Out</span>
+      <span class="as" data-t="endDay">End your day</span>
+      <span class="cdown" id="cdBadge"></span>
+    </div>
+    <div class="abtn or dis" id="bOrd" onclick="window.open(ORDER_URL,'_blank')">
+      <span class="ai">📋</span>
+      <span class="al" data-t="order">Take Order</span>
+      <span class="as" data-t="orderSub">Order entry</span>
+    </div>
+    <div class="abtn py dis" id="bPay" onclick="window.open(PAYMENT_URL,'_blank')">
+      <span class="ai">💰</span>
+      <span class="al" data-t="payment">Payment</span>
+      <span class="as" data-t="paySub">Collect payment</span>
+    </div>
+  </div>
+
+  <div class="fbtn fc dis" id="bForm" onclick="openForm()">
+    <span class="fi">📝</span>
+    <div><div class="fl" data-t="openForm">Open Check-In Form</div><div class="fs" data-t="formSub">Fill visit details</div></div>
+    <span style="margin-left:auto;color:var(--muted);">→</span>
+  </div>
+
+  <button class="logout-b" onclick="logout()" data-t="logout">🚪 Logout</button>
 </div>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-iaQPU7vcA4WX1Z-U8T8mx2aIjBcAaaPmCvm0w8NYdG0GKRzPHU15DyHpyqggzHE/exec";
-
-// ✅ 2 ALAG FORMS
+// ══════════════════════════════════════════
+// CONFIG — Update these
+// ══════════════════════════════════════════
+const SCRIPT_URL    = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
 const CHECKIN_FORM  = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
 const CHECKOUT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScONIbe7d_yOLZCdF56AocltjcThmQzPve2XBndI2fsR4c5kw/viewform?usp=pp_url";
+const ORDER_URL     = "order.html";
+const PAYMENT_URL   = "payment.html";
+const GEOFENCE_M    = 500;
+const MIN_CHECKOUT  = 5 * 60 * 1000; // 5 min
 
-// ✅ Check-In Entry IDs
-const CI = {
-  name:              "entry.1855905436",
-  shopName:          "entry.1139461100",
-  shopkeeperName:    "entry.1206032357",
-  shopkeeperContact: "entry.937160659",
-  area:              "entry.1516065360",
-  notes:             "entry.512401051"
-};
+const CI = { name:"entry.1855905436", shopName:"entry.1139461100", shopkeeperName:"entry.1206032357", shopkeeperContact:"entry.937160659", area:"entry.1516065360", notes:"entry.512401051" };
+const CO = { name:"entry.1905643927", area:"entry.1007887376", notes:"entry.841576993" };
 
-// ✅ Check-Out Entry IDs
-const CO = {
-  name:  "entry.1905643927",
-  area:  "entry.1007887376",
-  notes: "entry.841576993"
-};
-
-// ✅ EMPLOYEES — Name aur PIN
 const EMPLOYEES = {
-  "Rajesh": { pin: "1234", contact: "9876543210", designation: "Sales Executive", address: "Prayagraj, UP" }
-  // Naya employee:
-  // "Ramesh": { pin: "5678", contact: "9999999999", designation: "Sales Executive", address: "Pratapgarh, UP" }
+  "Rajesh": { pin:"1234", contact:"9876543210", designation:"Sales Executive", address:"Prayagraj, UP" }
+  // "Ramesh": { pin:"5678", contact:"9999999999", designation:"Sales Executive", address:"Pratapgarh, UP" }
 };
 
-// State
-let currentEmployee = null;
-let currentAction   = null;
-let enteredPin      = "";
-let gpsData         = { lat: null, lng: null };
-let checkinCoords   = null;
-let photoDataUrl    = null;
-let videoStream     = null;
-
-// ── Clock ─────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  document.getElementById("currentDateTime").textContent =
-    now.toLocaleDateString("en-IN", { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  document.getElementById("liveClock").textContent = now.toLocaleTimeString("en-IN");
+// ══════════════════════════════════════════
+// TRANSLATIONS
+// ══════════════════════════════════════════
+const TR = {
+  en:{ appName:"Field Attendance", appSub:"Track visits • Manage orders", getStarted:"Get Started →",
+    verifyId:"Verify Identity", selName:"Select Your Name", enterPin:"Enter PIN", wrongPin:"❌ Wrong PIN. Try again.",
+    loggedAs:"Logged in as", notIn:"Not checked in", checkedIn:"✅ Checked in", onField:"⏱ Time on Field",
+    hello:"Hello,", checkIn:"Check-In", startDay:"Start your day", checkOut:"Check-Out", endDay:"End your day",
+    order:"Take Order", orderSub:"Order entry", payment:"Payment", paySub:"Collect payment",
+    openForm:"Open Check-In Form", formSub:"Fill visit details", logout:"🚪 Logout",
+    locating:"Locating...", alreadyIn:"Already checked in!", waitMsg:"Wait {m} min for checkout",
+    outOfRange:"You are {d}m away! Max 500m.", confirmLogout:"Logout?" },
+  hi:{ appName:"फील्ड अटेंडेंस", appSub:"विज़िट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करें →",
+    verifyId:"पहचान सत्यापित", selName:"नाम चुनें", enterPin:"PIN डालें", wrongPin:"❌ गलत PIN।",
+    loggedAs:"लॉग इन", notIn:"चेक-इन नहीं", checkedIn:"✅ चेक-इन हो गया", onField:"⏱ फील्ड पर समय",
+    hello:"नमस्ते,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन समाप्त",
+    order:"ऑर्डर लें", orderSub:"ऑर्डर एंट्री", payment:"पेमेंट", paySub:"पेमेंट कलेक्ट",
+    openForm:"चेक-इन फॉर्म खोलें", formSub:"विवरण भरें", logout:"🚪 लॉगआउट",
+    locating:"लोकेशन मिल रही है...", alreadyIn:"पहले से चेक-इन है!", waitMsg:"{m} मिनट बाद चेक-आउट",
+    outOfRange:"आप {d}m दूर हैं! 500m के अंदर रहें।", confirmLogout:"लॉगआउट करें?" },
+  ur:{ appName:"فیلڈ حاضری", appSub:"وزٹ ٹریک • آرڈر منیج", getStarted:"شروع کریں →",
+    verifyId:"شناخت تصدیق", selName:"نام چنیں", enterPin:"PIN درج", wrongPin:"❌ غلط PIN۔",
+    loggedAs:"لاگ ان", notIn:"چیک ان نہیں", checkedIn:"✅ چیک ان", onField:"⏱ فیلڈ وقت",
+    hello:"السلام،", checkIn:"چیک ان", startDay:"شروع", checkOut:"چیک آؤٹ", endDay:"ختم",
+    order:"آرڈر", orderSub:"آرڈر", payment:"ادائیگی", paySub:"پیسے جمع",
+    openForm:"فارم کھولیں", formSub:"تفصیلات بھریں", logout:"🚪 لاگ آؤٹ",
+    locating:"لوکیشن...", alreadyIn:"پہلے سے چیک ان!", waitMsg:"{m} منٹ انتظار",
+    outOfRange:"آپ {d}m دور ہیں!", confirmLogout:"لاگ آؤٹ؟" },
+  bho:{ appName:"फील्ड हाजिरी", appSub:"विजिट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करीं →",
+    verifyId:"पहचान जाँच", selName:"नाम चुनीं", enterPin:"PIN डालीं", wrongPin:"❌ गलत PIN बा।",
+    loggedAs:"लॉगिन बा", notIn:"चेक-इन नइखे", checkedIn:"✅ चेक-इन भइल", onField:"⏱ फील्ड समय",
+    hello:"प्रणाम,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन खतम",
+    order:"ऑर्डर लीं", orderSub:"ऑर्डर", payment:"पेमेंट", paySub:"पैसा लीं",
+    openForm:"फॉर्म खोलीं", formSub:"विवरण भरीं", logout:"🚪 लॉगआउट",
+    locating:"लोकेशन मिल रहल...", alreadyIn:"पहिलहीं चेक-इन बा!", waitMsg:"{m} मिनट बाद",
+    outOfRange:"रउआ {d}m दूर बानीं!", confirmLogout:"लॉगआउट करीं?" }
+};
+let lang = localStorage.getItem("lang")||"en";
+const t = k => (TR[lang]||TR.en)[k]||(TR.en[k]||k);
+function applyLang(){
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const k=el.getAttribute("data-t");
+    if(k==="hello") el.innerHTML = t("hello")+" <span id='gName'></span>!";
+    else el.textContent=t(k);
+  });
+  document.querySelectorAll(".lang-chip").forEach(c=>{
+    c.classList.toggle("active",c.getAttribute("onclick").includes("'"+lang+"'"));
+  });
+  if(currentEmp) { const g=document.getElementById("gName"); if(g) g.textContent=currentEmp.name; }
 }
-setInterval(updateClock, 1000);
-updateClock();
+function setLang(l){lang=l;localStorage.setItem("lang",l);applyLang();}
+function cycleLang(){const ls=["en","hi","ur","bho"];lang=ls[(ls.indexOf(lang)+1)%ls.length];localStorage.setItem("lang",lang);applyLang();toast("🌐 "+{en:"English",hi:"हिन्दी",ur:"اردو",bho:"भोजपुरी"}[lang],"info");}
 
-// ── Employee Select ───────────────────────────
-document.getElementById("empSelect").addEventListener("change", function() {
-  document.getElementById("pinSection").style.display = this.value ? "block" : "none";
-  enteredPin = "";
-  const inp = document.getElementById("pinInput");
-  if (inp) inp.value = "";
-  document.getElementById("pinError").classList.remove("show");
-  if (this.value) setTimeout(() => { const i = document.getElementById("pinInput"); if(i) i.focus(); }, 150);
-});
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentEmp=null, currentAction=null;
+let photoData=null, gps={lat:null,lng:null};
+let stream=null, facing="user";
+let screenStack=["s-land"];
+let cdTimer=null, fTimer=null;
 
-// ── PIN input from keyboard ───────────────────
-function onPinInput(val) {
-  const clean = val.replace(/[^0-9]/g, "").slice(0, 4);
-  document.getElementById("pinInput").value = clean;
-  enteredPin = clean;
-  document.getElementById("pinError").classList.remove("show");
-  if (clean.length === 4) setTimeout(verifyPin, 300);
+const ls={
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
+  del:(k)=>{try{localStorage.removeItem(k);}catch(e){}}
+};
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
+function goTo(id){screenStack.push(id);show(id);if(id==="s-cam")initCam();if(id==="s-dash")refreshDash();}
+function goBack(){
+  stopCam();
+  screenStack.pop();
+  const p=screenStack[screenStack.length-1]||"s-land";
+  show(p);
+  if(p==="s-dash")refreshDash();
 }
 
-function verifyPin() {
-  const empName = document.getElementById("empSelect").value;
-  const emp = EMPLOYEES[empName];
-  if (emp && enteredPin === emp.pin) {
-    currentEmployee = { name: empName, ...emp };
-    document.getElementById("pinError").classList.remove("show");
-    showMenu();
-  } else {
-    document.getElementById("pinError").classList.add("show");
-    enteredPin = "";
-    document.getElementById("pinInput").value = "";
-    const card = document.querySelector(".pin-card");
-    card.style.transform = "translateX(-8px)";
-    setTimeout(() => { card.style.transform = "translateX(8px)"; }, 80);
-    setTimeout(() => { card.style.transform = "translateX(0)";   }, 160);
+// ══════════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════════
+setInterval(()=>{
+  document.getElementById("lClock").textContent=new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+  const d=new Date();
+  document.getElementById("dDate").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+},1000);
+
+// ══════════════════════════════════════════
+// CAMERA
+// ══════════════════════════════════════════
+async function initCam(){
+  photoData=null;
+  document.getElementById("video").style.display="block";
+  document.getElementById("photoPreview").style.display="none";
+  document.getElementById("btnCap").style.display="block";
+  document.getElementById("btnRe").style.display="none";
+  document.getElementById("btnNext").style.display="none";
+  document.getElementById("gpsBadge").classList.remove("show");
+  document.getElementById("gpsText").textContent=t("locating");
+  document.getElementById("camTitle").textContent = currentAction==="checkout"?"📸 Check-Out Photo":"📸 Check-In Photo";
+  try{
+    if(stream)stream.getTracks().forEach(t=>t.stop());
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false});
+    document.getElementById("video").srcObject=stream;
+  }catch(e){toast("❌ Camera allow karein!","error");goBack();return;}
+  getGPS();
+}
+function flipCam(){facing=facing==="user"?"environment":"user";initCam();}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
+
+function capturePhoto(){
+  const v=document.getElementById("video"),c=document.getElementById("canvas");
+  c.width=v.videoWidth||640; c.height=v.videoHeight||480;
+  const ctx=c.getContext("2d");
+  if(facing==="user"){ctx.translate(c.width,0);ctx.scale(-1,1);}
+  ctx.drawImage(v,0,0);
+  if(facing==="user"){ctx.scale(-1,1);ctx.translate(-c.width,0);}
+  if(gps.lat){
+    ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(0,c.height-52,c.width,52);
+    ctx.fillStyle="#22c55e";ctx.font="bold 13px Arial";
+    ctx.fillText("📍 "+gps.lat.toFixed(6)+", "+gps.lng.toFixed(6),10,c.height-30);
+    ctx.fillStyle="#fff";ctx.font="12px Arial";
+    ctx.fillText((currentEmp?currentEmp.name:"")+" | "+new Date().toLocaleString("en-IN"),10,c.height-10);
   }
+  photoData=c.toDataURL("image/jpeg",0.82);
+  document.getElementById("photoPreview").src=photoData;
+  document.getElementById("photoPreview").style.display="block";
+  document.getElementById("video").style.display="none";
+  document.getElementById("btnCap").style.display="none";
+  document.getElementById("btnRe").style.display="block";
+  document.getElementById("btnNext").style.display="block";
+  stopCam();
 }
+function retakePhoto(){initCam();}
 
-// ── Menu ──────────────────────────────────────
-function showMenu() {
-  showScreen("screen-menu");
-  document.getElementById("greetName").textContent = "Hello, " + currentEmployee.name + "!";
-  const saved = sessionStorage.getItem("checkin_" + currentEmployee.name);
-  if (!saved) {
-    document.getElementById("checkoutBtn").classList.add("disabled");
-    document.getElementById("rangeWarning").classList.remove("show");
-  } else {
-    checkinCoords = JSON.parse(saved);
-    document.getElementById("checkoutBtn").classList.remove("disabled");
-  }
-}
-
-function startAction(action) {
-  currentAction = action;
-  showScreen("screen-camera");
-  document.getElementById("cameraTitle").textContent    = action === "checkin" ? "📸 Check-In Selfie" : "📸 Check-Out Selfie";
-  document.getElementById("cameraSubtitle").textContent = "Selfie lo — location photo pe stamp ho jaayegi";
-  startCamera();
-  getLocation();
-}
-
-function backToMenu() { stopCamera(); showScreen("screen-menu"); }
-
-function logout() {
-  currentEmployee = null; enteredPin = "";
-  document.getElementById("empSelect").value = "";
-  document.getElementById("pinSection").style.display = "none";
-  const inp = document.getElementById("pinInput");
-  if (inp) inp.value = "";
-  showScreen("screen-pin");
-}
-
-// ── Camera ────────────────────────────────────
-async function startCamera() {
-  photoDataUrl = null;
-  document.getElementById("video").style.display          = "block";
-  document.getElementById("photoPreview").style.display   = "none";
-  document.getElementById("btnCapture").style.display     = "flex";
-  document.getElementById("btnBack").style.display        = "flex";
-  document.getElementById("btnSend").classList.remove("visible");
-  document.getElementById("btnRetake").classList.remove("visible");
-  try {
-    videoStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "user" } }, audio: false
-    });
-    document.getElementById("video").srcObject = videoStream;
-  } catch(e) {
-    showToast("❌ Camera allow karein browser settings mein!", "error");
-    backToMenu();
-  }
-}
-
-function stopCamera() {
-  if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
-}
-
-function capturePhoto() {
-  const video  = document.getElementById("video");
-  const canvas = document.getElementById("canvas");
-  canvas.width  = video.videoWidth  || 640;
-  canvas.height = video.videoHeight || 480;
-  const ctx = canvas.getContext("2d");
-
-  // selfie mirror
-  ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0);
-
-  // location stamp
-  if (gpsData.lat) {
-    ctx.scale(-1, 1); ctx.translate(-canvas.width, 0);
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(0, canvas.height - 56, canvas.width, 56);
-    ctx.fillStyle = "#00e676"; ctx.font = "bold 14px Arial";
-    ctx.fillText("📍 " + gpsData.lat.toFixed(6) + ",  " + gpsData.lng.toFixed(6), 10, canvas.height - 32);
-    ctx.fillStyle = "#fff"; ctx.font = "12px Arial";
-    ctx.fillText(currentEmployee.name + "  |  " + new Date().toLocaleString("en-IN"), 10, canvas.height - 11);
-  }
-
-  photoDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-  document.getElementById("photoPreview").src            = photoDataUrl;
-  document.getElementById("photoPreview").style.display  = "block";
-  document.getElementById("video").style.display         = "none";
-  document.getElementById("btnCapture").style.display    = "none";
-  document.getElementById("btnBack").style.display       = "none";
-  document.getElementById("btnSend").classList.add("visible");
-  document.getElementById("btnRetake").classList.add("visible");
-  stopCamera();
-}
-
-function retakePhoto() { startCamera(); getLocation(); }
-
-// ── GPS ───────────────────────────────────────
-function getLocation() {
-  document.getElementById("locationBadge").classList.add("visible");
-  document.getElementById("locationText").textContent = "Locating...";
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      gpsData.lat = pos.coords.latitude;
-      gpsData.lng = pos.coords.longitude;
-      document.getElementById("locationText").textContent =
-        gpsData.lat.toFixed(5) + ", " + gpsData.lng.toFixed(5);
-
-      // geofence check for checkout
-      if (currentAction === "checkout" && checkinCoords) {
-        const dist = getDistance(gpsData.lat, gpsData.lng, checkinCoords.lat, checkinCoords.lng);
-        if (dist > 300) {
-          const warn = document.getElementById("rangeWarning");
-          warn.textContent = "⚠️ Aap checkin location se " + Math.round(dist) + "m door hain! 300m ke andar check-out karein.";
-          warn.classList.add("show");
-          showToast("300m se bahar hain! (" + Math.round(dist) + "m)", "error");
-          stopCamera();
-          showScreen("screen-menu");
+// ══════════════════════════════════════════
+// GPS
+// ══════════════════════════════════════════
+function getGPS(){
+  document.getElementById("gpsBadge").classList.add("show");
+  document.getElementById("gpsText").textContent=t("locating");
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gps.lat=pos.coords.latitude; gps.lng=pos.coords.longitude;
+    document.getElementById("gpsText").textContent=gps.lat.toFixed(5)+", "+gps.lng.toFixed(5);
+    // Geofence for checkout
+    if(currentAction==="checkout"&&currentEmp){
+      const sv=ls.get("ci_"+currentEmp.name);
+      if(sv){
+        const d=Math.round(dist(gps.lat,gps.lng,sv.lat,sv.lng));
+        if(d>GEOFENCE_M){
+          document.getElementById("rWarn").textContent="⚠️ "+t("outOfRange").replace("{d}",d);
+          document.getElementById("rWarn").classList.add("show");
+          toast(t("outOfRange").replace("{d}",d),"error");
+          stopCam();goBack();
         }
       }
-    },
-    () => {
-      showToast("❌ Location allow karein!", "error");
-      document.getElementById("locationText").textContent = "Location unavailable";
-    },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-  );
+    }
+  },()=>{document.getElementById("gpsText").textContent="Unavailable";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function dist(a,b,c,d){
+  const R=6371000,dLa=(c-a)*Math.PI/180,dLo=(d-b)*Math.PI/180;
+  const x=Math.sin(dLa/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLo/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
 
-function getDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 +
-            Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+// ══════════════════════════════════════════
+// PIN
+// ══════════════════════════════════════════
+function goToPin(){
+  if(!photoData){toast("❌ Photo lo pehle!","error");return;}
+  if(!gps.lat){toast("❌ Location chahiye!","error");return;}
+  screenStack.push("s-pin");
+  show("s-pin");
+  document.getElementById("empSel").value="";
+  document.getElementById("pinIn").value="";
+  document.getElementById("pinErr").classList.remove("show");
 }
-
-// ── Send Data ─────────────────────────────────
-function sendData() {
-  if (!photoDataUrl) { showToast("❌ Pehle selfie lo!", "error"); return; }
-  if (!gpsData.lat)  { showToast("❌ Location nahi mili!", "error"); return; }
-
-  showLoading("Photo save ho rahi hai...", "Please wait");
-
-  const mapLink   = "https://www.google.com/maps?q=" + gpsData.lat + "," + gpsData.lng;
-  const timestamp = new Date().toLocaleString("en-IN");
-
-  if (currentAction === "checkin") {
-    sessionStorage.setItem("checkin_" + currentEmployee.name,
-      JSON.stringify({ lat: gpsData.lat, lng: gpsData.lng }));
-    checkinCoords = { lat: gpsData.lat, lng: gpsData.lng };
-  }
-
-  // Photo compress karo pehle (size kam karo)
-  const compressedPhoto = compressPhoto(photoDataUrl, 0.5);
-
-  const payload = {
-    action:      currentAction,
-    name:        currentEmployee.name,
-    contact:     currentEmployee.contact,
-    designation: currentEmployee.designation,
-    address:     currentEmployee.address,
-    lat:         gpsData.lat,
-    lng:         gpsData.lng,
-    mapLink:     mapLink,
-    timestamp:   timestamp,
-    photo:       compressedPhoto
-  };
-
-  // ✅ no-cors HATAYA — ab properly bhejega
-  fetch(SCRIPT_URL, {
-    method:  "POST",
-    headers: { "Content-Type": "text/plain" }, // text/plain = no preflight, no-cors nahi chahiye
-    body:    JSON.stringify(payload)
-  })
-  .then(res => res.text())
-  .then(text => {
-    hideLoading();
-    try {
-      const result = JSON.parse(text);
-      if (result.photoUrl && result.photoUrl.startsWith("http")) {
-        showToast("✅ Photo Drive mein save hui!", "success");
-      }
-    } catch(e) {}
-    openGoogleForm(mapLink);
-  })
-  .catch(err => {
-    console.log("Fetch error:", err);
-    hideLoading();
-    // Error aaye tab bhi form kholo
-    openGoogleForm(mapLink);
-  });
+document.getElementById("empSel").addEventListener("change",function(){
+  document.getElementById("pinIn").value="";
+  document.getElementById("pinErr").classList.remove("show");
+  if(this.value)setTimeout(()=>document.getElementById("pinIn").focus(),100);
+});
+function onPin(v){
+  const c=v.replace(/[^0-9]/g,"").slice(0,4);
+  document.getElementById("pinIn").value=c;
+  document.getElementById("pinErr").classList.remove("show");
+  if(c.length===4)setTimeout(()=>verifyPin(c),250);
 }
-
-// Photo compress karo — Drive upload ke liye size kam karo
-function compressPhoto(dataUrl, quality) {
-  try {
-    const canvas = document.createElement("canvas");
-    const img = new Image();
-    img.src = dataUrl;
-    // Max 800px width
-    const maxW = 800;
-    const scale = img.width > maxW ? maxW / img.width : 1;
-    canvas.width  = img.width  * scale;
-    canvas.height = img.height * scale;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    return canvas.toDataURL("image/jpeg", quality || 0.5);
-  } catch(e) {
-    return dataUrl; // fallback
+function verifyPin(pin){
+  const nm=document.getElementById("empSel").value;
+  if(!nm){toast("Naam select karein!","error");return;}
+  const emp=EMPLOYEES[nm];
+  if(emp&&pin===emp.pin){
+    currentEmp={name:nm,...emp};
+    ls.set("emp",currentEmp);
+    document.getElementById("pinErr").classList.remove("show");
+    if(currentAction==="checkout")processCheckout();
+    else processCheckin();
+  }else{
+    document.getElementById("pinErr").classList.add("show");
+    document.getElementById("pinIn").value="";
+    const card=document.querySelector("#s-pin .card");
+    card.style.transform="translateX(-8px)";
+    setTimeout(()=>{card.style.transform="translateX(8px)";},80);
+    setTimeout(()=>{card.style.transform="translateX(0)";},160);
   }
 }
 
-// ── Open Google Form ──────────────────────────
-function openGoogleForm(mapLink) {
-  const emp = currentEmployee;
+// ══════════════════════════════════════════
+// CHECK-IN
+// ══════════════════════════════════════════
+function startApp(){currentAction="checkin";goTo("s-cam");}
+function doCheckin(){
+  if(ls.get("ci_"+currentEmp.name)){toast(t("alreadyIn"),"error");return;}
+  currentAction="checkin";goTo("s-cam");
+}
+function processCheckin(){
+  const map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
+  const now=new Date();
+  const ciTime=now.toLocaleTimeString("en-IN");
+  ls.set("ci_"+currentEmp.name,{lat:gps.lat,lng:gps.lng,time:ciTime,ms:now.getTime(),map});
+  // Open form immediately
+  window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
+  toast("✅ Check-In! Form fill karein.","success");
+  uploadBg("checkin",map,ciTime,"","");
+  goTo("s-dash");
+}
 
-  stopCamera();
+// ══════════════════════════════════════════
+// CHECK-OUT
+// ══════════════════════════════════════════
+function doCheckout(){
+  const sv=ls.get("ci_"+currentEmp.name);
+  if(!sv)return;
+  const el=Date.now()-sv.ms;
+  if(el<MIN_CHECKOUT){const m=Math.ceil((MIN_CHECKOUT-el)/60000);toast(t("waitMsg").replace("{m}",m),"error");return;}
+  document.getElementById("rWarn").classList.remove("show");
+  currentAction="checkout";goTo("s-cam");
+}
+function processCheckout(){
+  const map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
+  const sv=ls.get("ci_"+currentEmp.name);
+  const now=new Date();
+  const coTime=now.toLocaleTimeString("en-IN");
+  const durMs=now.getTime()-(sv?sv.ms:now.getTime());
+  const durStr=Math.floor(durMs/3600000)+"h "+Math.floor((durMs%3600000)/60000)+"m";
+  const m=sv?Math.round(dist(gps.lat,gps.lng,sv.lat,sv.lng)):0;
+  window.open(CHECKOUT_FORM+"&"+CO.name+"="+encodeURIComponent(currentEmp.name),"_blank");
+  toast("✅ Check-Out! "+durStr,"success");
+  uploadBg("checkout",map,coTime,durStr,m+" m");
+  ls.del("ci_"+currentEmp.name);
+  goTo("s-dash");
+}
 
-  if (currentAction === "checkin") {
-    // ✅ Sirf Name prefill — location Notes mein nahi, Apps Script ne already sheet mein save kar di
-    const url = CHECKIN_FORM
-      + "&" + CI.name + "=" + encodeURIComponent(emp.name);
+// ══════════════════════════════════════════
+// UPLOAD BACKGROUND
+// ══════════════════════════════════════════
+function compress(d){
+  try{
+    const cv=document.createElement("canvas"),im=new Image();im.src=d;
+    const mw=720,sc=im.width>mw?mw/im.width:1;
+    cv.width=(im.width||640)*sc;cv.height=(im.height||480)*sc;
+    cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
+    return cv.toDataURL("image/jpeg",0.5);
+  }catch(e){return d;}
+}
+function uploadBg(action,map,time,duration,distCovered){
+  if(!photoData||!currentEmp)return;
+  const p={action,name:currentEmp.name,contact:currentEmp.contact,designation:currentEmp.designation,
+    address:currentEmp.address,lat:gps.lat,lng:gps.lng,mapLink:map,timestamp:time,
+    duration,distCovered,photo:compress(photoData)};
+  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)})
+    .then(r=>r.text()).then(()=>toast("✅ Photo Drive mein save!","success")).catch(()=>{});
+}
 
-    window.open(url, "_blank");
-    showToast("✅ Check-In form khul gaya! Details fill karein.", "success");
-    showScreen("screen-menu");
-    document.getElementById("checkoutBtn").classList.remove("disabled");
-    document.getElementById("rangeWarning").classList.remove("show");
-
-  } else {
-    // ✅ Sirf Name prefill — location Notes mein nahi
-    const url = CHECKOUT_FORM
-      + "&" + CO.name + "=" + encodeURIComponent(emp.name);
-
-    window.open(url, "_blank");
-    showToast("✅ Check-Out form khul gaya! Submit karein.", "success");
-    sessionStorage.removeItem("checkin_" + emp.name);
-    checkinCoords = null;
-    showScreen("screen-menu");
-    document.getElementById("checkoutBtn").classList.add("disabled");
+// ══════════════════════════════════════════
+// DASHBOARD REFRESH
+// ══════════════════════════════════════════
+function openForm(){
+  if(!currentEmp)return;
+  window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
+}
+function refreshDash(){
+  if(!currentEmp)return;
+  document.getElementById("dName").textContent=currentEmp.name;
+  document.getElementById("gName").textContent=currentEmp.name;
+  applyLang();
+  const sv=ls.get("ci_"+currentEmp.name);
+  const in_=!!sv;
+  document.getElementById("sDot").className="dot"+(in_?" g":"");
+  document.getElementById("sTxt").textContent=in_?t("checkedIn"):t("notIn");
+  document.getElementById("tBar").classList.toggle("show",in_);
+  if(in_){
+    document.getElementById("tSub").textContent="Check-In: "+sv.time;
+    startFTimer(sv.ms);
+  }else{stopFTimer();}
+  const dis=el=>document.getElementById(el);
+  if(in_){
+    dis("bCI").classList.add("dis");
+    dis("bOrd").classList.remove("dis");
+    dis("bPay").classList.remove("dis");
+    dis("bForm").classList.remove("dis");
+    const el2=Date.now()-sv.ms;
+    if(el2<MIN_CHECKOUT){dis("bCO").classList.add("dis");dis("cdBadge").classList.add("show");startCD(sv.ms);}
+    else{dis("bCO").classList.remove("dis");dis("cdBadge").classList.remove("show");}
+  }else{
+    dis("bCI").classList.remove("dis");
+    dis("bCO").classList.add("dis");
+    dis("bOrd").classList.add("dis");
+    dis("bPay").classList.add("dis");
+    dis("bForm").classList.add("dis");
+    dis("cdBadge").classList.remove("show");
+    stopFTimer();
   }
 }
 
-// ── Helpers ───────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+function startFTimer(ms){
+  stopFTimer();
+  fTimer=setInterval(()=>{
+    const d=Date.now()-ms;
+    const h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+    document.getElementById("tDisp").textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  },1000);
 }
-function showLoading(text, sub) {
-  document.getElementById("loadingText").textContent    = text;
-  document.getElementById("loadingSubtext").textContent = sub;
-  document.getElementById("loadingOverlay").classList.add("visible");
+function stopFTimer(){if(fTimer){clearInterval(fTimer);fTimer=null;}document.getElementById("tDisp").textContent="00:00:00";}
+
+function startCD(ms){
+  if(cdTimer)clearInterval(cdTimer);
+  cdTimer=setInterval(()=>{
+    const r=MIN_CHECKOUT-(Date.now()-ms);
+    if(r<=0){clearInterval(cdTimer);document.getElementById("bCO").classList.remove("dis");document.getElementById("cdBadge").classList.remove("show");return;}
+    const m=Math.floor(r/60000),s=Math.floor((r%60000)/1000);
+    document.getElementById("cdBadge").textContent=m+":"+String(s).padStart(2,"0");
+  },1000);
 }
-function hideLoading() {
-  document.getElementById("loadingOverlay").classList.remove("visible");
+
+// ══════════════════════════════════════════
+// LOGOUT
+// ══════════════════════════════════════════
+function logout(){
+  if(!confirm(t("confirmLogout")))return;
+  stopCam();stopFTimer();if(cdTimer)clearInterval(cdTimer);
+  currentEmp=null;ls.del("emp");
+  screenStack=["s-land"];show("s-land");
 }
-function showToast(msg, type = "info") {
-  const t = document.getElementById("toast");
-  t.textContent  = msg;
-  t.className    = "toast " + type + " show";
-  setTimeout(() => t.classList.remove("show"), 4000);
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function toast(msg,type="info"){
+  const el=document.getElementById("toast");
+  el.textContent=msg;el.className="toast "+type+" show";
+  setTimeout(()=>el.classList.remove("show"),4000);
+}
+
+// ══════════════════════════════════════════
+// INIT — Restore session
+// ══════════════════════════════════════════
+applyLang();
+const se=ls.get("emp");
+if(se&&EMPLOYEES[se.name]){
+  currentEmp=se;currentAction=null;
+  screenStack=["s-land","s-dash"];
+  show("s-dash");refreshDash();
 }
 </script>
 </body>
