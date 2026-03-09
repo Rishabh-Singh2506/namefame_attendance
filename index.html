@@ -6,30 +6,18 @@
 <title>Field Attendance</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#080c14; --card:#0f1623; --card2:#161f30; --border:#1e2d45;
-  --accent:#3b82f6; --green:#22c55e; --red:#ef4444; --yellow:#f59e0b;
-  --purple:#a855f7; --text:#e8eef8; --muted:#64748b; --radius:16px;
-  font-family:'Outfit',sans-serif;
-}
+:root{--bg:#080c14;--card:#0f1623;--card2:#161f30;--border:#1e2d45;--accent:#3b82f6;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--purple:#a855f7;--text:#e8eef8;--muted:#64748b;--radius:16px;font-family:"Outfit",sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
-
 .screen{position:fixed;inset:0;overflow-y:auto;display:none;flex-direction:column;background:var(--bg);}
 .screen.active{display:flex;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-/* TOPBAR */
 .topbar{display:flex;align-items:center;gap:10px;padding:14px 16px 0;position:sticky;top:0;z-index:10;background:var(--bg);}
 .back-btn{width:36px;height:36px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .topbar-title{font-size:16px;font-weight:600;flex:1;}
 .lang-btn{background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;}
-
-/* CARD */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:0 16px 14px;}
-
-/* LANDING */
-#screen-landing{align-items:center;justify-content:center;padding:24px;}
+#s-land{align-items:center;justify-content:center;padding:24px;}
 .brand-logo{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 0 40px rgba(59,130,246,.3);}
 .brand-title{font-size:28px;font-weight:800;text-align:center;margin-bottom:6px;}
 .brand-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:36px;}
@@ -38,9 +26,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
 .lang-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
 .lang-chip{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .2s;}
 .lang-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-
-/* CAMERA */
-#screen-camera{background:#000;}
+#s-cam{background:#000;}
 .video-wrap{position:relative;flex:1;min-height:0;overflow:hidden;}
 #video{width:100%;height:100%;object-fit:cover;display:block;}
 #canvas{display:none;}
@@ -56,38 +42,30 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
 .btn-cap{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
 .btn-send-cam{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:none;}
 .btn-re{flex:0 0 auto;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;font-family:inherit;display:none;}
-.show-cam{display:block!important;} .hide-cam{display:none!important;}
-
-/* INPUTS */
 .flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block;}
 .sel-wrap{position:relative;}
-.sel-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.sel-wrap::after{content:"\25BE";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
 select,input{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:15px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s;}
 select:focus,input:focus{border-color:var(--accent);}
 .fgroup{margin-bottom:14px;}
 .err{color:var(--red);font-size:12px;margin-top:6px;display:none;text-align:center;}
 .err.show{display:block;}
-
-/* DASHBOARD */
-#screen-dash{padding-bottom:32px;}
+#s-dash{padding-bottom:32px;}
 .stat-bar{margin:14px 16px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
 .stat-live{display:flex;align-items:center;gap:8px;font-size:13px;}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
 .dot.g{background:var(--green);animation:p 1.5s infinite;}
 @keyframes p{0%,100%{opacity:1;}50%{opacity:.3;}}
 .clock{font-size:18px;font-weight:700;}
-
 .timer-bar{margin:10px 16px 0;background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.2);border-radius:var(--radius);padding:13px 16px;display:none;}
 .timer-bar.show{display:block;}
 .timer-row{display:flex;justify-content:space-between;align-items:center;}
 .timer-lbl{font-size:12px;color:var(--green);}
 .timer-val{font-size:22px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;}
 .timer-sub{font-size:11px;color:var(--muted);margin-top:4px;}
-
 .greet{font-size:21px;font-weight:800;margin:14px 16px 3px;}
 .greet span{color:var(--accent);}
 .sub{font-size:13px;color:var(--muted);margin:0 16px 14px;}
-
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 16px;}
 .abtn{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
 .abtn.dis{opacity:.35;pointer-events:none;}
@@ -105,7 +83,6 @@ select:focus,input:focus{border-color:var(--accent);}
 .abtn.py:not(.dis){background:rgba(168,85,247,.06);}
 .cdown{position:absolute;top:6px;right:6px;background:rgba(239,68,68,.2);border-radius:6px;padding:2px 6px;font-size:10px;color:var(--red);display:none;}
 .cdown.show{display:block;}
-
 .fbtn{margin:10px 16px 0;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:15px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
 .fbtn.dis{opacity:.35;pointer-events:none;}
 .fbtn:not(.dis):active{transform:scale(.98);}
@@ -114,13 +91,8 @@ select:focus,input:focus{border-color:var(--accent);}
 .fbtn .fs{font-size:11px;color:var(--muted);}
 .fbtn.fc{border-color:rgba(59,130,246,.3);}
 .fbtn.fc:not(.dis){background:rgba(59,130,246,.06);}
-
-.range-w{margin:10px 16px 0;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:11px 14px;font-size:12px;color:var(--red);display:none;text-align:center;}
-.range-w.show{display:block;}
 .logout-b{margin:14px 16px 0;width:calc(100% - 32px);background:none;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;cursor:pointer;transition:all .2s;}
 .logout-b:hover{border-color:var(--red);color:var(--red);}
-
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;z-index:999;transition:transform .3s;white-space:nowrap;max-width:92vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.success{border-color:var(--green);color:var(--green);}
@@ -130,84 +102,78 @@ select:focus,input:focus{border-color:var(--accent);}
 </head>
 <body>
 
-<!-- SCREEN 1: LANDING -->
 <div class="screen active" id="s-land">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
-    <div class="brand-logo">🏢</div>
+    <div class="brand-logo">&#127970;</div>
     <h1 class="brand-title" data-t="appName">Field Attendance</h1>
-    <p class="brand-sub" data-t="appSub">Track visits • Manage orders • Stay connected</p>
-    <button class="start-btn" onclick="startApp()" data-t="getStarted">Get Started →</button>
+    <p class="brand-sub" data-t="appSub">Track visits - Manage orders - Stay connected</p>
+    <button class="start-btn" onclick="startApp()" data-t="getStarted">Get Started</button>
     <div class="lang-bar">
       <div class="lang-chip active" onclick="setLang('en')">English</div>
-      <div class="lang-chip" onclick="setLang('hi')">हिन्दी</div>
-      <div class="lang-chip" onclick="setLang('ur')">اردو</div>
-      <div class="lang-chip" onclick="setLang('bho')">भोजपुरी</div>
+      <div class="lang-chip" onclick="setLang('hi')">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div>
+      <div class="lang-chip" onclick="setLang('ur')">&#1575;&#1585;&#1583;&#1608;</div>
+      <div class="lang-chip" onclick="setLang('bho')">&#2349;&#2379;&#2332;&#2346;&#2369;&#2352;&#2368;</div>
     </div>
   </div>
 </div>
 
-<!-- SCREEN 2: CAMERA -->
 <div class="screen" id="s-cam">
   <div class="topbar" style="background:rgba(0,0,0,.75);position:absolute;z-index:5;width:100%;">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <span class="topbar-title" id="camTitle">📸 Take Selfie</span>
-    <button class="btn-flip" onclick="flipCam()">🔄</button>
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
+    <span class="topbar-title" id="camTitle">Check-In Photo</span>
+    <button class="btn-flip" onclick="flipCam()">&#128259;</button>
   </div>
   <div class="video-wrap">
     <video id="video" autoplay playsinline muted></video>
     <canvas id="canvas"></canvas>
     <img id="photoPreview" alt="" />
     <div class="cc tl"></div><div class="cc br"></div>
-    <div class="gps-badge" id="gpsBadge">📍 <strong id="gpsText">Locating...</strong></div>
+    <div class="gps-badge" id="gpsBadge">&#128205; <strong id="gpsText">Locating...</strong></div>
   </div>
   <div class="cam-bar">
-    <button class="btn-cap" id="btnCap" onclick="capturePhoto()">📷 Capture</button>
-    <button class="btn-re" id="btnRe" onclick="retakePhoto()">🔄 Retake</button>
-    <button class="btn-send-cam" id="btnNext" onclick="goToPin()">Next →</button>
+    <button class="btn-cap" id="btnCap" onclick="capturePhoto()">&#128247; Capture</button>
+    <button class="btn-re" id="btnRe" onclick="retakePhoto()">&#128259; Retake</button>
+    <button class="btn-send-cam" id="btnNext" onclick="goToPin()">Next &#8594;</button>
   </div>
 </div>
 
-<!-- SCREEN 3: PIN -->
 <div class="screen" id="s-pin">
   <div class="topbar">
-    <button class="back-btn" onclick="goBack()">←</button>
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
     <span class="topbar-title" data-t="verifyId">Verify Identity</span>
-    <button class="lang-btn" onclick="cycleLang()">🌐</button>
+    <button class="lang-btn" onclick="cycleLang()">&#127760;</button>
   </div>
   <div style="padding:20px 0 24px;">
-    <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;">👤</div>
+    <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;">&#128100;</div>
     <div class="card">
       <div class="fgroup">
         <label class="flabel" data-t="selName">Select Your Name</label>
         <div class="sel-wrap">
           <select id="empSel">
-            <option value="">— Select —</option>
+            <option value="">-- Select --</option>
             <option value="Rajesh">Rajesh</option>
-            <!-- Add more employees here -->
           </select>
         </div>
       </div>
       <div class="fgroup">
         <label class="flabel" data-t="enterPin">Enter PIN</label>
         <input type="password" id="pinIn" inputmode="numeric" maxlength="4"
-          placeholder="••••" style="letter-spacing:10px;font-size:22px;text-align:center;"
+          placeholder="****" style="letter-spacing:10px;font-size:22px;text-align:center;"
           oninput="onPin(this.value)" autocomplete="off" />
-        <p class="err" id="pinErr" data-t="wrongPin">❌ Wrong PIN. Try again.</p>
+        <p class="err" id="pinErr" data-t="wrongPin">Wrong PIN. Try again.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SCREEN 4: DASHBOARD -->
 <div class="screen" id="s-dash">
   <div class="topbar">
     <div style="flex:1;">
       <div style="font-size:11px;color:var(--muted)" data-t="loggedAs">Logged in as</div>
-      <div style="font-size:16px;font-weight:700;" id="dName">—</div>
+      <div style="font-size:16px;font-weight:700;" id="dName">--</div>
     </div>
-    <button class="lang-btn" onclick="cycleLang()">🌐</button>
+    <button class="lang-btn" onclick="cycleLang()">&#127760;</button>
   </div>
-
   <div class="stat-bar">
     <div class="stat-live">
       <div class="dot" id="sDot"></div>
@@ -215,169 +181,136 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
     <div class="clock" id="lClock">--:--</div>
   </div>
-
   <div class="timer-bar" id="tBar">
     <div class="timer-row">
-      <span class="timer-lbl" data-t="onField">⏱ Time on Field</span>
+      <span class="timer-lbl" data-t="onField">Time on Field</span>
       <span class="timer-val" id="tDisp">00:00:00</span>
     </div>
     <div class="timer-sub" id="tSub"></div>
   </div>
-
-  <div class="range-w" id="rWarn"></div>
-
   <div class="greet" data-t="hello">Hello, <span id="gName"></span>!</div>
   <p class="sub" id="dDate"></p>
-
   <div class="grid2">
     <div class="abtn ci" id="bCI" onclick="doCheckin()">
-      <span class="ai">🟢</span>
+      <span class="ai">&#128994;</span>
       <span class="al" data-t="checkIn">Check-In</span>
       <span class="as" data-t="startDay">Start your day</span>
     </div>
     <div class="abtn co dis" id="bCO" onclick="doCheckout()">
-      <span class="ai">🔴</span>
+      <span class="ai">&#128308;</span>
       <span class="al" data-t="checkOut">Check-Out</span>
       <span class="as" data-t="endDay">End your day</span>
       <span class="cdown" id="cdBadge"></span>
     </div>
     <div class="abtn or dis" id="bOrd" onclick="window.open(ORDER_URL,'_blank')">
-      <span class="ai">📋</span>
+      <span class="ai">&#128203;</span>
       <span class="al" data-t="order">Take Order</span>
       <span class="as" data-t="orderSub">Order entry</span>
     </div>
     <div class="abtn py dis" id="bPay" onclick="window.open(PAYMENT_URL,'_blank')">
-      <span class="ai">💰</span>
+      <span class="ai">&#128176;</span>
       <span class="al" data-t="payment">Payment</span>
       <span class="as" data-t="paySub">Collect payment</span>
     </div>
   </div>
-
   <div class="fbtn fc dis" id="bForm" onclick="openForm()">
-    <span class="fi">📝</span>
+    <span class="fi">&#128221;</span>
     <div><div class="fl" data-t="openForm">Open Check-In Form</div><div class="fs" data-t="formSub">Fill visit details</div></div>
-    <span style="margin-left:auto;color:var(--muted);">→</span>
+    <span style="margin-left:auto;color:var(--muted);">&#8594;</span>
   </div>
-
-  <button class="logout-b" onclick="logout()" data-t="logout">🚪 Logout</button>
+  <button class="logout-b" onclick="logout()" data-t="logout">Logout</button>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-// CONFIG — Update these
-// ══════════════════════════════════════════
-const SCRIPT_URL    = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
-const CHECKIN_FORM  = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
-const CHECKOUT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScONIbe7d_yOLZCdF56AocltjcThmQzPve2XBndI2fsR4c5kw/viewform?usp=pp_url";
-const ORDER_URL     = "order.html";
-const PAYMENT_URL   = "payment.html";
-const GEOFENCE_M    = 500;
-const MIN_CHECKOUT  = 0; // No minimum
+var SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+var CHECKIN_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
+var ORDER_URL    = "order.html";
+var PAYMENT_URL  = "payment.html";
+var GEOFENCE_M   = 500;
+var MIN_CHECKOUT = 10 * 1000;
 
-const CI = { name:"entry.1855905436", shopName:"entry.1139461100", shopkeeperName:"entry.1206032357", shopkeeperContact:"entry.937160659", area:"entry.1516065360", notes:"entry.512401051" };
-const CO = { name:"entry.1905643927", area:"entry.1007887376", notes:"entry.841576993" };
+var CI = { name:"entry.1855905436" };
 
-const EMPLOYEES = {
+var EMPLOYEES = {
   "Rajesh": { pin:"1234", contact:"9876543210", designation:"Sales Executive", address:"Prayagraj, UP" }
-  // "Ramesh": { pin:"5678", contact:"9999999999", designation:"Sales Executive", address:"Pratapgarh, UP" }
 };
 
-// ══════════════════════════════════════════
-// TRANSLATIONS
-// ══════════════════════════════════════════
-const TR = {
-  en:{ appName:"Field Attendance", appSub:"Track visits • Manage orders", getStarted:"Get Started →",
-    verifyId:"Verify Identity", selName:"Select Your Name", enterPin:"Enter PIN", wrongPin:"❌ Wrong PIN. Try again.",
-    loggedAs:"Logged in as", notIn:"Not checked in", checkedIn:"✅ Checked in", onField:"⏱ Time on Field",
+var TR = {
+  en:{ appName:"Field Attendance", appSub:"Track visits - Manage orders - Stay connected", getStarted:"Get Started",
+    verifyId:"Verify Identity", selName:"Select Your Name", enterPin:"Enter PIN", wrongPin:"Wrong PIN. Try again.",
+    loggedAs:"Logged in as", notIn:"Not checked in", checkedIn:"Checked in", onField:"Time on Field",
     hello:"Hello,", checkIn:"Check-In", startDay:"Start your day", checkOut:"Check-Out", endDay:"End your day",
     order:"Take Order", orderSub:"Order entry", payment:"Payment", paySub:"Collect payment",
-    openForm:"Open Check-In Form", formSub:"Fill visit details", logout:"🚪 Logout",
-    locating:"Locating...", alreadyIn:"Already checked in!", waitMsg:"Wait {m} min for checkout",
-    outOfRange:"You are {d}m away! Max 500m.", confirmLogout:"Logout?" },
-  hi:{ appName:"फील्ड अटेंडेंस", appSub:"विज़िट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करें →",
-    verifyId:"पहचान सत्यापित", selName:"नाम चुनें", enterPin:"PIN डालें", wrongPin:"❌ गलत PIN।",
-    loggedAs:"लॉग इन", notIn:"चेक-इन नहीं", checkedIn:"✅ चेक-इन हो गया", onField:"⏱ फील्ड पर समय",
+    openForm:"Open Check-In Form", formSub:"Fill visit details", logout:"Logout",
+    locating:"Locating...", alreadyIn:"Already checked in!", confirmLogout:"Logout?" },
+  hi:{ appName:"फ़ील्ड अटेंडेंस", appSub:"विज़िट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करें",
+    verifyId:"पहचान सत्यापित", selName:"नाम चुनें", enterPin:"PIN डालें", wrongPin:"गलत PIN।",
+    loggedAs:"लॉग इन", notIn:"चेक-इन नहीं", checkedIn:"चेक-इन हो गया", onField:"फ़ील्ड पर समय",
     hello:"नमस्ते,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन समाप्त",
     order:"ऑर्डर लें", orderSub:"ऑर्डर एंट्री", payment:"पेमेंट", paySub:"पेमेंट कलेक्ट",
-    openForm:"चेक-इन फॉर्म खोलें", formSub:"विवरण भरें", logout:"🚪 लॉगआउट",
-    locating:"लोकेशन मिल रही है...", alreadyIn:"पहले से चेक-इन है!", waitMsg:"{m} मिनट बाद चेक-आउट",
-    outOfRange:"आप {d}m दूर हैं! 500m के अंदर रहें।", confirmLogout:"लॉगआउट करें?" },
-  ur:{ appName:"فیلڈ حاضری", appSub:"وزٹ ٹریک • آرڈر منیج", getStarted:"شروع کریں →",
-    verifyId:"شناخت تصدیق", selName:"نام چنیں", enterPin:"PIN درج", wrongPin:"❌ غلط PIN۔",
-    loggedAs:"لاگ ان", notIn:"چیک ان نہیں", checkedIn:"✅ چیک ان", onField:"⏱ فیلڈ وقت",
+    openForm:"चेक-इन फ़ॉर्म खोलें", formSub:"विवरण भरें", logout:"लॉगआउट",
+    locating:"लोकेशन मिल रही है...", alreadyIn:"पहले से चेक-इन है!", confirmLogout:"लॉगआउट करें?" },
+  ur:{ appName:"فیلڈ حاضری", appSub:"وزٹ ٹریک • آرڈر منیج", getStarted:"شروع کریں",
+    verifyId:"شناخت تصدیق", selName:"نام چنیں", enterPin:"PIN درج", wrongPin:"غلط PIN۔",
+    loggedAs:"لاگ ان", notIn:"چیک ان نہیں", checkedIn:"چیک ان", onField:"فیلڈ وقت",
     hello:"السلام،", checkIn:"چیک ان", startDay:"شروع", checkOut:"چیک آؤٹ", endDay:"ختم",
     order:"آرڈر", orderSub:"آرڈر", payment:"ادائیگی", paySub:"پیسے جمع",
-    openForm:"فارم کھولیں", formSub:"تفصیلات بھریں", logout:"🚪 لاگ آؤٹ",
-    locating:"لوکیشن...", alreadyIn:"پہلے سے چیک ان!", waitMsg:"{m} منٹ انتظار",
-    outOfRange:"آپ {d}m دور ہیں!", confirmLogout:"لاگ آؤٹ؟" },
-  bho:{ appName:"फील्ड हाजिरी", appSub:"विजिट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करीं →",
-    verifyId:"पहचान जाँच", selName:"नाम चुनीं", enterPin:"PIN डालीं", wrongPin:"❌ गलत PIN बा।",
-    loggedAs:"लॉगिन बा", notIn:"चेक-इन नइखे", checkedIn:"✅ चेक-इन भइल", onField:"⏱ फील्ड समय",
+    openForm:"فارم کھولیں", formSub:"تفصیلات بھریں", logout:"لاگ آؤٹ",
+    locating:"لوکیشن...", alreadyIn:"پہلے سے چیک ان!", confirmLogout:"لاگ آؤٹ؟" },
+  bho:{ appName:"फ़ील्ड हाजिरी", appSub:"विजिट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करीं",
+    verifyId:"पहचान जाँच", selName:"नाम चुनीं", enterPin:"PIN डालीं", wrongPin:"गलत PIN बा।",
+    loggedAs:"लॉगिन बा", notIn:"चेक-इन नइखे", checkedIn:"चेक-इन भइल", onField:"फ़ील्ड समय",
     hello:"प्रणाम,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन खतम",
     order:"ऑर्डर लीं", orderSub:"ऑर्डर", payment:"पेमेंट", paySub:"पैसा लीं",
-    openForm:"फॉर्म खोलीं", formSub:"विवरण भरीं", logout:"🚪 लॉगआउट",
-    locating:"लोकेशन मिल रहल...", alreadyIn:"पहिलहीं चेक-इन बा!", waitMsg:"{m} मिनट बाद",
-    outOfRange:"रउआ {d}m दूर बानीं!", confirmLogout:"लॉगआउट करीं?" }
+    openForm:"फ़ॉर्म खोलीं", formSub:"विवरण भरीं", logout:"लॉगआउट",
+    locating:"लोकेशन मिल रहल...", alreadyIn:"पहिलहीं चेक-इन बा!", confirmLogout:"लॉगआउट करीं?" }
 };
-let lang = localStorage.getItem("lang")||"en";
-const t = k => (TR[lang]||TR.en)[k]||(TR.en[k]||k);
+
+var lang = localStorage.getItem("lang") || "en";
+function t(k){ return (TR[lang]||TR.en)[k] || (TR.en[k]||k); }
 function applyLang(){
-  document.querySelectorAll("[data-t]").forEach(el=>{
-    const k=el.getAttribute("data-t");
-    if(k==="hello") el.innerHTML = t("hello")+" <span id='gName'></span>!";
+  document.querySelectorAll("[data-t]").forEach(function(el){
+    var k=el.getAttribute("data-t");
+    if(k==="hello") el.innerHTML=t("hello")+" <span id='gName'></span>!";
     else el.textContent=t(k);
   });
-  document.querySelectorAll(".lang-chip").forEach(c=>{
-    c.classList.toggle("active",c.getAttribute("onclick").includes("'"+lang+"'"));
+  document.querySelectorAll(".lang-chip").forEach(function(c){
+    c.classList.toggle("active", c.getAttribute("onclick").indexOf("'"+lang+"'")>=0);
   });
-  if(currentEmp) { const g=document.getElementById("gName"); if(g) g.textContent=currentEmp.name; }
+  if(currentEmp){ var g=document.getElementById("gName"); if(g) g.textContent=currentEmp.name; }
 }
-function setLang(l){lang=l;localStorage.setItem("lang",l);applyLang();}
-function cycleLang(){const ls=["en","hi","ur","bho"];lang=ls[(ls.indexOf(lang)+1)%ls.length];localStorage.setItem("lang",lang);applyLang();toast("🌐 "+{en:"English",hi:"हिन्दी",ur:"اردو",bho:"भोजपुरी"}[lang],"info");}
+function setLang(l){ lang=l; localStorage.setItem("lang",l); applyLang(); }
+function cycleLang(){
+  var ls2=["en","hi","ur","bho"];
+  lang=ls2[(ls2.indexOf(lang)+1)%ls2.length];
+  localStorage.setItem("lang",lang);
+  applyLang();
+  toast({en:"English",hi:"Hindi",ur:"Urdu",bho:"Bhojpuri"}[lang],"info");
+}
 
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-let currentEmp=null, currentAction=null;
-let photoData=null, gps={lat:null,lng:null};
-let stream=null, facing="user";
-let screenStack=["s-land"];
-let cdTimer=null, fTimer=null;
+var currentEmp=null, currentAction=null;
+var photoData=null, gps={lat:null,lng:null};
+var stream=null, facing="user";
+var screenStack=["s-land"];
+var cdTimer=null, fTimer=null;
 
-const ls={
-  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
-  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
-  del:(k)=>{try{localStorage.removeItem(k);}catch(e){}}
+var ls={
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  get:function(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
+  del:function(k){try{localStorage.removeItem(k);}catch(e){}}
 };
 
-// ══════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");}
-function goTo(id){screenStack.push(id);show(id);if(id==="s-cam")initCam();if(id==="s-dash")refreshDash();}
-function goBack(){
-  stopCam();
-  screenStack.pop();
-  const p=screenStack[screenStack.length-1]||"s-land";
-  show(p);
-  if(p==="s-dash")refreshDash();
-}
+function show(id){ document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");}); document.getElementById(id).classList.add("active"); }
+function goTo(id){ screenStack.push(id); show(id); if(id==="s-cam")initCam(); if(id==="s-dash")refreshDash(); }
+function goBack(){ stopCam(); screenStack.pop(); var p=screenStack[screenStack.length-1]||"s-land"; show(p); if(p==="s-dash")refreshDash(); }
 
-// ══════════════════════════════════════════
-// CLOCK
-// ══════════════════════════════════════════
-setInterval(()=>{
+setInterval(function(){
   document.getElementById("lClock").textContent=new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
-  const d=new Date();
-  document.getElementById("dDate").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+  document.getElementById("dDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
 },1000);
 
-// ══════════════════════════════════════════
-// CAMERA
-// ══════════════════════════════════════════
 async function initCam(){
   photoData=null;
   document.getElementById("video").style.display="block";
@@ -387,29 +320,29 @@ async function initCam(){
   document.getElementById("btnNext").style.display="none";
   document.getElementById("gpsBadge").classList.remove("show");
   document.getElementById("gpsText").textContent=t("locating");
-  document.getElementById("camTitle").textContent = currentAction==="checkout"?"📸 Check-Out Photo":"📸 Check-In Photo";
+  document.getElementById("camTitle").textContent="Check-In Photo";
   try{
-    if(stream)stream.getTracks().forEach(t=>t.stop());
+    if(stream) stream.getTracks().forEach(function(t){t.stop();});
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false});
     document.getElementById("video").srcObject=stream;
-  }catch(e){toast("❌ Camera allow karein!","error");goBack();return;}
+  }catch(e){ toast("Camera allow karein!","error"); goBack(); return; }
   getGPS();
 }
-function flipCam(){facing=facing==="user"?"environment":"user";initCam();}
-function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
+function flipCam(){ facing=facing==="user"?"environment":"user"; initCam(); }
+function stopCam(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
 
 function capturePhoto(){
-  const v=document.getElementById("video"),c=document.getElementById("canvas");
+  var v=document.getElementById("video"), c=document.getElementById("canvas");
   c.width=v.videoWidth||640; c.height=v.videoHeight||480;
-  const ctx=c.getContext("2d");
-  if(facing==="user"){ctx.translate(c.width,0);ctx.scale(-1,1);}
+  var ctx=c.getContext("2d");
+  if(facing==="user"){ ctx.translate(c.width,0); ctx.scale(-1,1); }
   ctx.drawImage(v,0,0);
-  if(facing==="user"){ctx.scale(-1,1);ctx.translate(-c.width,0);}
+  if(facing==="user"){ ctx.scale(-1,1); ctx.translate(-c.width,0); }
   if(gps.lat){
-    ctx.fillStyle="rgba(0,0,0,.7)";ctx.fillRect(0,c.height-52,c.width,52);
-    ctx.fillStyle="#22c55e";ctx.font="bold 13px Arial";
-    ctx.fillText("📍 "+gps.lat.toFixed(6)+", "+gps.lng.toFixed(6),10,c.height-30);
-    ctx.fillStyle="#fff";ctx.font="12px Arial";
+    ctx.fillStyle="rgba(0,0,0,.7)"; ctx.fillRect(0,c.height-52,c.width,52);
+    ctx.fillStyle="#22c55e"; ctx.font="bold 13px Arial";
+    ctx.fillText(gps.lat.toFixed(6)+", "+gps.lng.toFixed(6),10,c.height-30);
+    ctx.fillStyle="#fff"; ctx.font="12px Arial";
     ctx.fillText((currentEmp?currentEmp.name:"")+" | "+new Date().toLocaleString("en-IN"),10,c.height-10);
   }
   photoData=c.toDataURL("image/jpeg",0.82);
@@ -421,44 +354,19 @@ function capturePhoto(){
   document.getElementById("btnNext").style.display="block";
   stopCam();
 }
-function retakePhoto(){initCam();}
+function retakePhoto(){ initCam(); }
 
-// ══════════════════════════════════════════
-// GPS
-// ══════════════════════════════════════════
 function getGPS(){
   document.getElementById("gpsBadge").classList.add("show");
-  document.getElementById("gpsText").textContent=t("locating");
-  navigator.geolocation.getCurrentPosition(pos=>{
+  navigator.geolocation.getCurrentPosition(function(pos){
     gps.lat=pos.coords.latitude; gps.lng=pos.coords.longitude;
     document.getElementById("gpsText").textContent=gps.lat.toFixed(5)+", "+gps.lng.toFixed(5);
-    // Geofence for checkout
-    if(currentAction==="checkout"&&currentEmp){
-      const sv=ls.get("ci_"+currentEmp.name);
-      if(sv){
-        const d=Math.round(dist(gps.lat,gps.lng,sv.lat,sv.lng));
-        if(d>GEOFENCE_M){
-          document.getElementById("rWarn").textContent="⚠️ "+t("outOfRange").replace("{d}",d);
-          document.getElementById("rWarn").classList.add("show");
-          toast(t("outOfRange").replace("{d}",d),"error");
-          stopCam();goBack();
-        }
-      }
-    }
-  },()=>{document.getElementById("gpsText").textContent="Unavailable";},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
-}
-function dist(a,b,c,d){
-  const R=6371000,dLa=(c-a)*Math.PI/180,dLo=(d-b)*Math.PI/180;
-  const x=Math.sin(dLa/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLo/2)**2;
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+  },function(){ document.getElementById("gpsText").textContent="Unavailable"; },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
 
-// ══════════════════════════════════════════
-// PIN
-// ══════════════════════════════════════════
 function goToPin(){
-  if(!photoData){toast("❌ Photo lo pehle!","error");return;}
-  if(!gps.lat){toast("❌ Location chahiye!","error");return;}
+  if(!photoData){ toast("Photo lo pehle!","error"); return; }
+  if(!gps.lat){ toast("Location chahiye!","error"); return; }
   screenStack.push("s-pin");
   show("s-pin");
   document.getElementById("empSel").value="";
@@ -468,188 +376,168 @@ function goToPin(){
 document.getElementById("empSel").addEventListener("change",function(){
   document.getElementById("pinIn").value="";
   document.getElementById("pinErr").classList.remove("show");
-  if(this.value)setTimeout(()=>document.getElementById("pinIn").focus(),100);
+  if(this.value) setTimeout(function(){document.getElementById("pinIn").focus();},100);
 });
 function onPin(v){
-  const c=v.replace(/[^0-9]/g,"").slice(0,4);
+  var c=v.replace(/[^0-9]/g,"").slice(0,4);
   document.getElementById("pinIn").value=c;
   document.getElementById("pinErr").classList.remove("show");
-  if(c.length===4)setTimeout(()=>verifyPin(c),250);
+  if(c.length===4) setTimeout(function(){verifyPin(c);},250);
 }
 function verifyPin(pin){
-  const nm=document.getElementById("empSel").value;
-  if(!nm){toast("Naam select karein!","error");return;}
-  const emp=EMPLOYEES[nm];
-  if(emp&&pin===emp.pin){
-    currentEmp={name:nm,...emp};
+  var nm=document.getElementById("empSel").value;
+  if(!nm){ toast("Naam select karein!","error"); return; }
+  var emp=EMPLOYEES[nm];
+  if(emp && pin===emp.pin){
+    currentEmp={name:nm,pin:emp.pin,contact:emp.contact,designation:emp.designation,address:emp.address};
     ls.set("emp",currentEmp);
     document.getElementById("pinErr").classList.remove("show");
     processCheckin();
   }else{
     document.getElementById("pinErr").classList.add("show");
     document.getElementById("pinIn").value="";
-    const card=document.querySelector("#s-pin .card");
+    var card=document.querySelector("#s-pin .card");
     card.style.transform="translateX(-8px)";
-    setTimeout(()=>{card.style.transform="translateX(8px)";},80);
-    setTimeout(()=>{card.style.transform="translateX(0)";},160);
+    setTimeout(function(){card.style.transform="translateX(8px)";},80);
+    setTimeout(function(){card.style.transform="translateX(0)";},160);
   }
 }
 
-// ══════════════════════════════════════════
-// CHECK-IN
-// ══════════════════════════════════════════
-function startApp(){currentAction="checkin";goTo("s-cam");}
+function startApp(){ currentAction="checkin"; goTo("s-cam"); }
 function doCheckin(){
-  if(ls.get("ci_"+currentEmp.name)){toast(t("alreadyIn"),"error");return;}
-  currentAction="checkin";goTo("s-cam");
+  if(ls.get("ci_"+currentEmp.name)){ toast(t("alreadyIn"),"error"); return; }
+  currentAction="checkin"; goTo("s-cam");
 }
 function processCheckin(){
-  const map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
-  const now=new Date();
-  const ciTime=now.toLocaleTimeString("en-IN");
-  ls.set("ci_"+currentEmp.name,{lat:gps.lat,lng:gps.lng,time:ciTime,ms:now.getTime(),map});
-  // Open form immediately
+  var map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
+  var now=new Date();
+  var ciTime=now.toLocaleTimeString("en-IN");
+  ls.set("ci_"+currentEmp.name,{lat:gps.lat,lng:gps.lng,time:ciTime,ms:now.getTime(),map:map});
   window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
-  toast("✅ Check-In! Form fill karein.","success");
-  uploadBg("checkin",map,ciTime,"","");
+  toast("Check-In done! Form fill karein.","success");
+  uploadBg(map,ciTime);
   goTo("s-dash");
 }
 
-// ══════════════════════════════════════════
-// CHECK-OUT
-// ══════════════════════════════════════════
 function doCheckout(){
-  const sv=ls.get("ci_"+currentEmp.name);
-  if(!sv)return;
-  const el=Date.now()-sv.ms;
-  if(el<MIN_CHECKOUT){const s=Math.ceil((MIN_CHECKOUT-el)/1000);toast("Wait "+s+"s","error");return;}
-  const now=new Date();
-  const coTime=now.toLocaleTimeString("en-IN");
-  const durMs=now.getTime()-sv.ms;
-  const durH=Math.floor(durMs/3600000),durM=Math.floor((durMs%3600000)/60000),durS=Math.floor((durMs%60000)/1000);
-  const durStr=durH+"h "+durM+"m "+durS+"s";
-  const p={action:"checkout",name:currentEmp.name,contact:currentEmp.contact,
+  var sv=ls.get("ci_"+currentEmp.name);
+  if(!sv) return;
+  var elapsed=Date.now()-sv.ms;
+  if(elapsed<MIN_CHECKOUT){
+    var s=Math.ceil((MIN_CHECKOUT-elapsed)/1000);
+    toast("Wait "+s+"s","error");
+    return;
+  }
+  var now=new Date();
+  var coTime=now.toLocaleTimeString("en-IN");
+  var durMs=now.getTime()-sv.ms;
+  var durH=Math.floor(durMs/3600000);
+  var durM=Math.floor((durMs%3600000)/60000);
+  var durS=Math.floor((durMs%60000)/1000);
+  var durStr=durH+"h "+durM+"m "+durS+"s";
+  var payload={action:"checkout",name:currentEmp.name,contact:currentEmp.contact,
     lat:0,lng:0,mapLink:"",timestamp:coTime,duration:durStr,distCovered:"",photo:""};
-  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)})
-    .then(()=>toast("Checkout saved to sheet!","success")).catch(()=>{});
-  toast("Check-Out! "+durStr,"success");
+  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})
+    .then(function(){}).catch(function(){});
   ls.del("ci_"+currentEmp.name);
+  toast("Check-Out! "+durStr,"success");
   refreshDash();
-}",m),"error");return;}
-  document.getElementById("rWarn").classList.remove("show");
-  currentAction="checkout";goTo("s-cam");
 }
 
-// ══════════════════════════════════════════
-// UPLOAD BACKGROUND
-// ══════════════════════════════════════════
 function compress(d){
   try{
-    const cv=document.createElement("canvas"),im=new Image();im.src=d;
-    const mw=720,sc=im.width>mw?mw/im.width:1;
-    cv.width=(im.width||640)*sc;cv.height=(im.height||480)*sc;
+    var cv=document.createElement("canvas"),im=new Image(); im.src=d;
+    var mw=720, sc=im.width>mw?mw/im.width:1;
+    cv.width=(im.width||640)*sc; cv.height=(im.height||480)*sc;
     cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
     return cv.toDataURL("image/jpeg",0.5);
-  }catch(e){return d;}
+  }catch(e){ return d; }
 }
-function uploadBg(action,map,time,duration,distCovered){
-  if(!photoData||!currentEmp)return;
-  const p={action,name:currentEmp.name,contact:currentEmp.contact,designation:currentEmp.designation,
-    address:currentEmp.address,lat:gps.lat,lng:gps.lng,mapLink:map,timestamp:time,
-    duration,distCovered,photo:compress(photoData)};
+function uploadBg(map,time){
+  if(!photoData||!currentEmp) return;
+  var p={action:"checkin",name:currentEmp.name,contact:currentEmp.contact,
+    designation:currentEmp.designation,address:currentEmp.address,
+    lat:gps.lat,lng:gps.lng,mapLink:map,timestamp:time,duration:"",distCovered:"",photo:compress(photoData)};
   fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)})
-    .then(r=>r.text()).then(()=>toast("✅ Photo Drive mein save!","success")).catch(()=>{});
+    .then(function(){toast("Photo Drive mein save!","success");}).catch(function(){});
 }
 
-// ══════════════════════════════════════════
-// DASHBOARD REFRESH
-// ══════════════════════════════════════════
 function openForm(){
-  if(!currentEmp)return;
+  if(!currentEmp) return;
   window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
 }
 function refreshDash(){
-  if(!currentEmp)return;
+  if(!currentEmp) return;
   document.getElementById("dName").textContent=currentEmp.name;
-  document.getElementById("gName").textContent=currentEmp.name;
+  var gn=document.getElementById("gName"); if(gn) gn.textContent=currentEmp.name;
   applyLang();
-  const sv=ls.get("ci_"+currentEmp.name);
-  const in_=!!sv;
-  document.getElementById("sDot").className="dot"+(in_?" g":"");
-  document.getElementById("sTxt").textContent=in_?t("checkedIn"):t("notIn");
-  document.getElementById("tBar").classList.toggle("show",in_);
-  if(in_){
-    document.getElementById("tSub").textContent="Check-In: "+sv.time;
-    startFTimer(sv.ms);
-  }else{stopFTimer();}
-  const dis=el=>document.getElementById(el);
-  if(in_){
-    dis("bCI").classList.add("dis");
-    dis("bOrd").classList.remove("dis");
-    dis("bPay").classList.remove("dis");
-    dis("bForm").classList.remove("dis");
-    const el2=Date.now()-sv.ms;
-    if(el2<MIN_CHECKOUT){dis("bCO").classList.add("dis");dis("cdBadge").classList.add("show");startCD(sv.ms);}
-    else{dis("bCO").classList.remove("dis");dis("cdBadge").classList.remove("show");}
+  var sv=ls.get("ci_"+currentEmp.name);
+  var isIn=!!sv;
+  document.getElementById("sDot").className="dot"+(isIn?" g":"");
+  document.getElementById("sTxt").textContent=isIn?t("checkedIn"):t("notIn");
+  document.getElementById("tBar").classList.toggle("show",isIn);
+  if(isIn){ document.getElementById("tSub").textContent="Check-In: "+sv.time; startFTimer(sv.ms); }
+  else{ stopFTimer(); }
+  function D(id){ return document.getElementById(id); }
+  if(isIn){
+    D("bCI").classList.add("dis");
+    D("bOrd").classList.remove("dis");
+    D("bPay").classList.remove("dis");
+    D("bForm").classList.remove("dis");
+    var el2=Date.now()-sv.ms;
+    if(el2<MIN_CHECKOUT){ D("bCO").classList.add("dis"); D("cdBadge").classList.add("show"); startCD(sv.ms); }
+    else{ D("bCO").classList.remove("dis"); D("cdBadge").classList.remove("show"); }
   }else{
-    dis("bCI").classList.remove("dis");
-    dis("bCO").classList.add("dis");
-    dis("bOrd").classList.add("dis");
-    dis("bPay").classList.add("dis");
-    dis("bForm").classList.add("dis");
-    dis("cdBadge").classList.remove("show");
+    D("bCI").classList.remove("dis");
+    D("bCO").classList.add("dis");
+    D("bOrd").classList.add("dis");
+    D("bPay").classList.add("dis");
+    D("bForm").classList.add("dis");
+    D("cdBadge").classList.remove("show");
     stopFTimer();
   }
 }
 
 function startFTimer(ms){
   stopFTimer();
-  fTimer=setInterval(()=>{
-    const d=Date.now()-ms;
-    const h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
+  fTimer=setInterval(function(){
+    var d=Date.now()-ms;
+    var h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
     document.getElementById("tDisp").textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
   },1000);
 }
-function stopFTimer(){if(fTimer){clearInterval(fTimer);fTimer=null;}document.getElementById("tDisp").textContent="00:00:00";}
+function stopFTimer(){ if(fTimer){clearInterval(fTimer);fTimer=null;} document.getElementById("tDisp").textContent="00:00:00"; }
 
 function startCD(ms){
-  if(cdTimer)clearInterval(cdTimer);
-  cdTimer=setInterval(()=>{
-    const r=MIN_CHECKOUT-(Date.now()-ms);
-    if(r<=0){clearInterval(cdTimer);document.getElementById("bCO").classList.remove("dis");document.getElementById("cdBadge").classList.remove("show");return;}
-    const m=Math.floor(r/60000),s=Math.floor((r%60000)/1000);
+  if(cdTimer) clearInterval(cdTimer);
+  cdTimer=setInterval(function(){
+    var r=MIN_CHECKOUT-(Date.now()-ms);
+    if(r<=0){ clearInterval(cdTimer); document.getElementById("bCO").classList.remove("dis"); document.getElementById("cdBadge").classList.remove("show"); return; }
+    var m=Math.floor(r/60000),s=Math.floor((r%60000)/1000);
     document.getElementById("cdBadge").textContent=m+":"+String(s).padStart(2,"0");
   },1000);
 }
 
-// ══════════════════════════════════════════
-// LOGOUT
-// ══════════════════════════════════════════
 function logout(){
-  if(!confirm(t("confirmLogout")))return;
-  stopCam();stopFTimer();if(cdTimer)clearInterval(cdTimer);
-  currentEmp=null;ls.del("emp");
-  screenStack=["s-land"];show("s-land");
+  if(!confirm(t("confirmLogout"))) return;
+  stopCam(); stopFTimer(); if(cdTimer) clearInterval(cdTimer);
+  currentEmp=null; ls.del("emp");
+  screenStack=["s-land"]; show("s-land");
 }
 
-// ══════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════
-function toast(msg,type="info"){
-  const el=document.getElementById("toast");
-  el.textContent=msg;el.className="toast "+type+" show";
-  setTimeout(()=>el.classList.remove("show"),4000);
+function toast(msg,type){
+  type=type||"info";
+  var el=document.getElementById("toast");
+  el.textContent=msg; el.className="toast "+type+" show";
+  setTimeout(function(){el.classList.remove("show");},4000);
 }
 
-// ══════════════════════════════════════════
-// INIT — Restore session
-// ══════════════════════════════════════════
 applyLang();
-const se=ls.get("emp");
-if(se&&EMPLOYEES[se.name]){
-  currentEmp=se;currentAction=null;
+var se=ls.get("emp");
+if(se && EMPLOYEES[se.name]){
+  currentEmp=se; currentAction=null;
   screenStack=["s-land","s-dash"];
-  show("s-dash");refreshDash();
+  show("s-dash"); refreshDash();
 }
 </script>
 </body>
