@@ -275,7 +275,7 @@ const CHECKOUT_FORM = "https://docs.google.com/forms/d/e/1FAIpQLScONIbe7d_yOLZCd
 const ORDER_URL     = "order.html";
 const PAYMENT_URL   = "payment.html";
 const GEOFENCE_M    = 500;
-const MIN_CHECKOUT  = 10 * 1000; // 10sec
+const MIN_CHECKOUT  = 0; // No minimum
 
 const CI = { name:"entry.1855905436", shopName:"entry.1139461100", shopkeeperName:"entry.1206032357", shopkeeperContact:"entry.937160659", area:"entry.1516065360", notes:"entry.512401051" };
 const CO = { name:"entry.1905643927", area:"entry.1007887376", notes:"entry.841576993" };
@@ -484,8 +484,7 @@ function verifyPin(pin){
     currentEmp={name:nm,...emp};
     ls.set("emp",currentEmp);
     document.getElementById("pinErr").classList.remove("show");
-    if(currentAction==="checkout")processCheckout();
-    else processCheckin();
+    processCheckin();
   }else{
     document.getElementById("pinErr").classList.add("show");
     document.getElementById("pinIn").value="";
@@ -523,23 +522,22 @@ function doCheckout(){
   const sv=ls.get("ci_"+currentEmp.name);
   if(!sv)return;
   const el=Date.now()-sv.ms;
-  if(el<MIN_CHECKOUT){const m=Math.ceil((MIN_CHECKOUT-el)/60000);toast(t("waitMsg").replace("{m}",m),"error");return;}
-  document.getElementById("rWarn").classList.remove("show");
-  currentAction="checkout";goTo("s-cam");
-}
-function processCheckout(){
-  const map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
-  const sv=ls.get("ci_"+currentEmp.name);
+  if(el<MIN_CHECKOUT){const s=Math.ceil((MIN_CHECKOUT-el)/1000);toast("Wait "+s+"s","error");return;}
   const now=new Date();
   const coTime=now.toLocaleTimeString("en-IN");
-  const durMs=now.getTime()-(sv?sv.ms:now.getTime());
-  const durStr=Math.floor(durMs/3600000)+"h "+Math.floor((durMs%3600000)/60000)+"m";
-  const m=sv?Math.round(dist(gps.lat,gps.lng,sv.lat,sv.lng)):0;
-  window.open(CHECKOUT_FORM+"&"+CO.name+"="+encodeURIComponent(currentEmp.name),"_blank");
-  toast("✅ Check-Out! "+durStr,"success");
-  uploadBg("checkout",map,coTime,durStr,m+" m");
+  const durMs=now.getTime()-sv.ms;
+  const durH=Math.floor(durMs/3600000),durM=Math.floor((durMs%3600000)/60000),durS=Math.floor((durMs%60000)/1000);
+  const durStr=durH+"h "+durM+"m "+durS+"s";
+  const p={action:"checkout",name:currentEmp.name,contact:currentEmp.contact,
+    lat:0,lng:0,mapLink:"",timestamp:coTime,duration:durStr,distCovered:"",photo:""};
+  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)})
+    .then(()=>toast("Checkout saved to sheet!","success")).catch(()=>{});
+  toast("Check-Out! "+durStr,"success");
   ls.del("ci_"+currentEmp.name);
-  goTo("s-dash");
+  refreshDash();
+}",m),"error");return;}
+  document.getElementById("rWarn").classList.remove("show");
+  currentAction="checkout";goTo("s-cam");
 }
 
 // ══════════════════════════════════════════
