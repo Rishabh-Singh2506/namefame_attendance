@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Field Attendance — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN SYSTEM — Tactical Dark Enterprise
+═══════════════════════════════════════ */
+:root {
+  --ink:    #040810;
+  --void:   #070d1a;
+  --panel:  #0a1220;
+  --raised: #0e1928;
+  --rim:    #152236;
+  --line:   #1a2d45;
+  --glow:   #2563eb;
+  --glow2:  #0ea5e9;
+  --lime:   #22d3ee;
+  --ok:     #10b981;
+  --warn:   #f59e0b;
+  --danger: #ef4444;
+  --text:   #e2eaf6;
+  --dim:    #4a6380;
+  --ghost:  #1e3050;
+  --r:      12px;
+  --mono:   "JetBrains Mono", monospace;
+  --sans:   "Syne", sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--panel); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+
+/* ── LOGIN ── */
+#loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,.15) 0%, transparent 70%), var(--ink);
+  padding: 24px;
+}
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.login-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--glow), var(--lime), transparent);
+}
+.lc-icon {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(37,99,235,.3), rgba(14,165,233,.2));
+  border: 1px solid rgba(37,99,235,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 32px rgba(37,99,235,.2);
+}
+.lc-title { font-size: 24px; font-weight: 800; text-align: center; letter-spacing: -.5px; }
+.lc-sub { font-size: 12px; color: var(--dim); text-align: center; margin: 6px 0 28px; font-family: var(--mono); }
+.inp-group { margin-bottom: 14px; }
+.inp-group label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 7px; font-family: var(--mono); }
+.inp {
+  width: 100%;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.inp:focus { border-color: var(--glow); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity .2s, transform .15s;
+  letter-spacing: .3px;
+}
+.login-btn:hover { opacity: .9; }
+.login-btn:active { transform: scale(.98); }
+.login-err { color: var(--danger); font-size: 12px; text-align: center; margin-top: 12px; font-family: var(--mono); display: none; }
+.login-err.show { display: block; }
+.login-back { text-align: center; margin-top: 16px; font-size: 11px; color: var(--dim); cursor: pointer; font-family: var(--mono); }
+.login-back:hover { color: var(--glow2); }
+
+/* ══════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════ */
+#appPage { display: none; flex-direction: column; min-height: 100vh; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 56px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.tb-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 800;
+  padding-right: 20px;
+  border-right: 1px solid var(--line);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tb-logo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+.tb-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 12px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+.tb-tabs::-webkit-scrollbar { display: none; }
+.t-tab {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--dim);
+  white-space: nowrap;
+  transition: all .18s;
+  border: 1px solid transparent;
+  display: flex; align-items: center; gap: 6px;
+}
+.t-tab:hover { color: var(--text); background: var(--raised); }
+.t-tab.on { color: var(--text); background: var(--raised); border-color: var(--line); }
+.t-tab .badge {
+  background: var(--glow);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-family: var(--mono);
+}
+.tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+.tb-time { font-family: var(--mono); font-size: 13px; color: var(--dim); }
+.tb-logout {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--dim);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all .2s;
+}
+.tb-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── CONTENT ── */
+.content { flex: 1; overflow-y: auto; }
+.tab-pane { display: none; padding: 24px; }
+.tab-pane.on { display: block; animation: fadeUp .25s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+/* ── SECTION HEADER ── */
+.s-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+}
+.s-title { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+.s-sub { font-size: 12px; color: var(--dim); font-family: var(--mono); margin-top: 2px; }
+
+/* ── STAT CARDS ── */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.stat::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  border-radius: var(--r) var(--r) 0 0;
+}
+.stat.s-ok::after   { background: var(--ok); }
+.stat.s-blue::after { background: var(--glow); }
+.stat.s-warn::after { background: var(--warn); }
+.stat.s-cyan::after { background: var(--lime); }
+.stat-val { font-size: 32px; font-weight: 800; font-family: var(--mono); line-height: 1; margin-bottom: 6px; }
+.stat-lbl { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .8px; }
+.stat.s-ok   .stat-val { color: var(--ok); }
+.stat.s-blue .stat-val { color: var(--glow2); }
+.stat.s-warn .stat-val { color: var(--warn); }
+.stat.s-cyan .stat-val { color: var(--lime); }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+.tb-inp {
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color .2s;
+}
+.tb-inp:focus { border-color: var(--glow); }
+.tb-btn {
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all .18s;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.tb-btn:hover { border-color: var(--glow); color: var(--glow2); }
+.tb-btn.primary { background: rgba(37,99,235,.15); border-color: rgba(37,99,235,.4); color: var(--glow2); }
+.tb-btn.success { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: var(--ok); }
+.tb-btn.danger  { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.3); color: var(--danger); }
+
+/* ══════════════════════════════════════
+   GOOGLE SHEET VIEW — Raw Table
+══════════════════════════════════════ */
+.sheet-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.sheet-scroll { overflow-x: auto; }
+table.sheet-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+table.sheet-tbl thead th {
+  background: var(--raised);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--dim);
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--ghost);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  user-select: none;
+  cursor: pointer;
+  transition: color .15s;
+}
+table.sheet-tbl thead th:hover { color: var(--text); }
+table.sheet-tbl thead th.sort-asc::after  { content: " ↑"; color: var(--lime); }
+table.sheet-tbl thead th.sort-desc::after { content: " ↓"; color: var(--lime); }
+table.sheet-tbl tbody tr {
+  border-bottom: 1px solid var(--ghost);
+  transition: background .12s;
+}
+table.sheet-tbl tbody tr:hover { background: var(--raised); }
+table.sheet-tbl tbody td {
+  padding: 9px 14px;
+  border-right: 1px solid var(--ghost);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+table.sheet-tbl tbody td:first-child { color: var(--dim); font-size: 10px; }
+.row-num {
+  background: var(--ink);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 9px 10px;
+  border-right: 1px solid var(--line) !important;
+  text-align: right;
+  user-select: none;
+}
+.cell-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.chip-in  { background: rgba(16,185,129,.15); color: var(--ok); border: 1px solid rgba(16,185,129,.25); }
+.chip-out { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid rgba(100,116,139,.2); }
+.chip-map { background: rgba(37,99,235,.12); color: var(--glow2); border: 1px solid rgba(37,99,235,.25); cursor: pointer; text-decoration: none; }
+.chip-photo { background: rgba(168,85,247,.12); color: #c084fc; border: 1px solid rgba(168,85,247,.25); cursor: pointer; text-decoration: none; }
+.sheet-empty { padding: 40px; text-align: center; color: var(--dim); font-family: var(--mono); font-size: 13px; }
+.sheet-footer { padding: 10px 14px; border-top: 1px solid var(--line); font-size: 11px; color: var(--dim); font-family: var(--mono); display: flex; justify-content: space-between; }
+
+/* ── SEARCH BAR ── */
+.search-inp {
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 14px 9px 36px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  width: 220px;
+  transition: border-color .2s, width .3s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a6380' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+.search-inp:focus { border-color: var(--glow); width: 280px; }
+
+/* ══════════════════════════════════════
+   CALENDAR TIMELINE
+══════════════════════════════════════ */
+.cal-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+}
+@media(max-width:640px) { .cal-grid { grid-template-columns: 1fr; } }
+.cal-sidebar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.cal-month-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.cal-nav-btn {
+  background: none; border: none; color: var(--dim); cursor: pointer;
+  font-size: 16px; padding: 4px 8px; border-radius: 6px; transition: all .15s;
+}
+.cal-nav-btn:hover { background: var(--raised); color: var(--text); }
+.cal-month-lbl { font-size: 13px; font-weight: 700; font-family: var(--mono); }
+.cal-days-hdr {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  padding: 8px 10px 4px;
+  font-size: 9px; color: var(--dim); text-align: center;
+  font-family: var(--mono);
+}
+.cal-days {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  padding: 0 10px 10px; gap: 2px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-family: var(--mono);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--dim);
+  position: relative;
+  transition: all .15s;
+}
+.cal-day:hover { background: var(--raised); color: var(--text); }
+.cal-day.has-data { color: var(--text); }
+.cal-day.has-data::after {
+  content: "";
+  position: absolute;
+  bottom: 3px; left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+.cal-day.selected {
+  background: var(--glow) !important;
+  color: #fff !important;
+}
+.cal-day.selected::after { background: rgba(255,255,255,.6); }
+.cal-day.today { border: 1px solid var(--glow); color: var(--glow2); }
+.cal-day.empty { pointer-events: none; }
+.cal-day.other-month { opacity: .3; }
+
+/* TIMELINE */
+.timeline-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  min-height: 400px;
+}
+.tl-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tl-date { font-size: 14px; font-weight: 700; }
+.tl-count { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+.tl-body { padding: 18px; overflow-y: auto; max-height: 500px; }
+.tl-emp-block { margin-bottom: 28px; }
+.tl-emp-name {
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.tl-emp-avatar {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(37,99,235,.4), rgba(14,165,233,.3));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800;
+  color: var(--glow2);
+  flex-shrink: 0;
+}
+/* Timeline track */
+.tl-track {
+  position: relative;
+  padding-left: 24px;
+}
+.tl-track::before {
+  content: "";
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+.tl-event {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  transition: border-color .15s;
+}
+.tl-event:hover { border-color: var(--glow); }
+.tl-event::before {
+  content: "";
+  position: absolute;
+  left: -20px; top: 14px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--panel);
+  background: var(--dim);
+}
+.tl-event.ev-checkin::before  { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.tl-event.ev-checkout::before { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+.tl-event.ev-gps::before      { background: var(--glow2); box-shadow: 0 0 6px var(--glow2); }
+.ev-time {
+  font-size: 11px; color: var(--dim); font-family: var(--mono); margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.ev-dot.in   { background: var(--ok); }
+.ev-dot.out  { background: var(--danger); }
+.ev-dot.gps  { background: var(--glow2); }
+.ev-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.ev-detail { font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 1.5; }
+.ev-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.ev-tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 4px;
+  font-family: var(--mono);
+}
+.ev-tag.t-area { background: rgba(14,165,233,.12); color: var(--glow2); border: 1px solid rgba(14,165,233,.2); }
+.ev-tag.t-shop { background: rgba(245,158,11,.1); color: var(--warn); border: 1px solid rgba(245,158,11,.2); }
+.ev-tag.t-dur  { background: rgba(16,185,129,.1); color: var(--ok); border: 1px solid rgba(16,185,129,.2); }
+.ev-tag.t-acc  { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid rgba(100,116,139,.2); }
+.tl-bar-outer {
+  height: 6px;
+  background: var(--ghost);
+  border-radius: 3px;
+  margin: 6px 0 4px;
+  overflow: hidden;
+}
+.tl-bar-inner {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ok), var(--lime));
+  transition: width .5s ease;
+}
+.tl-empty { padding: 60px 20px; text-align: center; color: var(--dim); font-family: var(--mono); font-size: 12px; }
+
+/* ══════════════════════════════════════
+   EMPLOYEE MANAGEMENT
+══════════════════════════════════════ */
+.emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.emp-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px;
+  transition: border-color .2s;
+  position: relative;
+  overflow: hidden;
+}
+.emp-card:hover { border-color: rgba(37,99,235,.4); }
+.emp-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.emp-card.status-in::before  { background: linear-gradient(90deg, var(--ok), transparent); }
+.emp-card.status-out::before { background: linear-gradient(90deg, var(--dim), transparent); }
+.ec-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.ec-av {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(37,99,235,.3), rgba(14,165,233,.2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: var(--glow2);
+  flex-shrink: 0;
+}
+.ec-name { font-size: 15px; font-weight: 700; }
+.ec-desg { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+.ec-status {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.ec-status.in  { background: rgba(16,185,129,.15); color: var(--ok); border: 1px solid rgba(16,185,129,.25); }
+.ec-status.out { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid var(--line); }
+.ec-info { font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 1.7; margin-bottom: 12px; }
+.ec-actions { display: flex; gap: 8px; }
+.ec-btn {
+  flex: 1; padding: 8px; border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--sans);
+  border: 1px solid var(--line);
+  transition: all .15s;
+}
+.ec-btn.edit { background: rgba(37,99,235,.1); border-color: rgba(37,99,235,.25); color: var(--glow2); }
+.ec-btn.del  { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
+.ec-btn:hover { filter: brightness(1.2); }
+.add-emp-btn {
+  background: rgba(16,185,129,.1);
+  border: 1.5px solid rgba(16,185,129,.3);
+  color: var(--ok);
+  border-radius: var(--r);
+  padding: 12px 20px;
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: var(--sans);
+  display: flex; align-items: center; gap: 8px;
+  transition: all .2s; margin-bottom: 18px;
+}
+.add-emp-btn:hover { background: rgba(16,185,129,.18); }
+
+/* ══════════════════════════════════════
+   LIVE TRACKING
+══════════════════════════════════════ */
+.track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.track-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.track-card.active { border-color: rgba(16,185,129,.3); }
+.track-card.active::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--ok), transparent);
+}
+.tc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.tc-name { font-size: 14px; font-weight: 700; }
+.tc-time { font-size: 10px; color: var(--dim); font-family: var(--mono); }
+.tc-coords { font-size: 11px; color: var(--lime); font-family: var(--mono); margin-bottom: 10px; }
+.tc-btns { display: flex; gap: 8px; }
+.tc-btn {
+  flex: 1; padding: 8px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--sans);
+  text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: all .15s;
+}
+.tc-btn.maps { background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.25); color: var(--glow2); }
+.tc-btn.nav  { background: rgba(16,185,129,.1);  border: 1px solid rgba(16,185,129,.25); color: var(--ok); }
+
+/* ══════════════════════════════════════
+   SETTINGS
+══════════════════════════════════════ */
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; max-width: 800px; }
+.set-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px;
+}
+.set-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.set-sub { font-size: 11px; color: var(--dim); font-family: var(--mono); margin-bottom: 16px; }
+.set-inp {
+  width: 100%;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+.set-inp:focus { border-color: var(--glow); }
+.set-save {
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+  border: none; border-radius: 9px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: var(--sans);
+  transition: opacity .2s;
+}
+.set-save:hover { opacity: .88; }
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(4,8,16,.88);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.show { display: flex; animation: fadeUp .2s ease; }
+.modal {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  width: 100%; max-width: 440px;
+  max-height: 90vh; overflow-y: auto;
+  position: relative;
+}
+.modal::before {
+  content: ""; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--glow), var(--lime), transparent);
+  border-radius: 16px 16px 0 0;
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 0;
+  margin-bottom: 18px;
+}
+.modal-head h3 { font-size: 17px; font-weight: 800; }
+.modal-close {
+  width: 30px; height: 30px;
+  background: var(--raised); border: 1px solid var(--line);
+  color: var(--dim); border-radius: 8px;
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.modal-close:hover { border-color: var(--danger); color: var(--danger); }
+.modal-body { padding: 0 20px 24px; }
+.m-inp {
+  width: 100%;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+.m-inp:focus { border-color: var(--glow); }
+.m-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); display: block; margin-bottom: 5px; font-family: var(--mono); }
+.m-group { margin-bottom: 12px; }
+.m-save {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: var(--sans);
+  margin-top: 4px; transition: opacity .2s;
+}
+.m-save:hover { opacity: .88; }
+.m-save:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 18px;
+  font-size: 13px; z-index: 999;
+  transform: translateY(80px); opacity: 0;
+  transition: transform .3s, opacity .3s;
+  max-width: 320px; font-family: var(--mono);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok   { border-color: var(--ok); color: var(--ok); }
+.toast.err  { border-color: var(--danger); color: var(--danger); }
+.toast.inf  { border-color: var(--glow2); color: var(--glow2); }
+
+/* ── SPINNER ── */
+.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--glow2); border-radius: 50%; animation: rotate .7s linear infinite; }
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px) {
+  .tab-pane { padding: 16px; }
+  .cal-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="lc-icon">&#128274;</div>
+    <div class="lc-title">Command Center</div>
+    <div class="lc-sub">Field Attendance Admin Panel</div>
+    <div class="inp-group">
+      <label>Username</label>
+      <input class="inp" type="text" id="lUser" placeholder="admin" autocomplete="off"
+        onkeydown="if(event.key==='Enter')document.getElementById('lPass').focus()">
+    </div>
+    <div class="inp-group">
+      <label>Password</label>
+      <input class="inp" type="password" id="lPass" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Enter System &#8594;</button>
+    <div class="login-err" id="loginErr">&#10005; Invalid credentials</div>
+    <div class="login-back" onclick="location.href='index.html'">&#8592; Back to Employee App</div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="appPage">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-logo">
+      <div class="tb-logo-dot"></div>
+      FIELD CTRL
+    </div>
+    <div class="tb-tabs">
+      <div class="t-tab on" id="tab-overview" onclick="switchTab('overview',this)">
+        &#9632; Overview
+      </div>
+      <div class="t-tab" id="tab-sheet" onclick="switchTab('sheet',this)">
+        &#9707; Sheet View
+      </div>
+      <div class="t-tab" id="tab-calendar" onclick="switchTab('calendar',this)">
+        &#128197; Timeline
+      </div>
+      <div class="t-tab" id="tab-tracking" onclick="switchTab('tracking',this)">
+        &#128205; Live Track
+      </div>
+      <div class="t-tab" id="tab-employees" onclick="switchTab('employees',this)">
+        &#128100; Employees
+      </div>
+      <div class="t-tab" id="tab-settings" onclick="switchTab('settings',this)">
+        &#9881; Settings
+      </div>
+    </div>
+    <div class="tb-right">
+      <span class="tb-time" id="tbClock">--:--:--</span>
+      <button class="tb-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="tab-pane on" id="pane-overview">
+      <div class="s-head">
+        <div>
+          <div class="s-title">Dashboard Overview</div>
+          <div class="s-sub" id="overviewDate">Loading...</div>
+        </div>
+        <button class="tb-btn primary" onclick="loadOverview()">
+          &#8635; Refresh
+        </button>
+      </div>
+      <div class="stat-row">
+        <div class="stat s-ok">
+          <div class="stat-val" id="stIn">--</div>
+          <div class="stat-lbl">Checked In</div>
+        </div>
+        <div class="stat s-blue">
+          <div class="stat-val" id="stTotal">--</div>
+          <div class="stat-lbl">Total Employees</div>
+        </div>
+        <div class="stat s-warn">
+          <div class="stat-val" id="stVisits">--</div>
+          <div class="stat-lbl">Shop Visits Today</div>
+        </div>
+        <div class="stat s-cyan">
+          <div class="stat-val" id="stPings">--</div>
+          <div class="stat-lbl">GPS Pings Today</div>
+        </div>
+      </div>
+      <!-- Today's activity table -->
+      <div class="s-head">
+        <div class="s-title" style="font-size:14px;">Today's Activity</div>
+      </div>
+      <div class="sheet-wrap">
+        <div class="sheet-scroll">
+          <table class="sheet-tbl">
+            <thead>
+              <tr>
+                <th class="row-num">#</th>
+                <th>Employee</th>
+                <th>Check-In</th>
+                <th>Shop</th>
+                <th>Area</th>
+                <th>Check-Out</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Map</th>
+              </tr>
+            </thead>
+            <tbody id="overviewTbody">
+              <tr><td colspan="9" class="sheet-empty">&#8635; Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sheet-footer">
+          <span id="overviewCount">0 rows</span>
+          <span id="overviewTime">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SHEET VIEW ── -->
+    <div class="tab-pane" id="pane-sheet">
+      <div class="s-head">
+        <div>
+          <div class="s-title">Google Sheet — Raw View</div>
+          <div class="s-sub">Sab rows aur columns exactly sheet jaisi</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="tb-btn" onclick="exportCSV()">&#8595; Export CSV</button>
+          <button class="tb-btn primary" onclick="loadSheet()">&#8635; Refresh</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <input type="date" class="tb-inp" id="sheetDateFrom" placeholder="From">
+        <input type="date" class="tb-inp" id="sheetDateTo"   placeholder="To">
+        <div class="sel-wrap2" style="position:relative;">
+          <select class="tb-inp" id="sheetEmpFilter" style="padding-right:28px;-webkit-appearance:none;">
+            <option value="">All Employees</option>
+          </select>
+        </div>
+        <input class="search-inp" type="text" id="sheetSearch" placeholder="Search..." oninput="filterSheet()">
+        <button class="tb-btn primary" onclick="loadSheet()">Apply</button>
+      </div>
+      <div class="sheet-wrap">
+        <div class="sheet-scroll">
+          <table class="sheet-tbl" id="sheetTbl">
+            <thead>
+              <tr>
+                <th class="row-num">#</th>
+                <th onclick="sortSheet(0)">Date</th>
+                <th onclick="sortSheet(1)">Check-In</th>
+                <th onclick="sortSheet(2)">Employee</th>
+                <th onclick="sortSheet(3)">Contact</th>
+                <th onclick="sortSheet(4)">Shop Name</th>
+                <th onclick="sortSheet(5)">Shopkeeper</th>
+                <th onclick="sortSheet(6)">Shop Contact</th>
+                <th onclick="sortSheet(7)">Area</th>
+                <th>Notes</th>
+                <th>Map</th>
+                <th>Photo</th>
+                <th onclick="sortSheet(11)">Check-Out</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="sheetTbody">
+              <tr><td colspan="14" class="sheet-empty">Select date range and click Apply</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="sheet-footer">
+          <span id="sheetCount">0 rows</span>
+          <span id="sheetLastUpdate">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CALENDAR / TIMELINE ── -->
+    <div class="tab-pane" id="pane-calendar">
+      <div class="s-head">
+        <div>
+          <div class="s-title">Attendance Timeline</div>
+          <div class="s-sub">Google Maps timeline jaisi view — din ke sabhi events</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <select class="tb-inp" id="tlEmpFilter" onchange="loadTimeline()">
+            <option value="">All Employees</option>
+          </select>
+        </div>
+      </div>
+      <div class="cal-grid">
+        <!-- Calendar -->
+        <div class="cal-sidebar">
+          <div class="cal-month-nav">
+            <button class="cal-nav-btn" onclick="calPrev()">&#8592;</button>
+            <span class="cal-month-lbl" id="calMonthLbl">--</span>
+            <button class="cal-nav-btn" onclick="calNext()">&#8594;</button>
+          </div>
+          <div class="cal-days-hdr">
+            <div>Su</div><div>Mo</div><div>Tu</div>
+            <div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+          </div>
+          <div class="cal-days" id="calDays"></div>
+        </div>
+        <!-- Timeline panel -->
+        <div class="timeline-panel">
+          <div class="tl-header">
+            <div class="tl-date" id="tlDate">Select a date</div>
+            <div class="tl-count" id="tlCount"></div>
+          </div>
+          <div class="tl-body" id="tlBody">
+            <div class="tl-empty">&#128197; Calendar se koi date select karo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LIVE TRACKING ── -->
+    <div class="tab-pane" id="pane-tracking">
+      <div class="s-head">
+        <div>
+          <div class="s-title">Live Employee Tracking</div>
+          <div class="s-sub">Har 5 minute mein auto-update hota hai</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="date" class="tb-inp" id="routeDate">
+          <select class="tb-inp" id="routeEmp"><option value="">-- Select Employee --</option></select>
+          <button class="tb-btn primary" onclick="loadRoute()">Show Route</button>
+          <button class="tb-btn success" onclick="loadLive()">&#8635; Live Now</button>
+        </div>
+      </div>
+      <div class="track-grid" id="trackGrid">
+        <div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;">
+          Click "Live Now" to load current positions
+        </div>
+      </div>
+      <!-- Route table -->
+      <div id="routeSection" style="display:none;margin-top:20px;">
+        <div class="s-head" style="margin-top:0;">
+          <div class="s-title" style="font-size:14px;" id="routeTitle">Route Points</div>
+          <a id="routeMapsLink" href="#" target="_blank" class="tb-btn primary" style="text-decoration:none;">
+            &#128663; Open in Google Maps
+          </a>
+        </div>
+        <div class="sheet-wrap">
+          <div class="sheet-scroll">
+            <table class="sheet-tbl">
+              <thead><tr>
+                <th class="row-num">#</th>
+                <th>Time</th><th>Latitude</th><th>Longitude</th>
+                <th>Status</th><th>Accuracy</th><th>Map</th>
+              </tr></thead>
+              <tbody id="routeTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMPLOYEES ── -->
+    <div class="tab-pane" id="pane-employees">
+      <div class="s-head">
+        <div>
+          <div class="s-title">Employee Management</div>
+          <div class="s-sub">Add, edit, delete employees</div>
+        </div>
+        <button class="add-emp-btn" onclick="openAddEmp()">
+          &#43; Add Employee
+        </button>
+      </div>
+      <div class="emp-grid" id="empGrid">
+        <div style="color:var(--dim);font-family:var(--mono);font-size:12px;">Loading...</div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="tab-pane" id="pane-settings">
+      <div class="s-title" style="margin-bottom:20px;">Settings</div>
+      <div class="settings-grid">
+        <div class="set-card">
+          <div class="set-title">&#128274; Change Admin Password</div>
+          <div class="set-sub">Login credentials update karo</div>
+          <input class="set-inp" type="text"     id="newUser" placeholder="New username">
+          <input class="set-inp" type="password" id="newPass" placeholder="New password">
+          <input class="set-inp" type="password" id="confPass" placeholder="Confirm password">
+          <button class="set-save" onclick="changePass()">Save Password</button>
+        </div>
+        <div class="set-card">
+          <div class="set-title">&#128279; Apps Script URL</div>
+          <div class="set-sub">Google Apps Script deployment URL</div>
+          <input class="set-inp" type="text" id="scriptUrl" placeholder="https://script.google.com/...">
+          <button class="set-save" onclick="saveUrl()">Save URL</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /appPage -->
+
+<!-- ── EMPLOYEE MODAL ── -->
+<div class="modal-backdrop" id="empModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="empModalTitle">Add Employee</h3>
+      <button class="modal-close" onclick="closeEmpModal()">&#215;</button>
+    </div>
+    <div class="modal-body">
+      <div class="m-group">
+        <label class="m-label">Full Name *</label>
+        <input class="m-inp" id="eNm" placeholder="e.g. Rajesh Kumar">
+      </div>
+      <div class="m-group">
+        <label class="m-label">PIN (4-6 digits) *</label>
+        <input class="m-inp" id="ePin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+      </div>
+      <div class="m-group">
+        <label class="m-label">Contact Number *</label>
+        <input class="m-inp" id="eCont" type="tel" placeholder="10-digit mobile">
+      </div>
+      <div class="m-group">
+        <label class="m-label">Designation</label>
+        <input class="m-inp" id="eDesg" placeholder="e.g. Sales Executive">
+      </div>
+      <div class="m-group">
+        <label class="m-label">Address / City</label>
+        <input class="m-inp" id="eAddr" placeholder="e.g. Prayagraj, UP">
+      </div>
+      <button class="m-save" id="empSaveBtn" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   CONFIG & STATE
+════════════════════════════════════════ */
+var SCRIPT_URL = localStorage.getItem("admin_script_url") ||
+  "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+
+var CREDS_KEY   = "admin_creds_v2";
+var SESSION_KEY = "admin_session_v2";
+
+var calState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+var tlSelectedDate = "";
+var allSheetRows  = [];
+var sortColIdx    = -1;
+var sortDir       = 1;
+var employeeList  = [];
+var editingEmp    = null;
+var datesWithData = new Set();
+
+/* ════════════════════════════════════════
+   UTILS
+════════════════════════════════════════ */
+function $(id) { return document.getElementById(id); }
+
+function apiCall(payload) {
+  var url = localStorage.getItem("admin_script_url") || SCRIPT_URL;
+  return fetch(url, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain"},
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); });
+}
+
+function toast(msg, type) {
+  type = type || "inf";
+  var el = $("toast");
+  el.innerHTML = msg;
+  el.className = "toast " + type + " show";
+  clearTimeout(el._t);
+  el._t = setTimeout(function() { el.classList.remove("show"); }, 4000);
+}
+
+function fmtDate(d) {
+  if (!d) return "--";
+  var s = d.toString().substring(0, 10);
+  return s === "Invalid" ? "--" : s;
+}
+
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+}
+
+/* ════════════════════════════════════════
+   CLOCK
+════════════════════════════════════════ */
+setInterval(function() {
+  var t = $("tbClock");
+  if (t) t.textContent = new Date().toLocaleTimeString("en-IN");
+}, 1000);
+
+/* ════════════════════════════════════════
+   LOGIN
+════════════════════════════════════════ */
+function getAdminCreds() {
+  return JSON.parse(localStorage.getItem(CREDS_KEY) || '{"user":"admin","pass":"admin123"}');
+}
+
+function doLogin() {
+  var u = $("lUser").value.trim();
+  var p = $("lPass").value;
+  var c = getAdminCreds();
+  if (u === c.user && p === c.pass) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ok:true, t:Date.now()}));
+    $("loginPage").style.display = "none";
+    $("appPage").style.display = "flex";
+    onAppInit();
+  } else {
+    $("loginErr").classList.add("show");
+    $("lPass").value = "";
+    $("lPass").focus();
+    setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem(SESSION_KEY);
+  $("appPage").style.display = "none";
+  $("loginPage").style.display = "flex";
+  $("lUser").value = "";
+  $("lPass").value = "";
+}
+
+/* ════════════════════════════════════════
+   TAB SWITCHING — FIX: no event.target
+════════════════════════════════════════ */
+function switchTab(name, el) {
+  // Deactivate all
+  document.querySelectorAll(".t-tab").forEach(function(t) { t.classList.remove("on"); });
+  document.querySelectorAll(".tab-pane").forEach(function(p) { p.classList.remove("on"); });
+  // Activate selected
+  if (el) el.classList.add("on");
+  var pane = $("pane-"+name);
+  if (pane) pane.classList.add("on");
+  // Load data
+  if (name === "overview")   loadOverview();
+  if (name === "sheet")      loadSheet();
+  if (name === "calendar")   initCalendar();
+  if (name === "tracking")   { loadLive(); populateTrackDropdowns(); }
+  if (name === "employees")  loadEmployees();
+  if (name === "settings")   loadSettings();
+}
+
+/* ════════════════════════════════════════
+   APP INIT
+════════════════════════════════════════ */
+function onAppInit() {
+  $("overviewDate").textContent = new Date().toLocaleDateString("en-IN",
+    {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  var td = todayStr();
+  $("sheetDateFrom").value = td;
+  $("sheetDateTo").value   = td;
+  $("routeDate").value     = td;
+  loadOverview();
+  loadEmployees();
+}
+
+/* ════════════════════════════════════════
+   OVERVIEW
+════════════════════════════════════════ */
+function loadOverview() {
+  $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty"><span class="spin"></span> Loading...</td></tr>';
+  apiCall({action:"get_today_attendance"}).then(function(res) {
+    var rows = res.rows || [];
+    $("stIn").textContent     = rows.filter(function(r){return r.checkinTime && !r.checkoutTime;}).length;
+    $("stTotal").textContent  = res.totalEmployees || 0;
+    $("stVisits").textContent = rows.filter(function(r){return r.shopName;}).length;
+    $("stPings").textContent  = res.gpsPings || 0;
+    $("overviewTime").textContent = "Updated: " + new Date().toLocaleTimeString("en-IN");
+    if (!rows.length) {
+      $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty">Aaj koi activity nahi</td></tr>';
+      $("overviewCount").textContent = "0 rows";
+      return;
+    }
+    $("overviewCount").textContent = rows.length + " rows";
+    $("overviewTbody").innerHTML = rows.map(function(r, i) {
+      var isOut = !!r.checkoutTime;
+      return '<tr>' +
+        '<td class="row-num">' + (i+1) + '</td>' +
+        '<td><b>' + (r.empName||"--") + '</b></td>' +
+        '<td>' + (r.checkinTime||"--") + '</td>' +
+        '<td>' + (r.shopName||"--") + '</td>' +
+        '<td>' + (r.area||"--") + '</td>' +
+        '<td>' + (r.checkoutTime||"--") + '</td>' +
+        '<td>' + (r.duration||"--") + '</td>' +
+        '<td><span class="cell-chip ' + (isOut?"chip-out":"chip-in") + '">' + (isOut?"OUT":"IN") + '</span></td>' +
+        '<td>' + (r.mapLink ? '<a class="cell-chip chip-map" href="'+r.mapLink+'" target="_blank">&#128205; Map</a>' : '--') + '</td>' +
+        '</tr>';
+    }).join("");
+  }).catch(function(e) {
+    $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty" style="color:var(--danger)">&#10005; Error: ' + e.message + '</td></tr>';
+  });
+}
+
+/* ════════════════════════════════════════
+   SHEET VIEW — Full raw table
+════════════════════════════════════════ */
+var rawSheetData = [];
+
+function loadSheet() {
+  var from = $("sheetDateFrom").value;
+  var to   = $("sheetDateTo").value;
+  var emp  = $("sheetEmpFilter").value;
+  if (!from) { toast("Start date select karo","err"); return; }
+  $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty"><span class="spin"></span> Loading sheet data...</td></tr>';
+  apiCall({action:"get_sheet_range", dateFrom:from, dateTo:(to||from), empName:emp})
+    .then(function(res) {
+      rawSheetData = res.rows || [];
+      $("sheetLastUpdate").textContent = "Updated: " + new Date().toLocaleTimeString("en-IN");
+      filterSheet();
+    }).catch(function(e) {
+      $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty" style="color:var(--danger)">Error: ' + e.message + '</td></tr>';
+    });
+}
+
+function filterSheet() {
+  var q = ($("sheetSearch").value || "").toLowerCase();
+  var rows = rawSheetData.filter(function(r) {
+    if (!q) return true;
+    return JSON.stringify(r).toLowerCase().includes(q);
+  });
+  renderSheetTable(rows);
+}
+
+function renderSheetTable(rows) {
+  $("sheetCount").textContent = rows.length + " rows";
+  if (!rows.length) {
+    $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty">Koi data nahi — date range check karo</td></tr>';
+    return;
+  }
+  $("sheetTbody").innerHTML = rows.map(function(r, i) {
+    return '<tr>' +
+      '<td class="row-num">' + (i+1) + '</td>' +
+      '<td>' + (fmtDate(r.date)||"--") + '</td>' +
+      '<td style="color:var(--ok);">' + (r.checkinTime||"--") + '</td>' +
+      '<td><b>' + (r.empName||"--") + '</b></td>' +
+      '<td>' + (r.empContact||"--") + '</td>' +
+      '<td>' + (r.shopName||"--") + '</td>' +
+      '<td>' + (r.shopkeeperName||"--") + '</td>' +
+      '<td>' + (r.shopkeeperContact||"--") + '</td>' +
+      '<td>' + (r.area||"--") + '</td>' +
+      '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;" title="' + (r.notes||"") + '">' + (r.notes||"--") + '</td>' +
+      '<td>' + (r.mapLink ? '<a class="cell-chip chip-map" href="'+r.mapLink+'" target="_blank">&#128205; Map</a>' : '--') + '</td>' +
+      '<td>' + (r.photo  ? '<a class="cell-chip chip-photo" href="'+r.photo+'"  target="_blank">&#128247; View</a>' : '--') + '</td>' +
+      '<td style="color:var(--danger);">' + (r.checkoutTime||"--") + '</td>' +
+      '<td style="color:var(--lime);">' + (r.duration||"--") + '</td>' +
+      '</tr>';
+  }).join("");
+}
+
+function sortSheet(colIdx) {
+  var headers = document.querySelectorAll("#sheetTbl thead th");
+  headers.forEach(function(h) { h.classList.remove("sort-asc","sort-desc"); });
+  if (sortColIdx === colIdx) sortDir = -sortDir;
+  else { sortColIdx = colIdx; sortDir = 1; }
+  var keys = ["date","checkinTime","empName","empContact","shopName","shopkeeperName","shopkeeperContact","area","notes","mapLink","photo","checkoutTime","duration"];
+  var key = keys[colIdx];
+  rawSheetData.sort(function(a,b) {
+    var av = (a[key]||"").toString().toLowerCase();
+    var bv = (b[key]||"").toString().toLowerCase();
+    return sortDir * av.localeCompare(bv);
+  });
+  headers[colIdx+1].classList.add(sortDir===1?"sort-asc":"sort-desc");
+  filterSheet();
+}
+
+function exportCSV() {
+  var rows = rawSheetData;
+  if (!rows.length) { toast("Koi data nahi export karne ke liye","err"); return; }
+  var headers = ["Date","Check-In","Employee","Contact","Shop","Shopkeeper","Shop Contact","Area","Notes","Map","Photo","Check-Out","Duration"];
+  var csv = headers.join(",") + "\n";
+  rows.forEach(function(r) {
+    csv += [fmtDate(r.date),r.checkinTime,r.empName,r.empContact,r.shopName,
+      r.shopkeeperName,r.shopkeeperContact,r.area,
+      '"'+(r.notes||"").replace(/"/g,'""')+'"',
+      r.mapLink,r.photo,r.checkoutTime,r.duration
+    ].join(",") + "\n";
+  });
+  var blob = new Blob([csv], {type:"text/csv"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "attendance_" + todayStr() + ".csv";
+  a.click();
+  toast("CSV downloaded!","ok");
+}
+
+/* ════════════════════════════════════════
+   CALENDAR + TIMELINE
+════════════════════════════════════════ */
+function initCalendar() {
+  renderCal();
+  // Load dates that have data for current month
+  fetchDatesWithData();
+}
+
+function calPrev() { calState.month--; if(calState.month<0){calState.month=11;calState.year--;} renderCal(); fetchDatesWithData(); }
+function calNext() { calState.month++; if(calState.month>11){calState.month=0;calState.year++;} renderCal(); fetchDatesWithData(); }
+
+function renderCal() {
+  var months = ["January","February","March","April","May","June",
+                "July","August","September","October","November","December"];
+  $("calMonthLbl").textContent = months[calState.month] + " " + calState.year;
+  var firstDay = new Date(calState.year, calState.month, 1).getDay();
+  var daysInMonth = new Date(calState.year, calState.month+1, 0).getDate();
+  var today = new Date();
+  var todayKey = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+  var html = "";
+  // Blank cells before 1st
+  for (var b = 0; b < firstDay; b++) html += '<div class="cal-day empty"></div>';
+  // Days
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    var cls = "cal-day";
+    if (dateStr === todayKey)        cls += " today";
+    if (dateStr === tlSelectedDate)  cls += " selected";
+    if (datesWithData.has(dateStr))  cls += " has-data";
+    html += '<div class="' + cls + '" onclick="selectCalDay(\'' + dateStr + '\')">' + d + '</div>';
+  }
+  $("calDays").innerHTML = html;
+}
+
+function fetchDatesWithData() {
+  // Load all dates in current month that have attendance
+  var from = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-01";
+  var lastDay = new Date(calState.year, calState.month+1, 0).getDate();
+  var to   = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-" + String(lastDay).padStart(2,"0");
+  apiCall({action:"get_sheet_range", dateFrom:from, dateTo:to, empName:""})
+    .then(function(res) {
+      datesWithData = new Set();
+      (res.rows||[]).forEach(function(r) { datesWithData.add(fmtDate(r.date)); });
+      renderCal();
+    }).catch(function(){});
+}
+
+function selectCalDay(dateStr) {
+  tlSelectedDate = dateStr;
+  renderCal();
+  loadTimeline();
+}
+
+function loadTimeline() {
+  if (!tlSelectedDate) return;
+  var emp = $("tlEmpFilter").value;
+  $("tlDate").textContent = new Date(tlSelectedDate + "T00:00:00").toLocaleDateString("en-IN",
+    {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  $("tlBody").innerHTML = '<div class="tl-empty"><span class="spin"></span> Loading timeline...</div>';
+  // Fetch attendance + GPS for selected date
+  Promise.all([
+    apiCall({action:"get_sheet_range", dateFrom:tlSelectedDate, dateTo:tlSelectedDate, empName:emp}),
+    apiCall({action:"get_route", name:emp, date:tlSelectedDate})
+  ]).then(function(results) {
+    var attRows = results[0].rows || [];
+    var gpsRows = results[1].route || [];
+    buildTimeline(attRows, gpsRows);
+  }).catch(function(e) {
+    $("tlBody").innerHTML = '<div class="tl-empty" style="color:var(--danger)">Error loading: ' + e.message + '</div>';
+  });
+}
+
+function buildTimeline(attRows, gpsRows) {
+  if (!attRows.length && !gpsRows.length) {
+    $("tlBody").innerHTML = '<div class="tl-empty">Is din ka koi data nahi &#128197;</div>';
+    $("tlCount").textContent = "";
+    return;
+  }
+  // Group by employee
+  var empMap = {};
+  attRows.forEach(function(r) {
+    var nm = r.empName || "Unknown";
+    if (!empMap[nm]) empMap[nm] = {att:[], gps:[]};
+    empMap[nm].att.push(r);
+  });
+  gpsRows.forEach(function(g) {
+    var nm = g.name || "Unknown";
+    if (!empMap[nm]) empMap[nm] = {att:[], gps:[]};
+    empMap[nm].gps.push(g);
+  });
+
+  var total = attRows.length;
+  $("tlCount").textContent = total + " check-in" + (total!==1?"s":"");
+
+  var html = "";
+  Object.keys(empMap).forEach(function(nm) {
+    var data = empMap[nm];
+    var initial = nm.charAt(0).toUpperCase();
+    html += '<div class="tl-emp-block">';
+    html += '<div class="tl-emp-name"><div class="tl-emp-avatar">' + initial + '</div>' + nm + '</div>';
+    html += '<div class="tl-track">';
+
+    // For each attendance row
+    data.att.forEach(function(r) {
+      // Check-in event
+      html += '<div class="tl-event ev-checkin">' +
+        '<div class="ev-time"><span class="ev-dot in"></span>' + (r.checkinTime||"--") + ' &nbsp;&#10003; Check-In</div>' +
+        '<div class="ev-title">&#127970; ' + (r.shopName||"No shop recorded") + '</div>';
+      if (r.shopkeeperName || r.area || r.notes) {
+        html += '<div class="ev-detail">';
+        if (r.shopkeeperName) html += 'Shopkeeper: ' + r.shopkeeperName + '<br>';
+        if (r.shopkeeperContact) html += 'Contact: ' + r.shopkeeperContact + '<br>';
+        if (r.notes) html += 'Notes: ' + r.notes;
+        html += '</div>';
+      }
+      html += '<div class="ev-tags">';
+      if (r.area)     html += '<span class="ev-tag t-area">&#128205; ' + r.area + '</span>';
+      if (r.shopName) html += '<span class="ev-tag t-shop">&#127970; ' + r.shopName + '</span>';
+      if (r.mapLink)  html += '<a class="ev-tag t-area" href="' + r.mapLink + '" target="_blank" style="text-decoration:none;">&#128204; Map</a>';
+      if (r.photo)    html += '<a class="ev-tag" href="' + r.photo + '" target="_blank" style="text-decoration:none;background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.25);">&#128247; Photo</a>';
+      html += '</div></div>';
+
+      // GPS pings for this employee (between checkin and checkout time)
+      if (data.gps.length > 0) {
+        var ciMs = parseTime(r.checkinTime);
+        var coMs = r.checkoutTime ? parseTime(r.checkoutTime) : Infinity;
+        data.gps.forEach(function(g) {
+          var gMs = parseTime(g.time);
+          if (gMs >= ciMs && gMs <= coMs) {
+            html += '<div class="tl-event ev-gps">' +
+              '<div class="ev-time"><span class="ev-dot gps"></span>' + g.time + ' &nbsp;&#128205; GPS Ping</div>' +
+              '<div class="ev-detail">' + Number(g.lat).toFixed(5) + ', ' + Number(g.lng).toFixed(5) +
+              (g.accuracy ? ' &nbsp;|&nbsp; Acc: ~' + Math.round(g.accuracy) + 'm' : '') + '</div>' +
+              '<div class="ev-tags"><a class="ev-tag t-area" href="https://www.google.com/maps?q=' + g.lat + ',' + g.lng + '" target="_blank" style="text-decoration:none;">&#128663; Navigate</a></div>' +
+              '</div>';
+          }
+        });
+      }
+
+      // Check-out event
+      if (r.checkoutTime) {
+        // Field time bar
+        var ciMs = parseTime(r.checkinTime);
+        var coMs = parseTime(r.checkoutTime);
+        var dur = coMs - ciMs;
+        var pct = Math.min(100, Math.round(dur / (8*3600000) * 100));
+        html += '<div class="tl-event ev-checkout">' +
+          '<div class="ev-time"><span class="ev-dot out"></span>' + r.checkoutTime + ' &nbsp;&#8226; Check-Out</div>' +
+          '<div class="ev-title" style="color:var(--danger);">Day Complete</div>' +
+          '<div class="tl-bar-outer"><div class="tl-bar-inner" style="width:' + pct + '%"></div></div>' +
+          '<div class="ev-tags"><span class="ev-tag t-dur">&#9201; ' + (r.duration||"--") + '</span></div>' +
+          '</div>';
+      }
+    });
+
+    html += '</div></div>';
+  });
+  $("tlBody").innerHTML = html;
+}
+
+function parseTime(tStr) {
+  if (!tStr) return 0;
+  // Handles "HH:MM:SS" or "HH:MM:SS AM/PM"
+  var m = tStr.match(/(\d+):(\d+):?(\d*)\s*(AM|PM)?/i);
+  if (!m) return 0;
+  var h = parseInt(m[1]), mn = parseInt(m[2]), s = parseInt(m[3]||0);
+  if (m[4] && m[4].toUpperCase()==="PM" && h < 12) h += 12;
+  if (m[4] && m[4].toUpperCase()==="AM" && h === 12) h = 0;
+  return (h*3600 + mn*60 + s) * 1000;
+}
+
+/* ════════════════════════════════════════
+   LIVE TRACKING
+════════════════════════════════════════ */
+function loadLive() {
+  $("trackGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;"><span class="spin"></span> Loading live locations...</div>';
+  apiCall({action:"get_live_locations"}).then(function(res) {
+    var locs = res.locations || [];
+    if (!locs.length) {
+      $("trackGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;">Koi active employee nahi abhi</div>';
+      return;
+    }
+    $("trackGrid").innerHTML = locs.map(function(l) {
+      var mapUrl = "https://www.google.com/maps?q=" + l.lat + "," + l.lng;
+      var navUrl = "https://www.google.com/maps/dir//" + l.lat + "," + l.lng;
+      return '<div class="track-card active">' +
+        '<div class="tc-head">' +
+        '<div class="tl-emp-avatar">' + l.name.charAt(0) + '</div>' +
+        '<div><div class="tc-name">' + l.name + '</div>' +
+        '<div class="tc-time">Last ping: ' + l.time + '</div></div>' +
+        '</div>' +
+        '<div class="tc-coords">&#128205; ' + Number(l.lat).toFixed(5) + ', ' + Number(l.lng).toFixed(5) + '</div>' +
+        (l.accuracy ? '<div style="font-size:11px;color:var(--dim);font-family:var(--mono);margin-bottom:10px;">Accuracy: ~' + Math.round(l.accuracy) + 'm</div>' : '') +
+        '<div class="tc-btns">' +
+        '<a class="tc-btn maps" href="' + mapUrl + '" target="_blank">&#128204; Maps</a>' +
+        '<a class="tc-btn nav"  href="' + navUrl + '" target="_blank">&#128663; Navigate</a>' +
+        '</div></div>';
+    }).join("");
+  }).catch(function(e) {
+    $("trackGrid").innerHTML = '<div style="color:var(--danger);font-family:var(--mono);font-size:12px;padding:20px;">Error: ' + e.message + '</div>';
+  });
+}
+
+function populateTrackDropdowns() {
+  var sel1 = $("routeEmp");
+  var sel2 = $("tlEmpFilter");
+  var existing = sel1.innerHTML;
+  if (existing.includes("option") && employeeList.length) {
+    var opts = '<option value="">-- Select Employee --</option>' +
+      employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
+    sel1.innerHTML = opts;
+    sel2.innerHTML = '<option value="">All Employees</option>' +
+      employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
+  }
+}
+
+function loadRoute() {
+  var emp  = $("routeEmp").value;
+  var date = $("routeDate").value;
+  if (!emp || !date) { toast("Employee aur date dono select karo","err"); return; }
+  $("routeSection").style.display = "none";
+  $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty"><span class="spin"></span> Loading route...</td></tr>';
+  apiCall({action:"get_route", name:emp, date:date}).then(function(res) {
+    var route = res.route || [];
+    $("routeTitle").textContent = emp + " — " + date + " (" + route.length + " points)";
+    if (!route.length) {
+      $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty">Is date ka koi route nahi</td></tr>';
+      $("routeSection").style.display = "block";
+      return;
+    }
+    var mapsUrl = "https://www.google.com/maps/dir/" + route.map(function(r){return r.lat+","+r.lng;}).join("/");
+    $("routeMapsLink").href = mapsUrl;
+    $("routeTbody").innerHTML = route.map(function(r, i) {
+      return '<tr>' +
+        '<td class="row-num">' + (i+1) + '</td>' +
+        '<td style="color:var(--lime);">' + r.time + '</td>' +
+        '<td>' + Number(r.lat).toFixed(6) + '</td>' +
+        '<td>' + Number(r.lng).toFixed(6) + '</td>' +
+        '<td><span class="cell-chip chip-in">' + (r.status||"tracking") + '</span></td>' +
+        '<td>' + (r.accuracy ? '~'+Math.round(r.accuracy)+'m' : '--') + '</td>' +
+        '<td><a class="cell-chip chip-map" href="https://www.google.com/maps?q=' + r.lat + ',' + r.lng + '" target="_blank">&#128205;</a></td>' +
+        '</tr>';
+    }).join("");
+    $("routeSection").style.display = "block";
+  }).catch(function(e) {
+    $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty" style="color:var(--danger)">Error: ' + e.message + '</td></tr>';
+    $("routeSection").style.display = "block";
+  });
+}
+
+/* ════════════════════════════════════════
+   EMPLOYEES
+════════════════════════════════════════ */
+function loadEmployees() {
+  $("empGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;"><span class="spin"></span> Loading...</div>';
+  apiCall({action:"get_employees"}).then(function(res) {
+    employeeList = res.employees || [];
+    populateFilters();
+    populateTrackDropdowns();
+    renderEmpGrid();
+  }).catch(function() {
+    $("empGrid").innerHTML = '<div style="color:var(--danger);font-family:var(--mono);font-size:12px;">Error loading employees</div>';
+  });
+}
+
+function populateFilters() {
+  var opts = '<option value="">All Employees</option>' +
+    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
+  $("sheetEmpFilter").innerHTML = opts;
+  $("tlEmpFilter").innerHTML = '<option value="">All Employees</option>' +
+    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
+  $("routeEmp").innerHTML = '<option value="">-- Select Employee --</option>' +
+    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
+}
+
+function renderEmpGrid() {
+  if (!employeeList.length) {
+    $("empGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;">Koi employee nahi. Add karo.</div>';
+    return;
+  }
+  $("empGrid").innerHTML = employeeList.map(function(e, i) {
+    var init = e.name.charAt(0).toUpperCase();
+    return '<div class="emp-card status-out">' +
+      '<div class="ec-top">' +
+      '<div class="ec-av">' + init + '</div>' +
+      '<div>' +
+      '<div class="ec-name">' + e.name + '</div>' +
+      '<div class="ec-desg">' + (e.designation||"--") + '</div>' +
+      '</div>' +
+      '<span class="ec-status out">ACTIVE</span>' +
+      '</div>' +
+      '<div class="ec-info">' +
+      '&#128222; ' + (e.contact||"--") + '<br>' +
+      '&#128205; ' + (e.address||"--") + '<br>' +
+      '&#128272; PIN: ' + "*".repeat((e.pin||"").length) +
+      '</div>' +
+      '<div class="ec-actions">' +
+      '<button class="ec-btn edit" onclick="openEditEmp(' + i + ')">&#9998; Edit</button>' +
+      '<button class="ec-btn del"  onclick="deleteEmp(\'' + e.name.replace(/'/g,"\\'") + '\')">&#128465; Delete</button>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+}
+
+function openAddEmp() {
+  editingEmp = null;
+  $("empModalTitle").textContent = "Add Employee";
+  ["eNm","ePin","eCont","eDesg","eAddr"].forEach(function(id){ $(id).value = ""; });
+  $("empModal").classList.add("show");
+  setTimeout(function(){ $("eNm").focus(); }, 200);
+}
+function openEditEmp(i) {
+  editingEmp = employeeList[i];
+  $("empModalTitle").textContent = "Edit Employee";
+  $("eNm").value   = editingEmp.name || "";
+  $("ePin").value  = editingEmp.pin  || "";
+  $("eCont").value = editingEmp.contact || "";
+  $("eDesg").value = editingEmp.designation || "";
+  $("eAddr").value = editingEmp.address || "";
+  $("empModal").classList.add("show");
+}
+function closeEmpModal() { $("empModal").classList.remove("show"); }
+
+function saveEmployee() {
+  var nm   = $("eNm").value.trim();
+  var pin  = $("ePin").value.trim();
+  var cont = $("eCont").value.trim();
+  var desg = $("eDesg").value.trim();
+  var addr = $("eAddr").value.trim();
+  if (!nm || !pin || !cont) { toast("Name, PIN, Contact zaroor bharein","err"); return; }
+  if (!/^[0-9]{4,6}$/.test(pin)) { toast("PIN 4-6 digits hona chahiye","err"); return; }
+  var btn = $("empSaveBtn");
+  btn.textContent = "Saving..."; btn.disabled = true;
+  var action = editingEmp ? "update_employee" : "add_employee";
+  apiCall({action:action, oldName:editingEmp?editingEmp.name:"",
+    name:nm, pin:pin, contact:cont, designation:desg, address:addr})
+  .then(function(res) {
+    if (res.status === "success") {
+      toast(editingEmp ? "Employee updated!" : "Employee added!","ok");
+      closeEmpModal();
+      loadEmployees();
+    } else {
+      toast("Error: " + (res.message||"Unknown"),"err");
+    }
+  }).catch(function() { toast("Network error","err"); })
+  .finally(function() { btn.textContent = "Save Employee"; btn.disabled = false; });
+}
+
+function deleteEmp(name) {
+  if (!confirm('"'+name+'" ko delete karna chahte hain?')) return;
+  apiCall({action:"delete_employee", name:name}).then(function(res) {
+    if (res.status === "success") { toast("Employee deleted","ok"); loadEmployees(); }
+    else toast("Error: " + (res.message||""), "err");
+  }).catch(function() { toast("Network error","err"); });
+}
+
+/* ════════════════════════════════════════
+   SETTINGS
+════════════════════════════════════════ */
+function loadSettings() {
+  var savedUrl = localStorage.getItem("admin_script_url") || SCRIPT_URL;
+  $("scriptUrl").value = savedUrl;
+}
+function changePass() {
+  var u = $("newUser").value.trim();
+  var p = $("newPass").value;
+  var c = $("confPass").value;
+  if (!u || !p)  { toast("Username aur password dono daalein","err"); return; }
+  if (p !== c)   { toast("Passwords match nahi karte!","err"); return; }
+  localStorage.setItem(CREDS_KEY, JSON.stringify({user:u, pass:p}));
+  toast("Password update ho gaya! ✓","ok");
+  $("newUser").value = ""; $("newPass").value = ""; $("confPass").value = "";
+}
+function saveUrl() {
+  var url = $("scriptUrl").value.trim();
+  if (!url) { toast("URL empty hai","err"); return; }
+  localStorage.setItem("admin_script_url", url);
+  SCRIPT_URL = url;
+  toast("URL saved! ✓","ok");
+}
+
+/* ════════════════════════════════════════
+   INIT — Check session
+════════════════════════════════════════ */
+(function init() {
+  var sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+  // Session valid for 8 hours
+  if (sess && sess.ok && (Date.now() - sess.t) < 8 * 3600000) {
+    $("loginPage").style.display = "none";
+    $("appPage").style.display   = "flex";
+    onAppInit();
+  }
+  // Enter key on login
+  $("lUser").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") $("lPass").focus();
+  });
+})();
+</script>
+</body>
+</html>
