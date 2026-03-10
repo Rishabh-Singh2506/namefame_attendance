@@ -137,7 +137,7 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent);}
     <h1 class="brand-title">Field Attendance</h1>
     <p class="brand-sub">Track visits &#8226; Manage orders &#8226; Stay connected</p>
     <button class="start-btn" onclick="startApp()">Get Started &#8594;</button>
-    <div class="admin-link" onclick="window.location.href='admin.html'">&#128274; Admin Panel</div>
+    <button onclick="window.location.href='admin.html'" style="width:100%;margin-top:10px;padding:14px;border-radius:14px;background:transparent;border:1.5px solid var(--border);color:var(--muted);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">&#128274; Admin Panel</button>
     <div class="lang-bar">
       <div class="lang-chip active" onclick="setLang('en')">English</div>
       <div class="lang-chip" onclick="setLang('hi')">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div>
@@ -253,10 +253,12 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent);}
 </div>
 
 <!-- MODAL: Shop Details -->
-<div class="modal-overlay" id="shopModal">
+<div class="modal-overlay" id="shopModal" onclick="if(event.target===this)cancelCheckin()">
   <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-title">&#128205; Visit Details</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div class="modal-title">&#128205; Visit Details</div>
+      <button onclick="cancelCheckin()" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#ef4444;width:32px;height:32px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#215;</button>
+    </div>
     <div class="modal-sub">Shop aur shopkeeper ki jaankari bharein</div>
     <div class="fgroup">
       <label class="flabel">Shop Name *</label>
@@ -268,7 +270,10 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent);}
     </div>
     <div class="fgroup">
       <label class="flabel">Shopkeeper Contact</label>
-      <input type="tel" id="mContact" inputmode="numeric" placeholder="Mobile number" />
+      <input type="tel" id="mContact" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+        onblur="if(this.value&&this.value.length!==10){this.style.borderColor='var(--red)';document.getElementById('mContactErr').style.display='block';}else{this.style.borderColor='';document.getElementById('mContactErr').style.display='none';}" />
+      <div id="mContactErr" style="color:var(--red);font-size:11px;margin-top:4px;display:none;">&#9888; Contact 10 digits ka hona chahiye</div>
     </div>
     <div class="fgroup">
       <label class="flabel">Area of Visit *</label>
@@ -603,6 +608,17 @@ function openShopModal() {
 function closeShopModal() {
   document.getElementById("shopModal").classList.remove("show");
 }
+function cancelCheckin() {
+  // X button — modal band karo, check-in cancel karo
+  closeShopModal();
+  // Check-in data clear karo
+  photoData = null;
+  currentEmp = null;
+  ls.del("emp");
+  screenStack = ["s-land"];
+  show("s-land");
+  toast("Check-in cancel kiya gaya","info");
+}
 
 function submitShopDetails() {
   var shop    = document.getElementById("mShop").value.trim();
@@ -613,6 +629,8 @@ function submitShopDetails() {
 
   if (!shop) { toast("Shop name zaroor bharein!","error"); document.getElementById("mShop").focus(); return; }
   if (!area) { toast("Area select karein!","error"); return; }
+  var ph = document.getElementById("mContact").value.trim();
+  if (ph && ph.length !== 10) { toast("Contact 10 digits ka hona chahiye!","error"); document.getElementById("mContact").focus(); return; }
 
   var btn = document.getElementById("modalSubmitBtn");
   btn.textContent = "Saving...";
