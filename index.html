@@ -23,9 +23,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
 .brand-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:36px;}
 .start-btn{width:100%;padding:18px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px rgba(59,130,246,.35);transition:transform .15s;}
 .start-btn:active{transform:scale(.97);}
-.lang-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
+.admin-link{margin-top:14px;font-size:12px;color:var(--muted);cursor:pointer;text-align:center;padding:8px;}
+.admin-link:hover{color:var(--accent);}
+.lang-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;}
 .lang-chip{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .2s;}
 .lang-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+/* CAMERA */
 #s-cam{background:#000;}
 .video-wrap{position:relative;flex:1;min-height:0;overflow:hidden;}
 #video{width:100%;height:100%;object-fit:cover;display:block;}
@@ -36,20 +39,31 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
 .cc.br{bottom:12px;right:12px;border-width:0 2px 2px 0;}
 .gps-badge{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border-radius:10px;padding:8px 12px;font-size:11px;color:#fff;display:none;}
 .gps-badge.show{display:block;}
-.gps-badge strong{color:var(--green);}
 .cam-bar{display:flex;gap:10px;padding:12px 14px;background:rgba(0,0,0,.85);align-items:center;}
 .btn-flip{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .btn-cap{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#6366f1);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn-send-cam{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:none;}
+.btn-next{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:none;}
 .btn-re{flex:0 0 auto;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;font-family:inherit;display:none;}
+/* INPUTS */
 .flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;display:block;}
 .sel-wrap{position:relative;}
 .sel-wrap::after{content:"\25BE";position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-select,input{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:15px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s;}
-select:focus,input:focus{border-color:var(--accent);}
-.fgroup{margin-bottom:14px;}
+select,input,textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:inherit;font-size:15px;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s;resize:none;}
+select:focus,input:focus,textarea:focus{border-color:var(--accent);}
+.fgroup{margin-bottom:12px;}
 .err{color:var(--red);font-size:12px;margin-top:6px;display:none;text-align:center;}
 .err.show{display:block;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.show{display:flex;animation:fadeIn .25s ease;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:20px 16px 32px;}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+.modal-btn{width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;transition:opacity .2s;}
+.modal-btn:active{transform:scale(.98);}
+.modal-btn.loading{opacity:.6;pointer-events:none;}
+/* DASHBOARD */
 #s-dash{padding-bottom:32px;}
 .stat-bar{margin:14px 16px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
 .stat-live{display:flex;align-items:center;gap:8px;font-size:13px;}
@@ -63,6 +77,9 @@ select:focus,input:focus{border-color:var(--accent);}
 .timer-lbl{font-size:12px;color:var(--green);}
 .timer-val{font-size:22px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;}
 .timer-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.gps-ping-bar{margin:8px 16px 0;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:9px 14px;font-size:11px;color:var(--accent);display:none;align-items:center;gap:8px;}
+.gps-ping-bar.show{display:flex;}
+.ping-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:p 1.5s infinite;}
 .greet{font-size:21px;font-weight:800;margin:14px 16px 3px;}
 .greet span{color:var(--accent);}
 .sub{font-size:13px;color:var(--muted);margin:0 16px 14px;}
@@ -89,25 +106,38 @@ select:focus,input:focus{border-color:var(--accent);}
 .fbtn .fi{font-size:22px;}
 .fbtn .fl{font-size:14px;font-weight:700;}
 .fbtn .fs{font-size:11px;color:var(--muted);}
-.fbtn.fc{border-color:rgba(59,130,246,.3);}
-.fbtn.fc:not(.dis){background:rgba(59,130,246,.06);}
 .logout-b{margin:14px 16px 0;width:calc(100% - 32px);background:none;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;cursor:pointer;transition:all .2s;}
 .logout-b:hover{border-color:var(--red);color:var(--red);}
+/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 18px;font-size:13px;z-index:999;transition:transform .3s;white-space:nowrap;max-width:92vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .toast.success{border-color:var(--green);color:var(--green);}
 .toast.error{border-color:var(--red);color:var(--red);}
 .toast.info{border-color:var(--accent);color:var(--accent);}
+/* Loading overlay */
+.load-cover{position:fixed;inset:0;background:rgba(8,12,20,.85);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.load-cover.hide{display:none;}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-txt{font-size:14px;color:var(--muted);}
 </style>
 </head>
 <body>
 
-<div class="screen active" id="s-land">
+<!-- LOADING OVERLAY -->
+<div class="load-cover" id="loadCover">
+  <div class="spinner"></div>
+  <div class="load-txt">Loading employees...</div>
+</div>
+
+<!-- SCREEN 1: LANDING -->
+<div class="screen" id="s-land">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
     <div class="brand-logo">&#127970;</div>
-    <h1 class="brand-title" data-t="appName">Field Attendance</h1>
-    <p class="brand-sub" data-t="appSub">Track visits - Manage orders - Stay connected</p>
-    <button class="start-btn" onclick="startApp()" data-t="getStarted">Get Started</button>
+    <h1 class="brand-title">Field Attendance</h1>
+    <p class="brand-sub">Track visits &#8226; Manage orders &#8226; Stay connected</p>
+    <button class="start-btn" onclick="startApp()">Get Started &#8594;</button>
+    <div class="admin-link" onclick="window.location.href='admin.html'">&#128274; Admin Panel</div>
     <div class="lang-bar">
       <div class="lang-chip active" onclick="setLang('en')">English</div>
       <div class="lang-chip" onclick="setLang('hi')">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</div>
@@ -117,10 +147,11 @@ select:focus,input:focus{border-color:var(--accent);}
   </div>
 </div>
 
+<!-- SCREEN 2: CAMERA -->
 <div class="screen" id="s-cam">
   <div class="topbar" style="background:rgba(0,0,0,.75);position:absolute;z-index:5;width:100%;">
     <button class="back-btn" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title" id="camTitle">Check-In Photo</span>
+    <span class="topbar-title">&#128247; Check-In Photo</span>
     <button class="btn-flip" onclick="flipCam()">&#128259;</button>
   </div>
   <div class="video-wrap">
@@ -128,48 +159,49 @@ select:focus,input:focus{border-color:var(--accent);}
     <canvas id="canvas"></canvas>
     <img id="photoPreview" alt="" />
     <div class="cc tl"></div><div class="cc br"></div>
-    <div class="gps-badge" id="gpsBadge">&#128205; <strong id="gpsText">Locating...</strong></div>
+    <div class="gps-badge" id="gpsBadge">&#128205; <span id="gpsText">Locating...</span></div>
   </div>
   <div class="cam-bar">
     <button class="btn-cap" id="btnCap" onclick="capturePhoto()">&#128247; Capture</button>
     <button class="btn-re" id="btnRe" onclick="retakePhoto()">&#128259; Retake</button>
-    <button class="btn-send-cam" id="btnNext" onclick="goToPin()">Next &#8594;</button>
+    <button class="btn-next" id="btnNext" onclick="goToPin()">Next &#8594;</button>
   </div>
 </div>
 
+<!-- SCREEN 3: PIN -->
 <div class="screen" id="s-pin">
   <div class="topbar">
     <button class="back-btn" onclick="goBack()">&#8592;</button>
-    <span class="topbar-title" data-t="verifyId">Verify Identity</span>
+    <span class="topbar-title">Verify Identity</span>
     <button class="lang-btn" onclick="cycleLang()">&#127760;</button>
   </div>
   <div style="padding:20px 0 24px;">
     <div style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;">&#128100;</div>
     <div class="card">
       <div class="fgroup">
-        <label class="flabel" data-t="selName">Select Your Name</label>
+        <label class="flabel">Select Your Name</label>
         <div class="sel-wrap">
-          <select id="empSel">
-            <option value="">-- Select --</option>
-            <option value="Rajesh">Rajesh</option>
-          </select>
+          <!-- FIX: Dynamic dropdown — sheet se load hoga -->
+          <select id="empSel"><option value="">-- Select --</option></select>
         </div>
+        <p class="err" id="empErr">&#9888; Employees load nahi hue. Reload karein.</p>
       </div>
       <div class="fgroup">
-        <label class="flabel" data-t="enterPin">Enter PIN</label>
-        <input type="password" id="pinIn" inputmode="numeric" maxlength="4"
-          placeholder="****" style="letter-spacing:10px;font-size:22px;text-align:center;"
+        <label class="flabel">Enter PIN</label>
+        <input type="password" id="pinIn" inputmode="numeric" maxlength="6"
+          placeholder="&#8226;&#8226;&#8226;&#8226;" style="letter-spacing:10px;font-size:22px;text-align:center;"
           oninput="onPin(this.value)" autocomplete="off" />
-        <p class="err" id="pinErr" data-t="wrongPin">Wrong PIN. Try again.</p>
+        <p class="err" id="pinErr">&#10060; Wrong PIN. Try again.</p>
       </div>
     </div>
   </div>
 </div>
 
+<!-- SCREEN 4: DASHBOARD -->
 <div class="screen" id="s-dash">
   <div class="topbar">
     <div style="flex:1;">
-      <div style="font-size:11px;color:var(--muted)" data-t="loggedAs">Logged in as</div>
+      <div style="font-size:11px;color:var(--muted)">Logged in as</div>
       <div style="font-size:16px;font-weight:700;" id="dName">--</div>
     </div>
     <button class="lang-btn" onclick="cycleLang()">&#127760;</button>
@@ -177,368 +209,691 @@ select:focus,input:focus{border-color:var(--accent);}
   <div class="stat-bar">
     <div class="stat-live">
       <div class="dot" id="sDot"></div>
-      <span id="sTxt" data-t="notIn">Not checked in</span>
+      <span id="sTxt">Not checked in</span>
     </div>
     <div class="clock" id="lClock">--:--</div>
   </div>
   <div class="timer-bar" id="tBar">
     <div class="timer-row">
-      <span class="timer-lbl" data-t="onField">Time on Field</span>
+      <span class="timer-lbl">&#9201; Time on Field</span>
       <span class="timer-val" id="tDisp">00:00:00</span>
     </div>
     <div class="timer-sub" id="tSub"></div>
   </div>
-  <div class="greet" data-t="hello">Hello, <span id="gName"></span>!</div>
+  <div class="gps-ping-bar" id="pingBar">
+    <div class="ping-dot"></div>
+    <span id="pingTxt">Live tracking active</span>
+  </div>
+  <div class="greet">Hello, <span id="gName"></span>!</div>
   <p class="sub" id="dDate"></p>
   <div class="grid2">
     <div class="abtn ci" id="bCI" onclick="doCheckin()">
       <span class="ai">&#128994;</span>
-      <span class="al" data-t="checkIn">Check-In</span>
-      <span class="as" data-t="startDay">Start your day</span>
+      <span class="al">Check-In</span>
+      <span class="as">Start your day</span>
     </div>
     <div class="abtn co dis" id="bCO" onclick="doCheckout()">
       <span class="ai">&#128308;</span>
-      <span class="al" data-t="checkOut">Check-Out</span>
-      <span class="as" data-t="endDay">End your day</span>
+      <span class="al">Check-Out</span>
+      <span class="as">End your day</span>
       <span class="cdown" id="cdBadge"></span>
     </div>
-    <div class="abtn or dis" id="bOrd" onclick="window.open(ORDER_URL,'_blank')">
+    <div class="abtn or dis" id="bOrd" onclick="goOrder()">
       <span class="ai">&#128203;</span>
-      <span class="al" data-t="order">Take Order</span>
-      <span class="as" data-t="orderSub">Order entry</span>
+      <span class="al">Take Order</span>
+      <span class="as">Order entry</span>
     </div>
-    <div class="abtn py dis" id="bPay" onclick="window.open(PAYMENT_URL,'_blank')">
+    <div class="abtn py dis" id="bPay" onclick="goPayment()">
       <span class="ai">&#128176;</span>
-      <span class="al" data-t="payment">Payment</span>
-      <span class="as" data-t="paySub">Collect payment</span>
+      <span class="al">Payment</span>
+      <span class="as">Collect payment</span>
     </div>
   </div>
-  <div class="fbtn fc dis" id="bForm" onclick="openForm()">
-    <span class="fi">&#128221;</span>
-    <div><div class="fl" data-t="openForm">Open Check-In Form</div><div class="fs" data-t="formSub">Fill visit details</div></div>
-    <span style="margin-left:auto;color:var(--muted);">&#8594;</span>
+  <button class="logout-b" onclick="logout()">&#128682; Logout</button>
+</div>
+
+<!-- MODAL: Shop Details -->
+<div class="modal-overlay" id="shopModal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">&#128205; Visit Details</div>
+    <div class="modal-sub">Shop aur shopkeeper ki jaankari bharein</div>
+    <div class="fgroup">
+      <label class="flabel">Shop Name *</label>
+      <input type="text" id="mShop" placeholder="e.g. Ratan Jewellers" />
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Shopkeeper Name</label>
+      <input type="text" id="mKeeper" placeholder="e.g. Rajkumar" />
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Shopkeeper Contact</label>
+      <input type="tel" id="mContact" inputmode="numeric" placeholder="Mobile number" />
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Area of Visit *</label>
+      <div class="sel-wrap">
+        <select id="mArea">
+          <option value="">-- Select Area --</option>
+          <option>Prayagraj</option>
+          <option>Pratapgarh</option>
+          <option>Kaushambi</option>
+          <option>Fatehpur</option>
+          <option>Lucknow</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="flabel">Additional Notes</label>
+      <textarea id="mNotes" rows="2" placeholder="Purpose of visit, observations..."></textarea>
+    </div>
+    <button class="modal-btn" id="modalSubmitBtn" onclick="submitShopDetails()">
+      &#10003; Save &amp; Check-In
+    </button>
   </div>
-  <button class="logout-b" onclick="logout()" data-t="logout">Logout</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
 var SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
-var CHECKIN_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdTgWBaeNsMh6b5yfeEL3vrpoX8fuuDbrj4FgLaszfX735yJw/viewform?usp=pp_url";
 var ORDER_URL    = "order.html";
 var PAYMENT_URL  = "payment.html";
-var GEOFENCE_M   = 500;
-var MIN_CHECKOUT = 10 * 1000;
+var MIN_CHECKOUT = 10 * 1000;       // 10 seconds
+var GPS_INTERVAL = 5 * 60 * 1000;  // 5 minutes
 
-var CI = { name:"entry.1855905436" };
+// ══════════════════════════════════════
+// EMPLOYEES — FIX: Sheet se load hoga, hardcode nahi
+// ══════════════════════════════════════
+var EMPLOYEES = {}; // Dynamically loaded from Google Sheet
 
-var EMPLOYEES = {
-  "Rajesh": { pin:"1234", contact:"9876543210", designation:"Sales Executive", address:"Prayagraj, UP" }
-};
-
-var TR = {
-  en:{ appName:"Field Attendance", appSub:"Track visits - Manage orders - Stay connected", getStarted:"Get Started",
-    verifyId:"Verify Identity", selName:"Select Your Name", enterPin:"Enter PIN", wrongPin:"Wrong PIN. Try again.",
-    loggedAs:"Logged in as", notIn:"Not checked in", checkedIn:"Checked in", onField:"Time on Field",
-    hello:"Hello,", checkIn:"Check-In", startDay:"Start your day", checkOut:"Check-Out", endDay:"End your day",
-    order:"Take Order", orderSub:"Order entry", payment:"Payment", paySub:"Collect payment",
-    openForm:"Open Check-In Form", formSub:"Fill visit details", logout:"Logout",
-    locating:"Locating...", alreadyIn:"Already checked in!", confirmLogout:"Logout?" },
-  hi:{ appName:"फ़ील्ड अटेंडेंस", appSub:"विज़िट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करें",
-    verifyId:"पहचान सत्यापित", selName:"नाम चुनें", enterPin:"PIN डालें", wrongPin:"गलत PIN।",
-    loggedAs:"लॉग इन", notIn:"चेक-इन नहीं", checkedIn:"चेक-इन हो गया", onField:"फ़ील्ड पर समय",
-    hello:"नमस्ते,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन समाप्त",
-    order:"ऑर्डर लें", orderSub:"ऑर्डर एंट्री", payment:"पेमेंट", paySub:"पेमेंट कलेक्ट",
-    openForm:"चेक-इन फ़ॉर्म खोलें", formSub:"विवरण भरें", logout:"लॉगआउट",
-    locating:"लोकेशन मिल रही है...", alreadyIn:"पहले से चेक-इन है!", confirmLogout:"लॉगआउट करें?" },
-  ur:{ appName:"فیلڈ حاضری", appSub:"وزٹ ٹریک • آرڈر منیج", getStarted:"شروع کریں",
-    verifyId:"شناخت تصدیق", selName:"نام چنیں", enterPin:"PIN درج", wrongPin:"غلط PIN۔",
-    loggedAs:"لاگ ان", notIn:"چیک ان نہیں", checkedIn:"چیک ان", onField:"فیلڈ وقت",
-    hello:"السلام،", checkIn:"چیک ان", startDay:"شروع", checkOut:"چیک آؤٹ", endDay:"ختم",
-    order:"آرڈر", orderSub:"آرڈر", payment:"ادائیگی", paySub:"پیسے جمع",
-    openForm:"فارم کھولیں", formSub:"تفصیلات بھریں", logout:"لاگ آؤٹ",
-    locating:"لوکیشن...", alreadyIn:"پہلے سے چیک ان!", confirmLogout:"لاگ آؤٹ؟" },
-  bho:{ appName:"फ़ील्ड हाजिरी", appSub:"विजिट ट्रैक • ऑर्डर मैनेज", getStarted:"शुरू करीं",
-    verifyId:"पहचान जाँच", selName:"नाम चुनीं", enterPin:"PIN डालीं", wrongPin:"गलत PIN बा।",
-    loggedAs:"लॉगिन बा", notIn:"चेक-इन नइखे", checkedIn:"चेक-इन भइल", onField:"फ़ील्ड समय",
-    hello:"प्रणाम,", checkIn:"चेक-इन", startDay:"दिन शुरू", checkOut:"चेक-आउट", endDay:"दिन खतम",
-    order:"ऑर्डर लीं", orderSub:"ऑर्डर", payment:"पेमेंट", paySub:"पैसा लीं",
-    openForm:"फ़ॉर्म खोलीं", formSub:"विवरण भरीं", logout:"लॉगआउट",
-    locating:"लोकेशन मिल रहल...", alreadyIn:"पहिलहीं चेक-इन बा!", confirmLogout:"लॉगआउट करीं?" }
-};
-
-var lang = localStorage.getItem("lang") || "en";
-function t(k){ return (TR[lang]||TR.en)[k] || (TR.en[k]||k); }
-function applyLang(){
-  document.querySelectorAll("[data-t]").forEach(function(el){
-    var k=el.getAttribute("data-t");
-    if(k==="hello") el.innerHTML=t("hello")+" <span id='gName'></span>!";
-    else el.textContent=t(k);
+function loadEmployees(callback) {
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain"},
+    body: JSON.stringify({action: "get_employees"})
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (res.employees && res.employees.length > 0) {
+      EMPLOYEES = {};
+      res.employees.forEach(function(e) {
+        EMPLOYEES[e.name] = e;
+      });
+      ls.set("emp_cache", res.employees); // Offline ke liye cache
+    } else {
+      // Sheet khaali hai — cache se try karo
+      loadFromCache();
+    }
+    buildEmpDropdown();
+    if (callback) callback(true);
+  })
+  .catch(function() {
+    // Network error — cache se load karo
+    loadFromCache();
+    buildEmpDropdown();
+    if (callback) callback(false);
   });
-  document.querySelectorAll(".lang-chip").forEach(function(c){
-    c.classList.toggle("active", c.getAttribute("onclick").indexOf("'"+lang+"'")>=0);
-  });
-  if(currentEmp){ var g=document.getElementById("gName"); if(g) g.textContent=currentEmp.name; }
 }
-function setLang(l){ lang=l; localStorage.setItem("lang",l); applyLang(); }
+
+function loadFromCache() {
+  var cached = ls.get("emp_cache");
+  if (cached && cached.length > 0) {
+    EMPLOYEES = {};
+    cached.forEach(function(e) { EMPLOYEES[e.name] = e; });
+    toast("Offline mode: cached employees loaded","info");
+  }
+}
+
+function buildEmpDropdown() {
+  var sel = document.getElementById("empSel");
+  var names = Object.keys(EMPLOYEES);
+  sel.innerHTML = '<option value="">-- Select --</option>';
+  names.forEach(function(name) {
+    var opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+  // FIX: Error dikhao agar koi employee nahi
+  var errEl = document.getElementById("empErr");
+  if (names.length === 0) {
+    errEl.classList.add("show");
+  } else {
+    errEl.classList.remove("show");
+  }
+}
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+var currentEmp  = null;
+var photoData   = null;
+var gps         = {lat:null, lng:null};
+var stream      = null;
+var facing      = "user";
+var screenStack = ["s-land"];
+var cdTimer     = null;
+var fTimer      = null;
+var gpsTimer    = null;
+var lang        = localStorage.getItem("lang") || "en";
+
+var ls = {
+  set: function(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },
+  get: function(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } },
+  del: function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function show(id) {
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+}
+function goTo(id) {
+  screenStack.push(id);
+  show(id);
+  if (id === "s-cam")  initCam();
+  if (id === "s-dash") refreshDash();
+}
+function goBack() {
+  stopCam();
+  screenStack.pop();
+  var p = screenStack[screenStack.length-1] || "s-land";
+  show(p);
+  if (p === "s-dash") refreshDash();
+}
+
+// ══════════════════════════════════════
+// LANG
+// ══════════════════════════════════════
+function setLang(l){ lang=l; localStorage.setItem("lang",l); updateLangChips(); }
 function cycleLang(){
   var ls2=["en","hi","ur","bho"];
   lang=ls2[(ls2.indexOf(lang)+1)%ls2.length];
   localStorage.setItem("lang",lang);
-  applyLang();
+  updateLangChips();
   toast({en:"English",hi:"Hindi",ur:"Urdu",bho:"Bhojpuri"}[lang],"info");
 }
+function updateLangChips(){
+  document.querySelectorAll(".lang-chip").forEach(function(c){
+    c.classList.toggle("active", c.getAttribute("onclick").indexOf("'"+lang+"'") >= 0);
+  });
+}
 
-var currentEmp=null, currentAction=null;
-var photoData=null, gps={lat:null,lng:null};
-var stream=null, facing="user";
-var screenStack=["s-land"];
-var cdTimer=null, fTimer=null;
-
-var ls={
-  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
-  get:function(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
-  del:function(k){try{localStorage.removeItem(k);}catch(e){}}
-};
-
-function show(id){ document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");}); document.getElementById(id).classList.add("active"); }
-function goTo(id){ screenStack.push(id); show(id); if(id==="s-cam")initCam(); if(id==="s-dash")refreshDash(); }
-function goBack(){ stopCam(); screenStack.pop(); var p=screenStack[screenStack.length-1]||"s-land"; show(p); if(p==="s-dash")refreshDash(); }
-
+// ══════════════════════════════════════
+// CLOCK
+// ══════════════════════════════════════
 setInterval(function(){
-  document.getElementById("lClock").textContent=new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
-  document.getElementById("dDate").textContent=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
-},1000);
+  var cl = document.getElementById("lClock");
+  if (cl) cl.textContent = new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+  var dd = document.getElementById("dDate");
+  if (dd) dd.textContent = new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+}, 1000);
 
-async function initCam(){
-  photoData=null;
-  document.getElementById("video").style.display="block";
-  document.getElementById("photoPreview").style.display="none";
-  document.getElementById("btnCap").style.display="block";
-  document.getElementById("btnRe").style.display="none";
-  document.getElementById("btnNext").style.display="none";
+// ══════════════════════════════════════
+// CAMERA
+// ══════════════════════════════════════
+async function initCam() {
+  photoData = null;
+  document.getElementById("video").style.display = "block";
+  document.getElementById("photoPreview").style.display = "none";
+  document.getElementById("btnCap").style.display = "block";
+  document.getElementById("btnRe").style.display = "none";
+  document.getElementById("btnNext").style.display = "none";
   document.getElementById("gpsBadge").classList.remove("show");
-  document.getElementById("gpsText").textContent=t("locating");
-  document.getElementById("camTitle").textContent="Check-In Photo";
-  try{
-    if(stream) stream.getTracks().forEach(function(t){t.stop();});
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing}},audio:false});
-    document.getElementById("video").srcObject=stream;
-  }catch(e){ toast("Camera allow karein!","error"); goBack(); return; }
-  getGPS();
-}
-function flipCam(){ facing=facing==="user"?"environment":"user"; initCam(); }
-function stopCam(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
-
-function capturePhoto(){
-  var v=document.getElementById("video"), c=document.getElementById("canvas");
-  c.width=v.videoWidth||640; c.height=v.videoHeight||480;
-  var ctx=c.getContext("2d");
-  if(facing==="user"){ ctx.translate(c.width,0); ctx.scale(-1,1); }
-  ctx.drawImage(v,0,0);
-  if(facing==="user"){ ctx.scale(-1,1); ctx.translate(-c.width,0); }
-  if(gps.lat){
-    ctx.fillStyle="rgba(0,0,0,.7)"; ctx.fillRect(0,c.height-52,c.width,52);
-    ctx.fillStyle="#22c55e"; ctx.font="bold 13px Arial";
-    ctx.fillText(gps.lat.toFixed(6)+", "+gps.lng.toFixed(6),10,c.height-30);
-    ctx.fillStyle="#fff"; ctx.font="12px Arial";
-    ctx.fillText((currentEmp?currentEmp.name:"")+" | "+new Date().toLocaleString("en-IN"),10,c.height-10);
-  }
-  photoData=c.toDataURL("image/jpeg",0.82);
-  document.getElementById("photoPreview").src=photoData;
-  document.getElementById("photoPreview").style.display="block";
-  document.getElementById("video").style.display="none";
-  document.getElementById("btnCap").style.display="none";
-  document.getElementById("btnRe").style.display="block";
-  document.getElementById("btnNext").style.display="block";
-  stopCam();
-}
-function retakePhoto(){ initCam(); }
-
-function getGPS(){
-  document.getElementById("gpsBadge").classList.add("show");
-  navigator.geolocation.getCurrentPosition(function(pos){
-    gps.lat=pos.coords.latitude; gps.lng=pos.coords.longitude;
-    document.getElementById("gpsText").textContent=gps.lat.toFixed(5)+", "+gps.lng.toFixed(5);
-  },function(){ document.getElementById("gpsText").textContent="Unavailable"; },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
-}
-
-function goToPin(){
-  if(!photoData){ toast("Photo lo pehle!","error"); return; }
-  if(!gps.lat){ toast("Location chahiye!","error"); return; }
-  screenStack.push("s-pin");
-  show("s-pin");
-  document.getElementById("empSel").value="";
-  document.getElementById("pinIn").value="";
-  document.getElementById("pinErr").classList.remove("show");
-}
-document.getElementById("empSel").addEventListener("change",function(){
-  document.getElementById("pinIn").value="";
-  document.getElementById("pinErr").classList.remove("show");
-  if(this.value) setTimeout(function(){document.getElementById("pinIn").focus();},100);
-});
-function onPin(v){
-  var c=v.replace(/[^0-9]/g,"").slice(0,4);
-  document.getElementById("pinIn").value=c;
-  document.getElementById("pinErr").classList.remove("show");
-  if(c.length===4) setTimeout(function(){verifyPin(c);},250);
-}
-function verifyPin(pin){
-  var nm=document.getElementById("empSel").value;
-  if(!nm){ toast("Naam select karein!","error"); return; }
-  var emp=EMPLOYEES[nm];
-  if(emp && pin===emp.pin){
-    currentEmp={name:nm,pin:emp.pin,contact:emp.contact,designation:emp.designation,address:emp.address};
-    ls.set("emp",currentEmp);
-    document.getElementById("pinErr").classList.remove("show");
-    processCheckin();
-  }else{
-    document.getElementById("pinErr").classList.add("show");
-    document.getElementById("pinIn").value="";
-    var card=document.querySelector("#s-pin .card");
-    card.style.transform="translateX(-8px)";
-    setTimeout(function(){card.style.transform="translateX(8px)";},80);
-    setTimeout(function(){card.style.transform="translateX(0)";},160);
-  }
-}
-
-function startApp(){ currentAction="checkin"; goTo("s-cam"); }
-function doCheckin(){
-  if(ls.get("ci_"+currentEmp.name)){ toast(t("alreadyIn"),"error"); return; }
-  currentAction="checkin"; goTo("s-cam");
-}
-function processCheckin(){
-  var map="https://www.google.com/maps?q="+gps.lat+","+gps.lng;
-  var now=new Date();
-  var ciTime=now.toLocaleTimeString("en-IN");
-  ls.set("ci_"+currentEmp.name,{lat:gps.lat,lng:gps.lng,time:ciTime,ms:now.getTime(),map:map});
-  window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
-  toast("Check-In done! Form fill karein.","success");
-  uploadBg(map,ciTime);
-  goTo("s-dash");
-}
-
-function doCheckout(){
-  var sv=ls.get("ci_"+currentEmp.name);
-  if(!sv) return;
-  var elapsed=Date.now()-sv.ms;
-  if(elapsed<MIN_CHECKOUT){
-    var s=Math.ceil((MIN_CHECKOUT-elapsed)/1000);
-    toast("Wait "+s+"s","error");
+  document.getElementById("gpsText").textContent = "Locating...";
+  try {
+    if (stream) stream.getTracks().forEach(function(t){ t.stop(); });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {facingMode: {ideal: facing}}, audio: false
+    });
+    document.getElementById("video").srcObject = stream;
+  } catch(e) {
+    toast("Camera allow karein browser mein!","error");
+    goBack();
     return;
   }
-  var now=new Date();
-  var coTime=now.toLocaleTimeString("en-IN");
-  var durMs=now.getTime()-sv.ms;
-  var durH=Math.floor(durMs/3600000);
-  var durM=Math.floor((durMs%3600000)/60000);
-  var durS=Math.floor((durMs%60000)/1000);
-  var durStr=durH+"h "+durM+"m "+durS+"s";
-  var payload={action:"checkout",name:currentEmp.name,contact:currentEmp.contact,
-    lat:0,lng:0,mapLink:"",timestamp:coTime,duration:durStr,distCovered:"",photo:""};
-  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})
-    .then(function(){}).catch(function(){});
+  getGPS();
+}
+function flipCam() { facing = facing==="user" ? "environment" : "user"; initCam(); }
+function stopCam() {
+  if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
+}
+
+function capturePhoto() {
+  var v = document.getElementById("video");
+  var c = document.getElementById("canvas");
+  c.width  = v.videoWidth  || 640;
+  c.height = v.videoHeight || 480;
+  var ctx = c.getContext("2d");
+  if (facing === "user") { ctx.translate(c.width,0); ctx.scale(-1,1); }
+  ctx.drawImage(v, 0, 0);
+  if (facing === "user") { ctx.scale(-1,1); ctx.translate(-c.width,0); }
+  // GPS stamp
+  if (gps.lat) {
+    ctx.fillStyle = "rgba(0,0,0,.72)";
+    ctx.fillRect(0, c.height-54, c.width, 54);
+    ctx.fillStyle = "#22c55e"; ctx.font = "bold 13px Arial";
+    ctx.fillText(gps.lat.toFixed(6)+", "+gps.lng.toFixed(6), 10, c.height-32);
+    ctx.fillStyle = "#fff"; ctx.font = "12px Arial";
+    ctx.fillText((currentEmp?currentEmp.name:"")+" | "+new Date().toLocaleString("en-IN"), 10, c.height-10);
+  }
+  photoData = c.toDataURL("image/jpeg", 0.82);
+  document.getElementById("photoPreview").src = photoData;
+  document.getElementById("photoPreview").style.display = "block";
+  document.getElementById("video").style.display = "none";
+  document.getElementById("btnCap").style.display = "none";
+  document.getElementById("btnRe").style.display = "block";
+  document.getElementById("btnNext").style.display = "block";
+  stopCam();
+}
+function retakePhoto() { initCam(); }
+
+// ══════════════════════════════════════
+// GPS
+// ══════════════════════════════════════
+function getGPS() {
+  document.getElementById("gpsBadge").classList.add("show");
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      gps.lat = pos.coords.latitude;
+      gps.lng = pos.coords.longitude;
+      document.getElementById("gpsText").textContent =
+        gps.lat.toFixed(5)+", "+gps.lng.toFixed(5);
+    },
+    function() {
+      document.getElementById("gpsText").textContent = "Unavailable";
+    },
+    {enableHighAccuracy:true, timeout:15000, maximumAge:0}
+  );
+}
+
+// ══════════════════════════════════════
+// PIN — FIX: Dynamic employee check
+// ══════════════════════════════════════
+function goToPin() {
+  if (!photoData) { toast("Photo lo pehle!","error"); return; }
+  // FIX: Agar employees abhi tak load nahi hue to reload karo
+  if (Object.keys(EMPLOYEES).length === 0) {
+    toast("Employees load ho rahe hain...","info");
+    loadEmployees(function() {
+      screenStack.push("s-pin");
+      show("s-pin");
+      resetPin();
+    });
+    return;
+  }
+  screenStack.push("s-pin");
+  show("s-pin");
+  resetPin();
+}
+
+function resetPin() {
+  document.getElementById("empSel").value = "";
+  document.getElementById("pinIn").value = "";
+  document.getElementById("pinErr").classList.remove("show");
+}
+
+document.getElementById("empSel").addEventListener("change", function() {
+  document.getElementById("pinIn").value = "";
+  document.getElementById("pinErr").classList.remove("show");
+  if (this.value) setTimeout(function(){ document.getElementById("pinIn").focus(); }, 100);
+});
+
+function onPin(v) {
+  var c = v.replace(/[^0-9]/g,"").slice(0,6);
+  document.getElementById("pinIn").value = c;
+  document.getElementById("pinErr").classList.remove("show");
+  // FIX: 4 se 6 digits — jab complete ho
+  var emp = EMPLOYEES[document.getElementById("empSel").value];
+  var pinLen = emp ? (emp.pin||"1234").length : 4;
+  if (c.length >= pinLen) setTimeout(function(){ verifyPin(c); }, 250);
+}
+
+function verifyPin(pin) {
+  var nm  = document.getElementById("empSel").value;
+  if (!nm) { toast("Naam select karein!","error"); return; }
+
+  // FIX: Agar employee nahi mila to reload karo
+  var emp = EMPLOYEES[nm];
+  if (!emp) {
+    toast("Employee data reload ho raha hai...","info");
+    loadEmployees(function() {
+      emp = EMPLOYEES[nm];
+      if (emp) verifyPin(pin);
+      else toast("Employee nahi mila. Admin se check karein.","error");
+    });
+    return;
+  }
+
+  if (pin === emp.pin) {
+    currentEmp = {name:nm, pin:emp.pin, contact:emp.contact,
+                  designation:emp.designation, address:emp.address};
+    ls.set("emp", currentEmp);
+    document.getElementById("pinErr").classList.remove("show");
+    openShopModal();
+  } else {
+    document.getElementById("pinErr").classList.add("show");
+    document.getElementById("pinIn").value = "";
+    // Shake animation
+    var card = document.querySelector("#s-pin .card");
+    card.style.transform = "translateX(-8px)";
+    setTimeout(function(){ card.style.transform = "translateX(8px)"; }, 80);
+    setTimeout(function(){ card.style.transform = "translateX(0)"; }, 160);
+  }
+}
+
+// ══════════════════════════════════════
+// SHOP MODAL
+// ══════════════════════════════════════
+function openShopModal() {
+  ["mShop","mKeeper","mContact","mNotes"].forEach(function(id){
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("mArea").value = "";
+  document.getElementById("shopModal").classList.add("show");
+  setTimeout(function(){ document.getElementById("mShop").focus(); }, 300);
+}
+function closeShopModal() {
+  document.getElementById("shopModal").classList.remove("show");
+}
+
+function submitShopDetails() {
+  var shop    = document.getElementById("mShop").value.trim();
+  var keeper  = document.getElementById("mKeeper").value.trim();
+  var contact = document.getElementById("mContact").value.trim();
+  var area    = document.getElementById("mArea").value.trim();
+  var notes   = document.getElementById("mNotes").value.trim();
+
+  if (!shop) { toast("Shop name zaroor bharein!","error"); document.getElementById("mShop").focus(); return; }
+  if (!area) { toast("Area select karein!","error"); return; }
+
+  var btn = document.getElementById("modalSubmitBtn");
+  btn.textContent = "Saving...";
+  btn.classList.add("loading");
+
+  processCheckin(shop, keeper, contact, area, notes, function(ok) {
+    // FIX: Button reset karo chahe success ho ya fail
+    btn.textContent = "&#10003; Save & Check-In";
+    btn.classList.remove("loading");
+  });
+}
+
+// ══════════════════════════════════════
+// CHECK-IN
+// ══════════════════════════════════════
+function startApp() {
+  // FIX: Employees load karo, phir camera
+  if (Object.keys(EMPLOYEES).length === 0) {
+    toast("Employees load ho rahe hain...","info");
+    loadEmployees(function(){ goTo("s-cam"); });
+  } else {
+    goTo("s-cam");
+  }
+}
+
+function doCheckin() {
+  if (ls.get("ci_"+currentEmp.name)) { toast("Pehle se check-in hai!","error"); return; }
+  goTo("s-cam");
+}
+
+function processCheckin(shop, keeper, contact, area, notes, done) {
+  var mapLink = gps.lat ? "https://www.google.com/maps?q="+gps.lat+","+gps.lng : "";
+  var now     = new Date();
+  var ciTime  = now.toLocaleTimeString("en-IN");
+
+  // LocalStorage mein turant save karo
+  ls.set("ci_"+currentEmp.name, {
+    lat: gps.lat, lng: gps.lng,
+    time: ciTime, ms: now.getTime(), map: mapLink
+  });
+
+  var photo = compressPhoto(photoData);
+  var payload = {
+    action: "checkin",
+    name:   currentEmp.name, contact: currentEmp.contact,
+    designation: currentEmp.designation, address: currentEmp.address,
+    shopName: shop, shopkeeperName: keeper,
+    shopkeeperContact: contact, area: area, notes: notes,
+    lat: gps.lat, lng: gps.lng, mapLink: mapLink,
+    timestamp: ciTime, photo: photo
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST", headers: {"Content-Type": "text/plain"},
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){ return r.text(); })
+  .then(function() {
+    toast("Check-In successful! &#10003;","success");
+    closeShopModal();
+    startGpsPing();
+    goTo("s-dash");
+    if (done) done(true);
+  })
+  .catch(function() {
+    toast("Saved locally (Offline mode)","info");
+    closeShopModal();
+    startGpsPing();
+    goTo("s-dash");
+    if (done) done(false);
+  });
+}
+
+function compressPhoto(d) {
+  try {
+    var cv = document.createElement("canvas");
+    var im = new Image();
+    im.src = d;
+    var mw = 720, sc = im.width > mw ? mw/im.width : 1;
+    cv.width  = (im.width  || 640) * sc;
+    cv.height = (im.height || 480) * sc;
+    cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+    return cv.toDataURL("image/jpeg", 0.5);
+  } catch(e) { return d; }
+}
+
+// ══════════════════════════════════════
+// CHECK-OUT
+// ══════════════════════════════════════
+function doCheckout() {
+  var sv = ls.get("ci_"+currentEmp.name);
+  if (!sv) return;
+  var elapsed = Date.now() - sv.ms;
+  if (elapsed < MIN_CHECKOUT) {
+    toast("Wait "+Math.ceil((MIN_CHECKOUT-elapsed)/1000)+"s","error");
+    return;
+  }
+  var now    = new Date();
+  var coTime = now.toLocaleTimeString("en-IN");
+  var durMs  = now.getTime() - sv.ms;
+  var h      = Math.floor(durMs/3600000);
+  var m      = Math.floor((durMs%3600000)/60000);
+  var s      = Math.floor((durMs%60000)/1000);
+  var durStr = h+"h "+m+"m "+s+"s";
+
+  var payload = {
+    action: "checkout", name: currentEmp.name,
+    contact: currentEmp.contact,
+    lat: gps.lat||0, lng: gps.lng||0,
+    mapLink: "", timestamp: coTime, duration: durStr, photo: ""
+  };
+  fetch(SCRIPT_URL, {method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)})
+    .catch(function(){});
+
+  stopGpsPing();
   ls.del("ci_"+currentEmp.name);
   toast("Check-Out! "+durStr,"success");
   refreshDash();
 }
 
-function compress(d){
-  try{
-    var cv=document.createElement("canvas"),im=new Image(); im.src=d;
-    var mw=720, sc=im.width>mw?mw/im.width:1;
-    cv.width=(im.width||640)*sc; cv.height=(im.height||480)*sc;
-    cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
-    return cv.toDataURL("image/jpeg",0.5);
-  }catch(e){ return d; }
+// ══════════════════════════════════════
+// GPS LIVE TRACKING
+// ══════════════════════════════════════
+function startGpsPing() {
+  if (gpsTimer) return;
+  sendGpsPing();
+  gpsTimer = setInterval(sendGpsPing, GPS_INTERVAL);
+  document.getElementById("pingBar").classList.add("show");
 }
-function uploadBg(map,time){
-  if(!photoData||!currentEmp) return;
-  var p={action:"checkin",name:currentEmp.name,contact:currentEmp.contact,
-    designation:currentEmp.designation,address:currentEmp.address,
-    lat:gps.lat,lng:gps.lng,mapLink:map,timestamp:time,duration:"",distCovered:"",photo:compress(photoData)};
-  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(p)})
-    .then(function(){toast("Photo Drive mein save!","success");}).catch(function(){});
+function stopGpsPing() {
+  if (gpsTimer){ clearInterval(gpsTimer); gpsTimer = null; }
+  document.getElementById("pingBar").classList.remove("show");
+}
+function sendGpsPing() {
+  if (!currentEmp) return;
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    fetch(SCRIPT_URL, {
+      method:"POST", headers:{"Content-Type":"text/plain"},
+      body: JSON.stringify({
+        action:"gps_ping", name:currentEmp.name,
+        lat:pos.coords.latitude, lng:pos.coords.longitude,
+        accuracy:pos.coords.accuracy, status:"tracking"
+      })
+    }).catch(function(){});
+    document.getElementById("pingTxt").textContent =
+      "Last ping: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+  }, function(){}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 }
 
-function openForm(){
-  if(!currentEmp) return;
-  window.open(CHECKIN_FORM+"&"+CI.name+"="+encodeURIComponent(currentEmp.name),"_blank");
-}
-function refreshDash(){
-  if(!currentEmp) return;
-  document.getElementById("dName").textContent=currentEmp.name;
-  var gn=document.getElementById("gName"); if(gn) gn.textContent=currentEmp.name;
-  applyLang();
-  var sv=ls.get("ci_"+currentEmp.name);
-  var isIn=!!sv;
-  document.getElementById("sDot").className="dot"+(isIn?" g":"");
-  document.getElementById("sTxt").textContent=isIn?t("checkedIn"):t("notIn");
-  document.getElementById("tBar").classList.toggle("show",isIn);
-  if(isIn){ document.getElementById("tSub").textContent="Check-In: "+sv.time; startFTimer(sv.ms); }
-  else{ stopFTimer(); }
-  function D(id){ return document.getElementById(id); }
-  if(isIn){
+// ══════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════
+function refreshDash() {
+  if (!currentEmp) return;
+  document.getElementById("dName").textContent = currentEmp.name;
+  document.getElementById("gName").textContent = currentEmp.name;
+  var sv   = ls.get("ci_"+currentEmp.name);
+  var isIn = !!sv;
+  document.getElementById("sDot").className  = "dot" + (isIn ? " g" : "");
+  document.getElementById("sTxt").textContent = isIn ? "Checked in &#10003;" : "Not checked in";
+  document.getElementById("tBar").classList.toggle("show", isIn);
+  if (isIn) {
+    document.getElementById("tSub").textContent = "Check-In: " + sv.time;
+    startFTimer(sv.ms);
+  } else {
+    stopFTimer();
+  }
+  var D = function(id){ return document.getElementById(id); };
+  if (isIn) {
     D("bCI").classList.add("dis");
     D("bOrd").classList.remove("dis");
     D("bPay").classList.remove("dis");
-    D("bForm").classList.remove("dis");
-    var el2=Date.now()-sv.ms;
-    if(el2<MIN_CHECKOUT){ D("bCO").classList.add("dis"); D("cdBadge").classList.add("show"); startCD(sv.ms); }
-    else{ D("bCO").classList.remove("dis"); D("cdBadge").classList.remove("show"); }
-  }else{
+    var el = Date.now() - sv.ms;
+    if (el < MIN_CHECKOUT) {
+      D("bCO").classList.add("dis");
+      D("cdBadge").classList.add("show");
+      startCD(sv.ms);
+    } else {
+      D("bCO").classList.remove("dis");
+      D("cdBadge").classList.remove("show");
+    }
+  } else {
     D("bCI").classList.remove("dis");
     D("bCO").classList.add("dis");
     D("bOrd").classList.add("dis");
     D("bPay").classList.add("dis");
-    D("bForm").classList.add("dis");
     D("cdBadge").classList.remove("show");
     stopFTimer();
   }
 }
 
-function startFTimer(ms){
+function startFTimer(ms) {
   stopFTimer();
-  fTimer=setInterval(function(){
-    var d=Date.now()-ms;
-    var h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
-    document.getElementById("tDisp").textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
-  },1000);
+  fTimer = setInterval(function(){
+    var d = Date.now()-ms;
+    var h = Math.floor(d/3600000);
+    var m = Math.floor((d%3600000)/60000);
+    var s = Math.floor((d%60000)/1000);
+    document.getElementById("tDisp").textContent =
+      String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }, 1000);
 }
-function stopFTimer(){ if(fTimer){clearInterval(fTimer);fTimer=null;} document.getElementById("tDisp").textContent="00:00:00"; }
-
-function startCD(ms){
-  if(cdTimer) clearInterval(cdTimer);
-  cdTimer=setInterval(function(){
-    var r=MIN_CHECKOUT-(Date.now()-ms);
-    if(r<=0){ clearInterval(cdTimer); document.getElementById("bCO").classList.remove("dis"); document.getElementById("cdBadge").classList.remove("show"); return; }
-    var m=Math.floor(r/60000),s=Math.floor((r%60000)/1000);
-    document.getElementById("cdBadge").textContent=m+":"+String(s).padStart(2,"0");
-  },1000);
+function stopFTimer() {
+  if (fTimer){ clearInterval(fTimer); fTimer = null; }
+  document.getElementById("tDisp").textContent = "00:00:00";
 }
-
-function logout(){
-  if(!confirm(t("confirmLogout"))) return;
-  stopCam(); stopFTimer(); if(cdTimer) clearInterval(cdTimer);
-  currentEmp=null; ls.del("emp");
-  screenStack=["s-land"]; show("s-land");
-}
-
-function toast(msg,type){
-  type=type||"info";
-  var el=document.getElementById("toast");
-  el.textContent=msg; el.className="toast "+type+" show";
-  setTimeout(function(){el.classList.remove("show");},4000);
+function startCD(ms) {
+  if (cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(function(){
+    var r = MIN_CHECKOUT - (Date.now()-ms);
+    if (r <= 0) {
+      clearInterval(cdTimer);
+      document.getElementById("bCO").classList.remove("dis");
+      document.getElementById("cdBadge").classList.remove("show");
+      return;
+    }
+    document.getElementById("cdBadge").textContent =
+      Math.floor(r/60000)+":"+String(Math.floor((r%60000)/1000)).padStart(2,"0");
+  }, 1000);
 }
 
-applyLang();
-var se=ls.get("emp");
-if(se && EMPLOYEES[se.name]){
-  currentEmp=se; currentAction=null;
-  screenStack=["s-land","s-dash"];
-  show("s-dash"); refreshDash();
+// ══════════════════════════════════════
+// ORDER / PAYMENT — FIX: window.open instead of direct
+// ══════════════════════════════════════
+function goOrder()   { window.open(ORDER_URL,   "_blank"); }
+function goPayment() { window.open(PAYMENT_URL, "_blank"); }
+
+// ══════════════════════════════════════
+// LOGOUT
+// ══════════════════════════════════════
+function logout() {
+  if (!confirm("Logout karna chahte hain?")) return;
+  stopCam(); stopFTimer(); stopGpsPing();
+  if (cdTimer) clearInterval(cdTimer);
+  currentEmp = null; ls.del("emp");
+  screenStack = ["s-land"];
+  show("s-land");
 }
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(msg, type) {
+  type = type || "info";
+  var el = document.getElementById("toast");
+  el.innerHTML = msg;
+  el.className = "toast " + type + " show";
+  setTimeout(function(){ el.classList.remove("show"); }, 4000);
+}
+
+// ══════════════════════════════════════
+// INIT — FIX: Pehle employees load karo, phir session restore
+// ══════════════════════════════════════
+updateLangChips();
+
+// Loading screen dikhao
+document.getElementById("loadCover").classList.remove("hide");
+
+loadEmployees(function(success) {
+  // Loading screen hatao
+  document.getElementById("loadCover").classList.add("hide");
+
+  // FIX: Session restore — EMPLOYEES load hone ke BAAD check karo
+  var se = ls.get("emp");
+  if (se) {
+    currentEmp = se;
+    // Update employee data from fresh sheet data if available
+    if (EMPLOYEES[se.name]) {
+      currentEmp.contact     = EMPLOYEES[se.name].contact     || se.contact;
+      currentEmp.designation = EMPLOYEES[se.name].designation || se.designation;
+      currentEmp.address     = EMPLOYEES[se.name].address     || se.address;
+      ls.set("emp", currentEmp);
+    }
+    screenStack = ["s-land", "s-dash"];
+    show("s-dash");
+    refreshDash();
+    if (ls.get("ci_"+se.name)) startGpsPing();
+  } else {
+    show("s-land");
+  }
+});
 </script>
 </body>
 </html>
