@@ -126,24 +126,76 @@ body {
 
 /* ── TOPBAR ── */
 .topbar {
-  height: 56px;
+  height: 52px;
   background: var(--panel);
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 16px;
   gap: 0;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 .tb-logo {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 15px; font-weight: 800;
-  padding-right: 20px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 800;
+  padding-right: 14px;
   border-right: 1px solid var(--line);
   white-space: nowrap;
   flex-shrink: 0;
+}
+/* Mobile bottom nav */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  z-index: 100;
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+}
+.bn-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+}
+.bn-item {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 6px 2px;
+  cursor: pointer;
+  color: var(--dim);
+  border-radius: 8px;
+  transition: all .15s;
+  font-size: 9px;
+  gap: 3px;
+}
+.bn-item .bn-icon { font-size: 18px; line-height: 1; }
+.bn-item.on { color: var(--glow2); }
+.bn-item:active { background: var(--raised); }
+@media(max-width: 768px) {
+  .tb-tabs { display: none !important; }
+  .bottom-nav { display: block; }
+  .content { padding-bottom: 70px; }
+  .tab-pane { padding: 14px 12px; }
+  .topbar { padding: 0 12px; }
+  .tb-logo { font-size: 13px; }
+  .tb-time { font-size: 11px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .emp-grid { grid-template-columns: 1fr; }
+  .track-grid { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .cal-grid { grid-template-columns: 1fr; }
+  .sheet-wrap { font-size: 11px; }
+  table.sheet-tbl thead th,
+  table.sheet-tbl tbody td { padding: 7px 10px; font-size: 11px; }
+  .s-head { flex-direction: column; align-items: flex-start; }
+  .s-head > div:last-child { width: 100%; }
+  .tb-btn { font-size: 12px; padding: 8px 12px; }
+  .toolbar { gap: 8px; }
+  .search-inp { width: 100% !important; }
+  .tb-inp { font-size: 12px; }
 }
 .tb-logo-dot {
   width: 8px; height: 8px;
@@ -805,30 +857,41 @@ table.sheet-tbl tbody td:first-child { color: var(--dim); font-size: 10px; }
       FIELD CTRL
     </div>
     <div class="tb-tabs">
-      <div class="t-tab on" id="tab-overview" onclick="switchTab('overview',this)">
-        &#9632; Overview
-      </div>
-      <div class="t-tab" id="tab-sheet" onclick="switchTab('sheet',this)">
-        &#9707; Sheet View
-      </div>
-      <div class="t-tab" id="tab-calendar" onclick="switchTab('calendar',this)">
-        &#128197; Timeline
-      </div>
-      <div class="t-tab" id="tab-tracking" onclick="switchTab('tracking',this)">
-        &#128205; Live Track
-      </div>
-      <div class="t-tab" id="tab-employees" onclick="switchTab('employees',this)">
-        &#128100; Employees
-      </div>
-      <div class="t-tab" id="tab-settings" onclick="switchTab('settings',this)">
-        &#9881; Settings
-      </div>
+      <div class="t-tab on" id="tab-overview" onclick="switchTab('overview',this)">&#9632; Overview</div>
+      <div class="t-tab" id="tab-sheet"    onclick="switchTab('sheet',this)">&#9707; Sheet View</div>
+      <div class="t-tab" id="tab-calendar" onclick="switchTab('calendar',this)">&#128197; Timeline</div>
+      <div class="t-tab" id="tab-tracking" onclick="switchTab('tracking',this)">&#128205; Live Track</div>
+      <div class="t-tab" id="tab-employees" onclick="switchTab('employees',this)">&#128100; Employees</div>
+      <div class="t-tab" id="tab-settings" onclick="switchTab('settings',this)">&#9881; Settings</div>
     </div>
     <div class="tb-right">
       <span class="tb-time" id="tbClock">--:--:--</span>
       <button class="tb-logout" onclick="doLogout()">Logout</button>
     </div>
   </header>
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottomNav">
+    <div class="bn-grid">
+      <div class="bn-item on" id="bn-overview" onclick="switchTab('overview',this,'bn')">
+        <span class="bn-icon">&#9632;</span><span>Overview</span>
+      </div>
+      <div class="bn-item" id="bn-sheet" onclick="switchTab('sheet',this,'bn')">
+        <span class="bn-icon">&#9707;</span><span>Sheet</span>
+      </div>
+      <div class="bn-item" id="bn-calendar" onclick="switchTab('calendar',this,'bn')">
+        <span class="bn-icon">&#128197;</span><span>Timeline</span>
+      </div>
+      <div class="bn-item" id="bn-tracking" onclick="switchTab('tracking',this,'bn')">
+        <span class="bn-icon">&#128205;</span><span>Live</span>
+      </div>
+      <div class="bn-item" id="bn-employees" onclick="switchTab('employees',this,'bn')">
+        <span class="bn-icon">&#128100;</span><span>Staff</span>
+      </div>
+      <div class="bn-item" id="bn-settings" onclick="switchTab('settings',this,'bn')">
+        <span class="bn-icon">&#9881;</span><span>Settings</span>
+      </div>
+    </div>
+  </nav>
 
   <!-- CONTENT -->
   <div class="content">
@@ -1054,10 +1117,11 @@ table.sheet-tbl tbody td:first-child { color: var(--dim); font-size: 10px; }
       <div class="settings-grid">
         <div class="set-card">
           <div class="set-title">&#128274; Change Admin Password</div>
-          <div class="set-sub">Login credentials update karo</div>
-          <input class="set-inp" type="text"     id="newUser" placeholder="New username">
-          <input class="set-inp" type="password" id="newPass" placeholder="New password">
-          <input class="set-inp" type="password" id="confPass" placeholder="Confirm password">
+          <div class="set-sub">Sheet mein secure store hota hai — F12 se nahi dikhega</div>
+          <input class="set-inp" type="password" id="currentPass" placeholder="Current password *">
+          <input class="set-inp" type="text"     id="newUser"     placeholder="New username *">
+          <input class="set-inp" type="password" id="newPass"     placeholder="New password *">
+          <input class="set-inp" type="password" id="confPass"    placeholder="Confirm new password *">
           <button class="set-save" onclick="changePass()">Save Password</button>
         </div>
         <div class="set-card">
@@ -1155,6 +1219,32 @@ function fmtDate(d) {
   return s === "Invalid" ? "--" : s;
 }
 
+function fmtTime(t) {
+  if (!t || t === "--") return "--";
+  var s = t.toString();
+  // Already formatted dd-MM-yyyy HH:mm:ss
+  if (/^\d{2}-\d{2}-\d{4}/.test(s)) return s;
+  // ISO format: 1899-12-30T08:46:44.000Z — extract time only
+  if (s.includes("T")) {
+    try {
+      var d = new Date(s);
+      if (!isNaN(d)) return d.toLocaleTimeString("en-IN", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    } catch(e) {}
+    // Fallback: extract HH:MM:SS from ISO string
+    var m = s.match(/T(\d{2}:\d{2}:\d{2})/);
+    if (m) {
+      // Convert UTC to IST (+5:30)
+      var parts = m[1].split(":").map(Number);
+      var totalMin = parts[0]*60 + parts[1] + 330; // +5:30 IST
+      totalMin = ((totalMin % 1440) + 1440) % 1440;
+      var hh = Math.floor(totalMin/60), mm = totalMin%60, ss = parts[2];
+      var ampm = hh>=12?"PM":"AM"; hh = hh%12||12;
+      return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+" "+ampm;
+    }
+  }
+  return s;
+}
+
 function todayStr() {
   var d = new Date();
   return d.getFullYear() + "-" +
@@ -1173,25 +1263,39 @@ setInterval(function() {
 /* ════════════════════════════════════════
    LOGIN
 ════════════════════════════════════════ */
-function getAdminCreds() {
-  return JSON.parse(localStorage.getItem(CREDS_KEY) || '{"user":"admin","pass":"admin123"}');
-}
+// Admin creds ab sheet mein hain — client pe store nahi
+function getAdminCreds() { return {}; }
 
 function doLogin() {
   var u = $("lUser").value.trim();
   var p = $("lPass").value;
-  var c = getAdminCreds();
-  if (u === c.user && p === c.pass) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ok:true, t:Date.now()}));
-    $("loginPage").style.display = "none";
-    $("appPage").style.display = "flex";
-    onAppInit();
-  } else {
-    $("loginErr").classList.add("show");
-    $("lPass").value = "";
-    $("lPass").focus();
-    setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
-  }
+  if (!u || !p) { $("loginErr").classList.add("show"); return; }
+  var btn = document.querySelector(".login-btn");
+  btn.textContent = "Verifying..."; btn.disabled = true;
+  // Sheet se verify karo — localStorage se nahi
+  apiCall({action:"admin_login", user:u, pass:p})
+    .then(function(res) {
+      if (res.status === "success") {
+        // Token save karo — password nahi
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
+          ok:true, t:Date.now(), token:res.token, user:u
+        }));
+        $("loginPage").style.display = "none";
+        $("appPage").style.display = "flex";
+        onAppInit();
+      } else {
+        $("loginErr").classList.add("show");
+        $("lPass").value = "";
+        $("lPass").focus();
+        setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
+      }
+    })
+    .catch(function() {
+      $("loginErr").textContent = "&#10005; Network error — retry karo";
+      $("loginErr").classList.add("show");
+      setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
+    })
+    .finally(function() { btn.textContent = "Enter System →"; btn.disabled = false; });
 }
 
 function doLogout() {
@@ -1205,21 +1309,28 @@ function doLogout() {
 /* ════════════════════════════════════════
    TAB SWITCHING — FIX: no event.target
 ════════════════════════════════════════ */
-function switchTab(name, el) {
-  // Deactivate all
+function switchTab(name, el, source) {
+  // Deactivate all tabs + bottom nav
   document.querySelectorAll(".t-tab").forEach(function(t) { t.classList.remove("on"); });
+  document.querySelectorAll(".bn-item").forEach(function(t) { t.classList.remove("on"); });
   document.querySelectorAll(".tab-pane").forEach(function(p) { p.classList.remove("on"); });
-  // Activate selected
-  if (el) el.classList.add("on");
+  // Activate — sync both desktop + mobile nav
+  var desktopTab = $("tab-"+name);
+  var mobileTab  = $("bn-"+name);
+  if (desktopTab) desktopTab.classList.add("on");
+  if (mobileTab)  mobileTab.classList.add("on");
   var pane = $("pane-"+name);
   if (pane) pane.classList.add("on");
   // Load data
   if (name === "overview")   loadOverview();
-  if (name === "sheet")      loadSheet();
+  if (name === "sheet")      { var td=new Date(); $("sheetDateFrom").value=$("sheetDateTo").value=td.toISOString().split("T")[0]; loadSheet(); }
   if (name === "calendar")   initCalendar();
   if (name === "tracking")   { loadLive(); populateTrackDropdowns(); }
   if (name === "employees")  loadEmployees();
   if (name === "settings")   loadSettings();
+  // Scroll to top
+  var content = document.querySelector(".content");
+  if (content) content.scrollTop = 0;
 }
 
 /* ════════════════════════════════════════
@@ -1259,7 +1370,7 @@ function loadOverview() {
       return '<tr>' +
         '<td class="row-num">' + (i+1) + '</td>' +
         '<td><b>' + (r.empName||"--") + '</b></td>' +
-        '<td>' + (r.checkinTime||"--") + '</td>' +
+        '<td>' + fmtTime(r.checkinTime) + '</td>' +
         '<td>' + (r.shopName||"--") + '</td>' +
         '<td>' + (r.area||"--") + '</td>' +
         '<td>' + (r.checkoutTime||"--") + '</td>' +
@@ -1313,7 +1424,7 @@ function renderSheetTable(rows) {
     return '<tr>' +
       '<td class="row-num">' + (i+1) + '</td>' +
       '<td>' + (fmtDate(r.date)||"--") + '</td>' +
-      '<td style="color:var(--ok);">' + (r.checkinTime||"--") + '</td>' +
+      '<td style="color:var(--ok);">' + fmtTime(r.checkinTime) + '</td>' +
       '<td><b>' + (r.empName||"--") + '</b></td>' +
       '<td>' + (r.empContact||"--") + '</td>' +
       '<td>' + (r.shopName||"--") + '</td>' +
@@ -1323,8 +1434,8 @@ function renderSheetTable(rows) {
       '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;" title="' + (r.notes||"") + '">' + (r.notes||"--") + '</td>' +
       '<td>' + (r.mapLink ? '<a class="cell-chip chip-map" href="'+r.mapLink+'" target="_blank">&#128205; Map</a>' : '--') + '</td>' +
       '<td>' + (r.photo  ? '<a class="cell-chip chip-photo" href="'+r.photo+'"  target="_blank">&#128247; View</a>' : '--') + '</td>' +
-      '<td style="color:var(--danger);">' + (r.checkoutTime||"--") + '</td>' +
-      '<td style="color:var(--lime);">' + (r.duration||"--") + '</td>' +
+      '<td style="color:var(--danger);">' + fmtTime(r.checkoutTime) + '</td>' +
+      '<td style="color:var(--lime);font-weight:700;">' + (r.duration||"--") + '</td>' +
       '</tr>';
   }).join("");
 }
@@ -1730,14 +1841,28 @@ function loadSettings() {
   $("scriptUrl").value = savedUrl;
 }
 function changePass() {
-  var u = $("newUser").value.trim();
-  var p = $("newPass").value;
-  var c = $("confPass").value;
-  if (!u || !p)  { toast("Username aur password dono daalein","err"); return; }
-  if (p !== c)   { toast("Passwords match nahi karte!","err"); return; }
-  localStorage.setItem(CREDS_KEY, JSON.stringify({user:u, pass:p}));
-  toast("Password update ho gaya! ✓","ok");
-  $("newUser").value = ""; $("newPass").value = ""; $("confPass").value = "";
+  var newU = $("newUser").value.trim();
+  var newP = $("newPass").value;
+  var conf = $("confPass").value;
+  var curP = $("currentPass") ? $("currentPass").value : "";
+  if (!newU || !newP)    { toast("Sab fields bharein","err"); return; }
+  if (newP !== conf)     { toast("Passwords match nahi karte!","err"); return; }
+  if (newP.length < 4)   { toast("Password kam se kam 4 characters ka ho","err"); return; }
+  var sess = JSON.parse(localStorage.getItem(SESSION_KEY)||"{}");
+  apiCall({
+    action:"admin_change_pass",
+    currentUser: sess.user || "",
+    currentPass: curP,
+    newUser: newU,
+    newPass: newP
+  }).then(function(res) {
+    if (res.status === "success") {
+      toast("Password update ho gaya! Ab naye credentials se login karo ✓","ok");
+      setTimeout(function() { doLogout(); }, 2000);
+    } else {
+      toast("Error: " + (res.message||"Unknown"),"err");
+    }
+  }).catch(function() { toast("Network error","err"); });
 }
 function saveUrl() {
   var url = $("scriptUrl").value.trim();
