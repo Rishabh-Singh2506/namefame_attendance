@@ -1,9 +1,10 @@
 // ══════════════════════════════════════════
 // CONFIG — GitHub se change karo
 // ══════════════════════════════════════════
-const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbwmf9R0WrZuIYbYDOxiVRH6ePRkRtBae1O40rhmPkJ_MDWni7P4ObKeflN3Nkkod5oU/exec";
+const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
 const ORDER_URL   = "order.html";
 const PAYMENT_URL = "payment.html";
+const RETURN_URL  = "return.html";
 const ADMIN_URL   = "admin.html";
 const MIN_CHECKOUT = 10 * 1000; // 10 seconds minimum
 const GPS_INTERVAL = 5 * 60 * 1000; // 5 minutes
