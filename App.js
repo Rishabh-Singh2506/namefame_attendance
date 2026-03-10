@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════
 // CONFIG — GitHub se change karo
 // ══════════════════════════════════════════
-const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbw-iaQPU7vcA4WX1Z-U8T8mx2aIjBcAaaPmCvm0w8NYdG0GKRzPHU15DyHpyqggzHE/exec";
 const ORDER_URL   = "order.html";
 const PAYMENT_URL = "payment.html";
 const ADMIN_URL   = "admin.html";
