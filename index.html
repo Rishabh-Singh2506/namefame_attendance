@@ -98,6 +98,17 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent);}
 .abtn.or:not(.dis){background:rgba(245,158,11,.06);}
 .abtn.py{border-color:rgba(168,85,247,.3);}
 .abtn.py:not(.dis){background:rgba(168,85,247,.06);}
+.abtn.re{border-color:rgba(14,165,233,.3);}
+.abtn.re:not(.dis){background:rgba(14,165,233,.06);}
+.abtn.rt{border-color:rgba(239,68,68,.3);}
+.abtn.rt:not(.dis){background:rgba(239,68,68,.06);}
+/* PWA Install Banner */
+.pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1d4ed8,#0ea5e9);color:#fff;padding:14px 16px;z-index:200;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.3);}
+.pwa-banner.show{display:flex;}
+.pwa-banner-txt{flex:1;font-size:13px;font-weight:600;}
+.pwa-banner-sub{font-size:11px;opacity:.8;margin-top:2px;}
+.pwa-install-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.pwa-close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:4px;}
 .cdown{position:absolute;top:6px;right:6px;background:rgba(239,68,68,.2);border-radius:6px;padding:2px 6px;font-size:10px;color:var(--red);display:none;}
 .cdown.show{display:block;}
 .fbtn{margin:10px 16px 0;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:15px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
@@ -247,6 +258,16 @@ select:focus,input:focus,textarea:focus{border-color:var(--accent);}
       <span class="ai">&#128176;</span>
       <span class="al">Payment</span>
       <span class="as">Collect payment</span>
+    </div>
+    <div class="abtn re dis" id="bReEntry" onclick="doReEntry()">
+      <span class="ai">&#128257;</span>
+      <span class="al">New Visit</span>
+      <span class="as">Dobara visit darj karo</span>
+    </div>
+    <div class="abtn rt dis" id="bReturn" onclick="goReturn()">
+      <span class="ai">&#128257;</span>
+      <span class="al">Return Order</span>
+      <span class="as">Wapsi order entry</span>
     </div>
   </div>
   <button class="logout-b" onclick="logout()">&#128682; Logout</button>
@@ -657,7 +678,7 @@ function startApp() {
 }
 
 function doCheckin() {
-  if (ls.get("ci_"+currentEmp.name)) { toast("Pehle se check-in hai!","error"); return; }
+  // Allow multiple check-ins per day (re-entry)
   goTo("s-cam");
 }
 
@@ -803,6 +824,8 @@ function refreshDash() {
     D("bCI").classList.add("dis");
     D("bOrd").classList.remove("dis");
     D("bPay").classList.remove("dis");
+    D("bReEntry").classList.remove("dis");
+    D("bReturn").classList.remove("dis");
     var el = Date.now() - sv.ms;
     if (el < MIN_CHECKOUT) {
       D("bCO").classList.add("dis");
@@ -815,6 +838,8 @@ function refreshDash() {
   } else {
     D("bCI").classList.remove("dis");
     D("bCO").classList.add("dis");
+    D("bReEntry").classList.add("dis");
+    D("bReturn").classList.add("dis");
     D("bOrd").classList.add("dis");
     D("bPay").classList.add("dis");
     D("cdBadge").classList.remove("show");
@@ -912,6 +937,105 @@ loadEmployees(function(success) {
     show("s-land");
   }
 });
+
+/* ══════════════════════════════
+   RE-ENTRY — Dobara visit same employee
+══════════════════════════════ */
+function doReEntry() {
+  if (!currentEmp) return;
+  photoData = null;
+  goTo("s-cam");
+  toast("Naya visit — photo lo aur details bharein", "info");
+}
+
+/* ══════════════════════════════
+   RETURN ORDER
+══════════════════════════════ */
+function goReturn() {
+  var url = (typeof RETURN_URL !== "undefined") ? RETURN_URL : "return.html";
+  window.location.href = url;
+}
+
+/* ══════════════════════════════
+   AUTO CHECKOUT — 11:30 PM pe automatic
+══════════════════════════════ */
+function scheduleAutoCheckout() {
+  var now = new Date();
+  var cutoff = new Date(now);
+  cutoff.setHours(23, 30, 0, 0);
+  if (now >= cutoff) cutoff.setDate(cutoff.getDate() + 1);
+  var msUntil = cutoff.getTime() - now.getTime();
+  setTimeout(function() {
+    if (!currentEmp) return;
+    var sv = ls.get("ci_" + currentEmp.name);
+    if (!sv) return;
+    // Auto checkout
+    apiPost({
+      action: "checkout",
+      name: currentEmp.name,
+      timestamp: new Date().toLocaleTimeString("en-IN"),
+      duration: "Auto (midnight)"
+    }).then(function() {
+      ls.del("ci_" + currentEmp.name);
+      ls.del("emp");
+      currentEmp = null;
+      toast("Auto check-out ho gaya (11:30 PM)", "info");
+      show("s-land");
+    }).catch(function(){});
+  }, msUntil);
+}
+
+/* ══════════════════════════════
+   PWA — Add to Home Screen
+══════════════════════════════ */
+var deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem("pwa_done")) {
+    setTimeout(function() {
+      var b = document.getElementById("pwaBanner");
+      if (b) b.classList.add("show");
+    }, 3000);
+  }
+});
+window.addEventListener("appinstalled", function() {
+  var b = document.getElementById("pwaBanner");
+  if (b) b.classList.remove("show");
+  localStorage.setItem("pwa_done", "1");
+  deferredPrompt = null;
+});
+function installPWA() {
+  if (!deferredPrompt) {
+    toast("Safari: Share &#8594; Add to Home Screen", "info");
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r) {
+    if (r.outcome === "accepted") localStorage.setItem("pwa_done","1");
+    deferredPrompt = null;
+    var b = document.getElementById("pwaBanner");
+    if (b) b.classList.remove("show");
+  });
+}
+function dismissPWA() {
+  var b = document.getElementById("pwaBanner");
+  if (b) b.classList.remove("show");
+  localStorage.setItem("pwa_done","1");
+}
+
+// Auto-checkout schedule shuru karo
+scheduleAutoCheckout();
+
 </script>
+<!-- PWA Install Banner -->
+<div class="pwa-banner" id="pwaBanner">
+  <div>
+    <div class="pwa-banner-txt">&#128241; Home Screen pe Add karo</div>
+    <div class="pwa-banner-sub">Fast access — bina browser khole</div>
+  </div>
+  <button class="pwa-install-btn" onclick="installPWA()">Install</button>
+  <button class="pwa-close-btn" onclick="dismissPWA()">&#215;</button>
+</div>
 </body>
 </html>
