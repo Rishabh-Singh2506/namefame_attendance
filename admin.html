@@ -1,1892 +1,1029 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Field Attendance — Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Admin Panel — Field Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════
-   DESIGN SYSTEM — Tactical Dark Enterprise
-═══════════════════════════════════════ */
-:root {
-  --ink:    #040810;
-  --void:   #070d1a;
-  --panel:  #0a1220;
-  --raised: #0e1928;
-  --rim:    #152236;
-  --line:   #1a2d45;
-  --glow:   #2563eb;
-  --glow2:  #0ea5e9;
-  --lime:   #22d3ee;
-  --ok:     #10b981;
-  --warn:   #f59e0b;
-  --danger: #ef4444;
-  --text:   #e2eaf6;
-  --dim:    #4a6380;
-  --ghost:  #1e3050;
-  --r:      12px;
-  --mono:   "JetBrains Mono", monospace;
-  --sans:   "Syne", sans-serif;
+:root{
+  --bg:#ffffff;--card:#f8f9fb;--card2:#f0f2f6;--border:#e2e6ed;
+  --accent:#2563eb;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--purple:#7c3aed;
+  --text:#1a1f2e;--muted:#6b7280;--radius:12px;
+  font-family:'Nunito',sans-serif;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  background: var(--ink);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  overflow-x: hidden;
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);}
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;max-width:90vw;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--red);}
+.toast.success{background:var(--green);}
+.toast.info{background:var(--accent);}
+
+/* ═════════ LOGIN ═════════ */
+#loginWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px 24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(37,99,235,.1);}
+.login-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;}
+.login-title{font-size:20px;font-weight:900;text-align:center;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px;}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px;display:block;}
+.inp-wrap{position:relative;margin-bottom:14px;}
+input,select,textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;appearance:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;}
+.btn{width:100%;padding:14px;border-radius:10px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .2s;}
+.btn:active{opacity:.85;}
+.btn.loading{opacity:.5;pointer-events:none;}
+.btn.danger{background:var(--red);}
+.btn.green{background:var(--green);}
+.btn.ghost{background:var(--card2);color:var(--text);border:1.5px solid var(--border);}
+.err-msg{color:var(--red);font-size:12px;margin-top:-10px;margin-bottom:10px;display:none;font-weight:600;}
+.err-msg.show{display:block;}
+
+/* ═════════ APP SHELL ═════════ */
+#appWrap{display:none;flex-direction:column;min-height:100vh;}
+/* TOP HEADER */
+.app-header{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;}
+.app-title{font-size:16px;font-weight:900;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.header-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+/* DESKTOP NAV */
+.desk-nav{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;padding:0 16px;}
+.desk-nav-item{padding:12px 16px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:all .2s;margin-bottom:-2px;}
+.desk-nav-item.active{color:var(--accent);border-bottom-color:var(--accent);}
+/* CONTENT */
+.app-content{flex:1;padding:16px;max-width:1200px;margin:0 auto;width:100%;}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,.06);}
+.mob-nav-row{display:flex;}
+.mob-nav-item{flex:1;padding:10px 4px 6px;text-align:center;cursor:pointer;color:var(--muted);transition:color .2s;}
+.mob-nav-item.active{color:var(--accent);}
+.mob-nav-item .mni{font-size:20px;display:block;}
+.mob-nav-item .mnl{font-size:9px;font-weight:700;display:block;margin-top:2px;}
+@media(max-width:640px){
+  .desk-nav{display:none;}
+  .mob-nav{display:block;}
+  .app-content{padding:12px 10px 80px;}
 }
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: var(--panel); }
-::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-
-/* ── LOGIN ── */
-#loginPage {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(37,99,235,.15) 0%, transparent 70%), var(--ink);
-  padding: 24px;
-}
-.login-card {
-  width: 100%;
-  max-width: 400px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 40px 32px;
-  position: relative;
-  overflow: hidden;
-}
-.login-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--glow), var(--lime), transparent);
-}
-.lc-icon {
-  width: 64px; height: 64px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(37,99,235,.3), rgba(14,165,233,.2));
-  border: 1px solid rgba(37,99,235,.4);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  margin: 0 auto 20px;
-  box-shadow: 0 0 32px rgba(37,99,235,.2);
-}
-.lc-title { font-size: 24px; font-weight: 800; text-align: center; letter-spacing: -.5px; }
-.lc-sub { font-size: 12px; color: var(--dim); text-align: center; margin: 6px 0 28px; font-family: var(--mono); }
-.inp-group { margin-bottom: 14px; }
-.inp-group label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 7px; font-family: var(--mono); }
-.inp {
-  width: 100%;
-  background: var(--raised);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 13px 16px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.inp:focus { border-color: var(--glow); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
-.login-btn {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-family: var(--sans);
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 6px;
-  transition: opacity .2s, transform .15s;
-  letter-spacing: .3px;
-}
-.login-btn:hover { opacity: .9; }
-.login-btn:active { transform: scale(.98); }
-.login-err { color: var(--danger); font-size: 12px; text-align: center; margin-top: 12px; font-family: var(--mono); display: none; }
-.login-err.show { display: block; }
-.login-back { text-align: center; margin-top: 16px; font-size: 11px; color: var(--dim); cursor: pointer; font-family: var(--mono); }
-.login-back:hover { color: var(--glow2); }
-
-/* ══════════════════════════════════════
-   MAIN LAYOUT
-══════════════════════════════════════ */
-#appPage { display: none; flex-direction: column; min-height: 100vh; }
-
-/* ── TOPBAR ── */
-.topbar {
-  height: 52px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.tb-logo {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 800;
-  padding-right: 14px;
-  border-right: 1px solid var(--line);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-/* Mobile bottom nav */
-.bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--panel);
-  border-top: 1px solid var(--line);
-  z-index: 100;
-  padding: 6px 0 env(safe-area-inset-bottom, 6px);
-}
-.bn-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 2px;
-}
-.bn-item {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 6px 2px;
-  cursor: pointer;
-  color: var(--dim);
-  border-radius: 8px;
-  transition: all .15s;
-  font-size: 9px;
-  gap: 3px;
-}
-.bn-item .bn-icon { font-size: 18px; line-height: 1; }
-.bn-item.on { color: var(--glow2); }
-.bn-item:active { background: var(--raised); }
-@media(max-width: 768px) {
-  .tb-tabs { display: none !important; }
-  .bottom-nav { display: block; }
-  .content { padding-bottom: 70px; }
-  .tab-pane { padding: 14px 12px; }
-  .topbar { padding: 0 12px; }
-  .tb-logo { font-size: 13px; }
-  .tb-time { font-size: 11px; }
-  .stat-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .emp-grid { grid-template-columns: 1fr; }
-  .track-grid { grid-template-columns: 1fr; }
-  .settings-grid { grid-template-columns: 1fr; }
-  .cal-grid { grid-template-columns: 1fr; }
-  .sheet-wrap { font-size: 11px; }
-  table.sheet-tbl thead th,
-  table.sheet-tbl tbody td { padding: 7px 10px; font-size: 11px; }
-  .s-head { flex-direction: column; align-items: flex-start; }
-  .s-head > div:last-child { width: 100%; }
-  .tb-btn { font-size: 12px; padding: 8px 12px; }
-  .toolbar { gap: 8px; }
-  .search-inp { width: 100% !important; }
-  .tb-inp { font-size: 12px; }
-}
-.tb-logo-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--ok);
-  box-shadow: 0 0 8px var(--ok);
-  animation: blink 2s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
-.tb-tabs {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 0 12px;
-  overflow-x: auto;
-  flex: 1;
-  scrollbar-width: none;
-}
-.tb-tabs::-webkit-scrollbar { display: none; }
-.t-tab {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--dim);
-  white-space: nowrap;
-  transition: all .18s;
-  border: 1px solid transparent;
-  display: flex; align-items: center; gap: 6px;
-}
-.t-tab:hover { color: var(--text); background: var(--raised); }
-.t-tab.on { color: var(--text); background: var(--raised); border-color: var(--line); }
-.t-tab .badge {
-  background: var(--glow);
-  color: #fff;
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-size: 10px;
-  font-family: var(--mono);
-}
-.tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
-.tb-time { font-family: var(--mono); font-size: 13px; color: var(--dim); }
-.tb-logout {
-  background: none;
-  border: 1px solid var(--line);
-  color: var(--dim);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all .2s;
-}
-.tb-logout:hover { border-color: var(--danger); color: var(--danger); }
-
-/* ── CONTENT ── */
-.content { flex: 1; overflow-y: auto; }
-.tab-pane { display: none; padding: 24px; }
-.tab-pane.on { display: block; animation: fadeUp .25s ease; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
-
-/* ── SECTION HEADER ── */
-.s-head {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
-}
-.s-title { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
-.s-sub { font-size: 12px; color: var(--dim); font-family: var(--mono); margin-top: 2px; }
-
-/* ── STAT CARDS ── */
-.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
-.stat {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 16px 18px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color .2s;
-}
-.stat::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  border-radius: var(--r) var(--r) 0 0;
-}
-.stat.s-ok::after   { background: var(--ok); }
-.stat.s-blue::after { background: var(--glow); }
-.stat.s-warn::after { background: var(--warn); }
-.stat.s-cyan::after { background: var(--lime); }
-.stat-val { font-size: 32px; font-weight: 800; font-family: var(--mono); line-height: 1; margin-bottom: 6px; }
-.stat-lbl { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .8px; }
-.stat.s-ok   .stat-val { color: var(--ok); }
-.stat.s-blue .stat-val { color: var(--glow2); }
-.stat.s-warn .stat-val { color: var(--warn); }
-.stat.s-cyan .stat-val { color: var(--lime); }
-
-/* ── TOOLBAR ── */
-.toolbar {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 14px; flex-wrap: wrap;
-}
-.tb-inp {
-  background: var(--panel);
-  border: 1.5px solid var(--line);
-  border-radius: 9px;
-  padding: 9px 14px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  outline: none;
-  transition: border-color .2s;
-}
-.tb-inp:focus { border-color: var(--glow); }
-.tb-btn {
-  background: var(--raised);
-  border: 1px solid var(--line);
-  color: var(--text);
-  border-radius: 9px;
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: all .18s;
-  display: flex; align-items: center; gap: 6px;
-  white-space: nowrap;
-}
-.tb-btn:hover { border-color: var(--glow); color: var(--glow2); }
-.tb-btn.primary { background: rgba(37,99,235,.15); border-color: rgba(37,99,235,.4); color: var(--glow2); }
-.tb-btn.success { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: var(--ok); }
-.tb-btn.danger  { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.3); color: var(--danger); }
-
-/* ══════════════════════════════════════
-   GOOGLE SHEET VIEW — Raw Table
-══════════════════════════════════════ */
-.sheet-wrap {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.sheet-scroll { overflow-x: auto; }
-table.sheet-tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  font-family: var(--mono);
-  white-space: nowrap;
-}
-table.sheet-tbl thead th {
-  background: var(--raised);
-  padding: 10px 14px;
-  text-align: left;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-  color: var(--dim);
-  border-bottom: 1px solid var(--line);
-  border-right: 1px solid var(--ghost);
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  user-select: none;
-  cursor: pointer;
-  transition: color .15s;
-}
-table.sheet-tbl thead th:hover { color: var(--text); }
-table.sheet-tbl thead th.sort-asc::after  { content: " ↑"; color: var(--lime); }
-table.sheet-tbl thead th.sort-desc::after { content: " ↓"; color: var(--lime); }
-table.sheet-tbl tbody tr {
-  border-bottom: 1px solid var(--ghost);
-  transition: background .12s;
-}
-table.sheet-tbl tbody tr:hover { background: var(--raised); }
-table.sheet-tbl tbody td {
-  padding: 9px 14px;
-  border-right: 1px solid var(--ghost);
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--text);
-}
-table.sheet-tbl tbody td:first-child { color: var(--dim); font-size: 10px; }
-.row-num {
-  background: var(--ink);
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 9px 10px;
-  border-right: 1px solid var(--line) !important;
-  text-align: right;
-  user-select: none;
-}
-.cell-chip {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-}
-.chip-in  { background: rgba(16,185,129,.15); color: var(--ok); border: 1px solid rgba(16,185,129,.25); }
-.chip-out { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid rgba(100,116,139,.2); }
-.chip-map { background: rgba(37,99,235,.12); color: var(--glow2); border: 1px solid rgba(37,99,235,.25); cursor: pointer; text-decoration: none; }
-.chip-photo { background: rgba(168,85,247,.12); color: #c084fc; border: 1px solid rgba(168,85,247,.25); cursor: pointer; text-decoration: none; }
-.sheet-empty { padding: 40px; text-align: center; color: var(--dim); font-family: var(--mono); font-size: 13px; }
-.sheet-footer { padding: 10px 14px; border-top: 1px solid var(--line); font-size: 11px; color: var(--dim); font-family: var(--mono); display: flex; justify-content: space-between; }
-
-/* ── SEARCH BAR ── */
-.search-inp {
-  background: var(--raised);
-  border: 1.5px solid var(--line);
-  border-radius: 9px;
-  padding: 9px 14px 9px 36px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  outline: none;
-  width: 220px;
-  transition: border-color .2s, width .3s;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234a6380' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 10px center;
-}
-.search-inp:focus { border-color: var(--glow); width: 280px; }
-
-/* ══════════════════════════════════════
-   CALENDAR TIMELINE
-══════════════════════════════════════ */
-.cal-grid {
-  display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 16px;
-}
-@media(max-width:640px) { .cal-grid { grid-template-columns: 1fr; } }
-.cal-sidebar {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.cal-month-nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px;
-  border-bottom: 1px solid var(--line);
-}
-.cal-nav-btn {
-  background: none; border: none; color: var(--dim); cursor: pointer;
-  font-size: 16px; padding: 4px 8px; border-radius: 6px; transition: all .15s;
-}
-.cal-nav-btn:hover { background: var(--raised); color: var(--text); }
-.cal-month-lbl { font-size: 13px; font-weight: 700; font-family: var(--mono); }
-.cal-days-hdr {
-  display: grid; grid-template-columns: repeat(7, 1fr);
-  padding: 8px 10px 4px;
-  font-size: 9px; color: var(--dim); text-align: center;
-  font-family: var(--mono);
-}
-.cal-days {
-  display: grid; grid-template-columns: repeat(7, 1fr);
-  padding: 0 10px 10px; gap: 2px;
-}
-.cal-day {
-  aspect-ratio: 1;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-family: var(--mono);
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--dim);
-  position: relative;
-  transition: all .15s;
-}
-.cal-day:hover { background: var(--raised); color: var(--text); }
-.cal-day.has-data { color: var(--text); }
-.cal-day.has-data::after {
-  content: "";
-  position: absolute;
-  bottom: 3px; left: 50%;
-  transform: translateX(-50%);
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--ok);
-}
-.cal-day.selected {
-  background: var(--glow) !important;
-  color: #fff !important;
-}
-.cal-day.selected::after { background: rgba(255,255,255,.6); }
-.cal-day.today { border: 1px solid var(--glow); color: var(--glow2); }
-.cal-day.empty { pointer-events: none; }
-.cal-day.other-month { opacity: .3; }
-
-/* TIMELINE */
-.timeline-panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-  min-height: 400px;
-}
-.tl-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.tl-date { font-size: 14px; font-weight: 700; }
-.tl-count { font-size: 11px; color: var(--dim); font-family: var(--mono); }
-.tl-body { padding: 18px; overflow-y: auto; max-height: 500px; }
-.tl-emp-block { margin-bottom: 28px; }
-.tl-emp-name {
-  font-size: 13px; font-weight: 700;
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 12px;
-}
-.tl-emp-avatar {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(37,99,235,.4), rgba(14,165,233,.3));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800;
-  color: var(--glow2);
-  flex-shrink: 0;
-}
-/* Timeline track */
-.tl-track {
-  position: relative;
-  padding-left: 24px;
-}
-.tl-track::before {
-  content: "";
-  position: absolute;
-  left: 7px; top: 0; bottom: 0;
-  width: 1px;
-  background: var(--line);
-}
-.tl-event {
-  position: relative;
-  margin-bottom: 14px;
-  padding: 10px 14px;
-  background: var(--raised);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  transition: border-color .15s;
-}
-.tl-event:hover { border-color: var(--glow); }
-.tl-event::before {
-  content: "";
-  position: absolute;
-  left: -20px; top: 14px;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  border: 2px solid var(--panel);
-  background: var(--dim);
-}
-.tl-event.ev-checkin::before  { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-.tl-event.ev-checkout::before { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
-.tl-event.ev-gps::before      { background: var(--glow2); box-shadow: 0 0 6px var(--glow2); }
-.ev-time {
-  font-size: 11px; color: var(--dim); font-family: var(--mono); margin-bottom: 4px;
-  display: flex; align-items: center; gap: 6px;
-}
-.ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.ev-dot.in   { background: var(--ok); }
-.ev-dot.out  { background: var(--danger); }
-.ev-dot.gps  { background: var(--glow2); }
-.ev-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.ev-detail { font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 1.5; }
-.ev-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-.ev-tag {
-  font-size: 10px; padding: 2px 8px; border-radius: 4px;
-  font-family: var(--mono);
-}
-.ev-tag.t-area { background: rgba(14,165,233,.12); color: var(--glow2); border: 1px solid rgba(14,165,233,.2); }
-.ev-tag.t-shop { background: rgba(245,158,11,.1); color: var(--warn); border: 1px solid rgba(245,158,11,.2); }
-.ev-tag.t-dur  { background: rgba(16,185,129,.1); color: var(--ok); border: 1px solid rgba(16,185,129,.2); }
-.ev-tag.t-acc  { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid rgba(100,116,139,.2); }
-.tl-bar-outer {
-  height: 6px;
-  background: var(--ghost);
-  border-radius: 3px;
-  margin: 6px 0 4px;
-  overflow: hidden;
-}
-.tl-bar-inner {
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--ok), var(--lime));
-  transition: width .5s ease;
-}
-.tl-empty { padding: 60px 20px; text-align: center; color: var(--dim); font-family: var(--mono); font-size: 12px; }
-
-/* ══════════════════════════════════════
-   EMPLOYEE MANAGEMENT
-══════════════════════════════════════ */
-.emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-.emp-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 18px;
-  transition: border-color .2s;
-  position: relative;
-  overflow: hidden;
-}
-.emp-card:hover { border-color: rgba(37,99,235,.4); }
-.emp-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-}
-.emp-card.status-in::before  { background: linear-gradient(90deg, var(--ok), transparent); }
-.emp-card.status-out::before { background: linear-gradient(90deg, var(--dim), transparent); }
-.ec-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.ec-av {
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(37,99,235,.3), rgba(14,165,233,.2));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 800; color: var(--glow2);
-  flex-shrink: 0;
-}
-.ec-name { font-size: 15px; font-weight: 700; }
-.ec-desg { font-size: 11px; color: var(--dim); font-family: var(--mono); }
-.ec-status {
-  margin-left: auto;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: var(--mono);
-}
-.ec-status.in  { background: rgba(16,185,129,.15); color: var(--ok); border: 1px solid rgba(16,185,129,.25); }
-.ec-status.out { background: rgba(100,116,139,.1); color: var(--dim); border: 1px solid var(--line); }
-.ec-info { font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 1.7; margin-bottom: 12px; }
-.ec-actions { display: flex; gap: 8px; }
-.ec-btn {
-  flex: 1; padding: 8px; border-radius: 8px;
-  font-size: 12px; font-weight: 600;
-  cursor: pointer; font-family: var(--sans);
-  border: 1px solid var(--line);
-  transition: all .15s;
-}
-.ec-btn.edit { background: rgba(37,99,235,.1); border-color: rgba(37,99,235,.25); color: var(--glow2); }
-.ec-btn.del  { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.2); color: var(--danger); }
-.ec-btn:hover { filter: brightness(1.2); }
-.add-emp-btn {
-  background: rgba(16,185,129,.1);
-  border: 1.5px solid rgba(16,185,129,.3);
-  color: var(--ok);
-  border-radius: var(--r);
-  padding: 12px 20px;
-  font-size: 14px; font-weight: 700;
-  cursor: pointer; font-family: var(--sans);
-  display: flex; align-items: center; gap: 8px;
-  transition: all .2s; margin-bottom: 18px;
-}
-.add-emp-btn:hover { background: rgba(16,185,129,.18); }
-
-/* ══════════════════════════════════════
-   LIVE TRACKING
-══════════════════════════════════════ */
-.track-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-}
-.track-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 16px;
-  position: relative;
-  overflow: hidden;
-}
-.track-card.active { border-color: rgba(16,185,129,.3); }
-.track-card.active::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--ok), transparent);
-}
-.tc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.tc-name { font-size: 14px; font-weight: 700; }
-.tc-time { font-size: 10px; color: var(--dim); font-family: var(--mono); }
-.tc-coords { font-size: 11px; color: var(--lime); font-family: var(--mono); margin-bottom: 10px; }
-.tc-btns { display: flex; gap: 8px; }
-.tc-btn {
-  flex: 1; padding: 8px 12px;
-  border-radius: 8px; font-size: 12px; font-weight: 600;
-  cursor: pointer; font-family: var(--sans);
-  text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;
-  transition: all .15s;
-}
-.tc-btn.maps { background: rgba(37,99,235,.12); border: 1px solid rgba(37,99,235,.25); color: var(--glow2); }
-.tc-btn.nav  { background: rgba(16,185,129,.1);  border: 1px solid rgba(16,185,129,.25); color: var(--ok); }
-
-/* ══════════════════════════════════════
-   SETTINGS
-══════════════════════════════════════ */
-.settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; max-width: 800px; }
-.set-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: 22px;
-}
-.set-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-.set-sub { font-size: 11px; color: var(--dim); font-family: var(--mono); margin-bottom: 16px; }
-.set-inp {
-  width: 100%;
-  background: var(--raised);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 11px 14px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  outline: none;
-  margin-bottom: 10px;
-  transition: border-color .2s;
-}
-.set-inp:focus { border-color: var(--glow); }
-.set-save {
-  width: 100%; padding: 12px;
-  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
-  border: none; border-radius: 9px;
-  color: #fff; font-size: 14px; font-weight: 700;
-  cursor: pointer; font-family: var(--sans);
-  transition: opacity .2s;
-}
-.set-save:hover { opacity: .88; }
-
-/* ══════════════════════════════════════
-   MODAL
-══════════════════════════════════════ */
-.modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(4,8,16,.88);
-  backdrop-filter: blur(4px);
-  z-index: 300;
-  display: none; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.modal-backdrop.show { display: flex; animation: fadeUp .2s ease; }
-.modal {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  width: 100%; max-width: 440px;
-  max-height: 90vh; overflow-y: auto;
-  position: relative;
-}
-.modal::before {
-  content: ""; position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--glow), var(--lime), transparent);
-  border-radius: 16px 16px 0 0;
-}
-.modal-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 20px 0;
-  margin-bottom: 18px;
-}
-.modal-head h3 { font-size: 17px; font-weight: 800; }
-.modal-close {
-  width: 30px; height: 30px;
-  background: var(--raised); border: 1px solid var(--line);
-  color: var(--dim); border-radius: 8px;
-  cursor: pointer; font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
-.modal-close:hover { border-color: var(--danger); color: var(--danger); }
-.modal-body { padding: 0 20px 24px; }
-.m-inp {
-  width: 100%;
-  background: var(--raised);
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 12px 14px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  outline: none;
-  margin-bottom: 10px;
-  transition: border-color .2s;
-}
-.m-inp:focus { border-color: var(--glow); }
-.m-label { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); display: block; margin-bottom: 5px; font-family: var(--mono); }
-.m-group { margin-bottom: 12px; }
-.m-save {
-  width: 100%; padding: 14px;
-  background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
-  border: none; border-radius: 10px;
-  color: #fff; font-size: 15px; font-weight: 700;
-  cursor: pointer; font-family: var(--sans);
-  margin-top: 4px; transition: opacity .2s;
-}
-.m-save:hover { opacity: .88; }
-.m-save:disabled { opacity: .5; cursor: not-allowed; }
-
-/* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 20px; right: 20px;
-  background: var(--raised); border: 1px solid var(--line);
-  border-radius: 10px; padding: 12px 18px;
-  font-size: 13px; z-index: 999;
-  transform: translateY(80px); opacity: 0;
-  transition: transform .3s, opacity .3s;
-  max-width: 320px; font-family: var(--mono);
-}
-.toast.show { transform: translateY(0); opacity: 1; }
-.toast.ok   { border-color: var(--ok); color: var(--ok); }
-.toast.err  { border-color: var(--danger); color: var(--danger); }
-.toast.inf  { border-color: var(--glow2); color: var(--glow2); }
-
-/* ── SPINNER ── */
-.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--glow2); border-radius: 50%; animation: rotate .7s linear infinite; }
-@keyframes rotate { to { transform: rotate(360deg); } }
-
-/* ── RESPONSIVE ── */
-@media(max-width:768px) {
-  .tab-pane { padding: 16px; }
-  .cal-grid { grid-template-columns: 1fr; }
-}
+/* ═════════ CARDS / GRID ═════════ */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.stat-val{font-size:26px;font-weight:900;margin-bottom:2px;}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+/* Section title */
+.sec-title{font-size:14px;font-weight:900;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.sec-title span{color:var(--muted);font-weight:600;}
+/* TABLE */
+.tbl-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:var(--card2);padding:10px 12px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border);}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--card);}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.badge.green{background:#dcfce7;color:var(--green);}
+.badge.red{background:#fee2e2;color:var(--red);}
+.badge.yellow{background:#fef3c7;color:var(--yellow);}
+.badge.blue{background:#dbeafe;color:var(--accent);}
+/* FILTERS */
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;}
+.filter-row input,.filter-row select{width:auto;flex:1;min-width:120px;max-width:180px;padding:8px 12px;font-size:13px;border-radius:8px;}
+.filter-btn{padding:8px 14px;border-radius:8px;background:var(--accent);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.filter-btn.ghost{background:var(--card2);color:var(--text);border:1.5px solid var(--border);}
+/* EMP CARD */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.emp-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.emp-name{font-size:15px;font-weight:900;margin-bottom:2px;}
+.emp-meta{font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.emp-actions{display:flex;gap:6px;}
+.emp-btn{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
+.emp-btn.edit{background:#dbeafe;color:var(--accent);}
+.emp-btn.del{background:#fee2e2;color:var(--red);}
+/* MAP VIEW */
+#mapContainer{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;}
+.map-placeholder{padding:40px;text-align:center;color:var(--muted);}
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;font-weight:600;}
+.modal-close{float:right;background:var(--card2);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.fgroup{margin-bottom:12px;}
+/* ALLOWANCE */
+.allow-card{background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1.5px solid #bfdbfe;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+.allow-val{font-size:22px;font-weight:900;color:var(--accent);}
+.allow-lbl{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;margin-bottom:4px;}
+.allow-due{background:#fee2e2;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--red);margin-top:8px;}
+.allow-paid{background:#dcfce7;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--green);margin-top:8px;}
+/* ROUTE MAP */
+.route-map{background:#f0f2f6;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;min-height:200px;}
+.route-stop{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.route-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:3px;}
+.route-dot.start{background:var(--green);}
+.route-dot.end{background:var(--red);}
+.route-line{width:2px;height:20px;background:var(--border);margin:2px 0 2px 4px;}
+.route-place{font-size:13px;font-weight:700;color:var(--text);}
+.route-time{font-size:11px;color:var(--muted);font-weight:600;}
+/* CUSTOMIZATION */
+.custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.custom-item{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.custom-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.custom-item label{font-size:13px;font-weight:700;cursor:pointer;}
+/* TOGGLE TABS (hidden sections) */
+.tab-section{display:none;}
+.tab-section.active{display:block;}
 </style>
 </head>
 <body>
+<div id="toast" class="toast"></div>
 
-<!-- ═══════════════ LOGIN ═══════════════ -->
-<div id="loginPage">
+<!-- ═════════ LOGIN ═════════ -->
+<div id="loginWrap">
   <div class="login-card">
-    <div class="lc-icon">&#128274;</div>
-    <div class="lc-title">Command Center</div>
-    <div class="lc-sub">Field Attendance Admin Panel</div>
-    <div class="inp-group">
-      <label>Username</label>
-      <input class="inp" type="text" id="lUser" placeholder="admin" autocomplete="off"
-        onkeydown="if(event.key==='Enter')document.getElementById('lPass').focus()">
+    <div class="login-logo">⚙️</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Field Attendance System</div>
+    <div class="fgroup">
+      <label class="lbl">Username</label>
+      <input type="text" id="lUser" placeholder="admin" value="admin">
     </div>
-    <div class="inp-group">
-      <label>Password</label>
-      <input class="inp" type="password" id="lPass" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="fgroup">
+      <label class="lbl">Password</label>
+      <div class="inp-wrap">
+        <input type="password" id="lPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="eye-btn" onclick="toggleEye('lPass',this)">👁️</button>
+      </div>
     </div>
-    <button class="login-btn" onclick="doLogin()">Enter System &#8594;</button>
-    <div class="login-err" id="loginErr">&#10005; Invalid credentials</div>
-    <div class="login-back" onclick="location.href='index.html'">&#8592; Back to Employee App</div>
+    <div class="err-msg show" id="loginErr" style="display:none;"></div>
+    <button class="btn" onclick="doLogin()" id="loginBtn">Login →</button>
   </div>
 </div>
 
-<!-- ═══════════════ APP ═══════════════ -->
-<div id="appPage">
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="tb-logo">
-      <div class="tb-logo-dot"></div>
-      FIELD CTRL
+<!-- ═════════ APP ═════════ -->
+<div id="appWrap">
+  <!-- Header -->
+  <div class="app-header">
+    <div class="app-title">⚙️ Admin Panel</div>
+    <div class="header-right">
+      <span id="adminUserLbl" style="font-size:12px;opacity:.8;font-weight:600;"></span>
+      <button class="header-btn" onclick="doLogout()">Logout</button>
     </div>
-    <div class="tb-tabs">
-      <div class="t-tab on" id="tab-overview" onclick="switchTab('overview',this)">&#9632; Overview</div>
-      <div class="t-tab" id="tab-sheet"    onclick="switchTab('sheet',this)">&#9707; Sheet View</div>
-      <div class="t-tab" id="tab-calendar" onclick="switchTab('calendar',this)">&#128197; Timeline</div>
-      <div class="t-tab" id="tab-tracking" onclick="switchTab('tracking',this)">&#128205; Live Track</div>
-      <div class="t-tab" id="tab-employees" onclick="switchTab('employees',this)">&#128100; Employees</div>
-      <div class="t-tab" id="tab-settings" onclick="switchTab('settings',this)">&#9881; Settings</div>
-    </div>
-    <div class="tb-right">
-      <span class="tb-time" id="tbClock">--:--:--</span>
-      <button class="tb-logout" onclick="doLogout()">Logout</button>
-    </div>
-  </header>
-  <!-- MOBILE BOTTOM NAV -->
-  <nav class="bottom-nav" id="bottomNav">
-    <div class="bn-grid">
-      <div class="bn-item on" id="bn-overview" onclick="switchTab('overview',this,'bn')">
-        <span class="bn-icon">&#9632;</span><span>Overview</span>
-      </div>
-      <div class="bn-item" id="bn-sheet" onclick="switchTab('sheet',this,'bn')">
-        <span class="bn-icon">&#9707;</span><span>Sheet</span>
-      </div>
-      <div class="bn-item" id="bn-calendar" onclick="switchTab('calendar',this,'bn')">
-        <span class="bn-icon">&#128197;</span><span>Timeline</span>
-      </div>
-      <div class="bn-item" id="bn-tracking" onclick="switchTab('tracking',this,'bn')">
-        <span class="bn-icon">&#128205;</span><span>Live</span>
-      </div>
-      <div class="bn-item" id="bn-employees" onclick="switchTab('employees',this,'bn')">
-        <span class="bn-icon">&#128100;</span><span>Staff</span>
-      </div>
-      <div class="bn-item" id="bn-settings" onclick="switchTab('settings',this,'bn')">
-        <span class="bn-icon">&#9881;</span><span>Settings</span>
-      </div>
-    </div>
-  </nav>
+  </div>
+  <!-- Desktop Tabs -->
+  <div class="desk-nav">
+    <div class="desk-nav-item active" onclick="switchTab('overview',this)">📊 Overview</div>
+    <div class="desk-nav-item" onclick="switchTab('sheet',this)">📄 Sheet View</div>
+    <div class="desk-nav-item" onclick="switchTab('route',this)">🗺️ Route Map</div>
+    <div class="desk-nav-item" onclick="switchTab('allowance',this)">💰 Allowance</div>
+    <div class="desk-nav-item" onclick="switchTab('employees',this)">👥 Employees</div>
+    <div class="desk-nav-item" onclick="switchTab('settings',this)">🔧 Settings</div>
+  </div>
+  <!-- Content -->
+  <div class="app-content">
 
-  <!-- CONTENT -->
-  <div class="content">
-
-    <!-- ── OVERVIEW ── -->
-    <div class="tab-pane on" id="pane-overview">
-      <div class="s-head">
-        <div>
-          <div class="s-title">Dashboard Overview</div>
-          <div class="s-sub" id="overviewDate">Loading...</div>
-        </div>
-        <button class="tb-btn primary" onclick="loadOverview()">
-          &#8635; Refresh
-        </button>
-      </div>
-      <div class="stat-row">
-        <div class="stat s-ok">
-          <div class="stat-val" id="stIn">--</div>
+    <!-- ══ OVERVIEW ══ -->
+    <div class="tab-section active" id="tab-overview">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-val" id="ov-checkedin" style="color:var(--green);">0</div>
           <div class="stat-lbl">Checked In</div>
+          <div class="stat-sub">Aaj</div>
         </div>
-        <div class="stat s-blue">
-          <div class="stat-val" id="stTotal">--</div>
+        <div class="stat-card">
+          <div class="stat-val" id="ov-total">0</div>
           <div class="stat-lbl">Total Employees</div>
+          <div class="stat-sub">Registered</div>
         </div>
-        <div class="stat s-warn">
-          <div class="stat-val" id="stVisits">--</div>
-          <div class="stat-lbl">Shop Visits Today</div>
+        <div class="stat-card">
+          <div class="stat-val" id="ov-visits" style="color:var(--purple);">0</div>
+          <div class="stat-lbl">Shop Visits</div>
+          <div class="stat-sub">Aaj</div>
         </div>
-        <div class="stat s-cyan">
-          <div class="stat-val" id="stPings">--</div>
-          <div class="stat-lbl">GPS Pings Today</div>
+        <div class="stat-card">
+          <div class="stat-val" id="ov-gps" style="color:var(--accent);">0</div>
+          <div class="stat-lbl">GPS Pings</div>
+          <div class="stat-sub">Aaj</div>
         </div>
       </div>
-      <!-- Today's activity table -->
-      <div class="s-head">
-        <div class="s-title" style="font-size:14px;">Today's Activity</div>
-      </div>
-      <div class="sheet-wrap">
-        <div class="sheet-scroll">
-          <table class="sheet-tbl">
-            <thead>
-              <tr>
-                <th class="row-num">#</th>
-                <th>Employee</th>
-                <th>Check-In</th>
-                <th>Shop</th>
-                <th>Area</th>
-                <th>Check-Out</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>Map</th>
-              </tr>
-            </thead>
-            <tbody id="overviewTbody">
-              <tr><td colspan="9" class="sheet-empty">&#8635; Loading...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="sheet-footer">
-          <span id="overviewCount">0 rows</span>
-          <span id="overviewTime">--</span>
-        </div>
+      <div class="sec-title">📋 Aaj ki Activity <span id="ov-date"></span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Employee</th><th>Check-In</th><th>Shop</th><th>Area</th><th>Status</th></tr></thead>
+          <tbody id="ov-tbody"></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ── SHEET VIEW ── -->
-    <div class="tab-pane" id="pane-sheet">
-      <div class="s-head">
-        <div>
-          <div class="s-title">Google Sheet — Raw View</div>
-          <div class="s-sub">Sab rows aur columns exactly sheet jaisi</div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="tb-btn" onclick="exportCSV()">&#8595; Export CSV</button>
-          <button class="tb-btn primary" onclick="loadSheet()">&#8635; Refresh</button>
-        </div>
+    <!-- ══ SHEET VIEW ══ -->
+    <div class="tab-section" id="tab-sheet">
+      <div class="filter-row">
+        <input type="date" id="sh-from" title="From date">
+        <input type="date" id="sh-to" title="To date">
+        <select id="sh-emp">
+          <option value="">Sab employees</option>
+        </select>
+        <button class="filter-btn" onclick="loadSheet()">🔍 Load</button>
+        <button class="filter-btn ghost" onclick="exportCSV()">⬇️ CSV</button>
       </div>
-      <div class="toolbar">
-        <input type="date" class="tb-inp" id="sheetDateFrom" placeholder="From">
-        <input type="date" class="tb-inp" id="sheetDateTo"   placeholder="To">
-        <div class="sel-wrap2" style="position:relative;">
-          <select class="tb-inp" id="sheetEmpFilter" style="padding-right:28px;-webkit-appearance:none;">
-            <option value="">All Employees</option>
-          </select>
-        </div>
-        <input class="search-inp" type="text" id="sheetSearch" placeholder="Search..." oninput="filterSheet()">
-        <button class="tb-btn primary" onclick="loadSheet()">Apply</button>
-      </div>
-      <div class="sheet-wrap">
-        <div class="sheet-scroll">
-          <table class="sheet-tbl" id="sheetTbl">
-            <thead>
-              <tr>
-                <th class="row-num">#</th>
-                <th onclick="sortSheet(0)">Date</th>
-                <th onclick="sortSheet(1)">Check-In</th>
-                <th onclick="sortSheet(2)">Employee</th>
-                <th onclick="sortSheet(3)">Contact</th>
-                <th onclick="sortSheet(4)">Shop Name</th>
-                <th onclick="sortSheet(5)">Shopkeeper</th>
-                <th onclick="sortSheet(6)">Shop Contact</th>
-                <th onclick="sortSheet(7)">Area</th>
-                <th>Notes</th>
-                <th>Map</th>
-                <th>Photo</th>
-                <th onclick="sortSheet(11)">Check-Out</th>
-                <th>Duration</th>
-              </tr>
-            </thead>
-            <tbody id="sheetTbody">
-              <tr><td colspan="14" class="sheet-empty">Select date range and click Apply</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="sheet-footer">
-          <span id="sheetCount">0 rows</span>
-          <span id="sheetLastUpdate">--</span>
-        </div>
+      <div class="sec-title">📄 Sheet Data <span id="sh-count"></span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Date</th><th>Employee</th><th>Check-In</th>
+              <th>Shop</th><th>Shopkeeper</th><th>Contact</th>
+              <th>Area</th><th>Notes</th><th>Check-Out</th><th>Duration</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sh-tbody"></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ── CALENDAR / TIMELINE ── -->
-    <div class="tab-pane" id="pane-calendar">
-      <div class="s-head">
-        <div>
-          <div class="s-title">Attendance Timeline</div>
-          <div class="s-sub">Google Maps timeline jaisi view — din ke sabhi events</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <select class="tb-inp" id="tlEmpFilter" onchange="loadTimeline()">
-            <option value="">All Employees</option>
-          </select>
-        </div>
+    <!-- ══ ROUTE MAP ══ -->
+    <div class="tab-section" id="tab-route">
+      <div class="filter-row">
+        <select id="rt-emp">
+          <option value="">Employee chunein</option>
+        </select>
+        <input type="date" id="rt-date">
+        <button class="filter-btn" onclick="loadRoute()">🗺️ Show Route</button>
       </div>
-      <div class="cal-grid">
-        <!-- Calendar -->
-        <div class="cal-sidebar">
-          <div class="cal-month-nav">
-            <button class="cal-nav-btn" onclick="calPrev()">&#8592;</button>
-            <span class="cal-month-lbl" id="calMonthLbl">--</span>
-            <button class="cal-nav-btn" onclick="calNext()">&#8594;</button>
-          </div>
-          <div class="cal-days-hdr">
-            <div>Su</div><div>Mo</div><div>Tu</div>
-            <div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
-          </div>
-          <div class="cal-days" id="calDays"></div>
+      <div class="sec-title">📍 Route — Check-In ke baad ka GPS Path</div>
+      <div class="route-map" id="routeMap">
+        <div class="map-placeholder">Employee aur date chunein, phir "Show Route" dabao</div>
+      </div>
+    </div>
+
+    <!-- ══ ALLOWANCE ══ -->
+    <div class="tab-section" id="tab-allowance">
+      <div class="filter-row">
+        <select id="al-emp">
+          <option value="">Employee chunein</option>
+        </select>
+        <input type="date" id="al-from" title="From">
+        <input type="date" id="al-to" title="To">
+        <button class="filter-btn" onclick="calcAllowance()">💰 Calculate</button>
+      </div>
+      <div id="allowanceResult"></div>
+      <!-- Rate setting -->
+      <div class="sec-title">⚙️ Rate Settings</div>
+      <div class="card" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
+        <div class="fgroup">
+          <label class="lbl">Rate per KM (₹)</label>
+          <input type="number" id="ratePerKm" placeholder="2" min="0" step="0.5" style="max-width:200px;">
         </div>
-        <!-- Timeline panel -->
-        <div class="timeline-panel">
-          <div class="tl-header">
-            <div class="tl-date" id="tlDate">Select a date</div>
-            <div class="tl-count" id="tlCount"></div>
-          </div>
-          <div class="tl-body" id="tlBody">
-            <div class="tl-empty">&#128197; Calendar se koi date select karo</div>
+        <button class="btn" style="max-width:200px;" onclick="saveRate()">Save Rate</button>
+      </div>
+    </div>
+
+    <!-- ══ EMPLOYEES ══ -->
+    <div class="tab-section" id="tab-employees">
+      <div style="margin-bottom:12px;">
+        <button class="btn" style="max-width:200px;" onclick="openEmpModal()">+ Add Employee</button>
+      </div>
+      <div class="emp-grid" id="emp-grid"></div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="tab-section" id="tab-settings">
+      <!-- Change Password -->
+      <div class="sec-title">🔒 Password Change</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;max-width:400px;">
+        <div class="fgroup">
+          <label class="lbl">Current Password</label>
+          <div class="inp-wrap">
+            <input type="password" id="sOldPass" placeholder="Current password">
+            <button class="eye-btn" onclick="toggleEye('sOldPass',this)">👁️</button>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- ── LIVE TRACKING ── -->
-    <div class="tab-pane" id="pane-tracking">
-      <div class="s-head">
-        <div>
-          <div class="s-title">Live Employee Tracking</div>
-          <div class="s-sub">Har 5 minute mein auto-update hota hai</div>
+        <div class="fgroup">
+          <label class="lbl">New Username</label>
+          <input type="text" id="sNewUser" placeholder="New username">
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input type="date" class="tb-inp" id="routeDate">
-          <select class="tb-inp" id="routeEmp"><option value="">-- Select Employee --</option></select>
-          <button class="tb-btn primary" onclick="loadRoute()">Show Route</button>
-          <button class="tb-btn success" onclick="loadLive()">&#8635; Live Now</button>
-        </div>
-      </div>
-      <div class="track-grid" id="trackGrid">
-        <div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;">
-          Click "Live Now" to load current positions
-        </div>
-      </div>
-      <!-- Route table -->
-      <div id="routeSection" style="display:none;margin-top:20px;">
-        <div class="s-head" style="margin-top:0;">
-          <div class="s-title" style="font-size:14px;" id="routeTitle">Route Points</div>
-          <a id="routeMapsLink" href="#" target="_blank" class="tb-btn primary" style="text-decoration:none;">
-            &#128663; Open in Google Maps
-          </a>
-        </div>
-        <div class="sheet-wrap">
-          <div class="sheet-scroll">
-            <table class="sheet-tbl">
-              <thead><tr>
-                <th class="row-num">#</th>
-                <th>Time</th><th>Latitude</th><th>Longitude</th>
-                <th>Status</th><th>Accuracy</th><th>Map</th>
-              </tr></thead>
-              <tbody id="routeTbody"></tbody>
-            </table>
+        <div class="fgroup">
+          <label class="lbl">New Password</label>
+          <div class="inp-wrap">
+            <input type="password" id="sNewPass" placeholder="New password">
+            <button class="eye-btn" onclick="toggleEye('sNewPass',this)">👁️</button>
           </div>
         </div>
+        <button class="btn" onclick="changePass()">Update Password</button>
       </div>
+      <!-- Dashboard Customization -->
+      <div class="sec-title">🎨 Dashboard Customize</div>
+      <div class="custom-grid" id="customGrid"></div>
+      <button class="btn" style="max-width:200px;margin-top:12px;" onclick="saveCustom()">Save View</button>
     </div>
 
-    <!-- ── EMPLOYEES ── -->
-    <div class="tab-pane" id="pane-employees">
-      <div class="s-head">
-        <div>
-          <div class="s-title">Employee Management</div>
-          <div class="s-sub">Add, edit, delete employees</div>
-        </div>
-        <button class="add-emp-btn" onclick="openAddEmp()">
-          &#43; Add Employee
-        </button>
-      </div>
-      <div class="emp-grid" id="empGrid">
-        <div style="color:var(--dim);font-family:var(--mono);font-size:12px;">Loading...</div>
-      </div>
-    </div>
-
-    <!-- ── SETTINGS ── -->
-    <div class="tab-pane" id="pane-settings">
-      <div class="s-title" style="margin-bottom:20px;">Settings</div>
-      <div class="settings-grid">
-        <div class="set-card">
-          <div class="set-title">&#128274; Change Admin Password</div>
-          <div class="set-sub">Sheet mein secure store hota hai — F12 se nahi dikhega</div>
-          <input class="set-inp" type="password" id="currentPass" placeholder="Current password *">
-          <input class="set-inp" type="text"     id="newUser"     placeholder="New username *">
-          <input class="set-inp" type="password" id="newPass"     placeholder="New password *">
-          <input class="set-inp" type="password" id="confPass"    placeholder="Confirm new password *">
-          <button class="set-save" onclick="changePass()">Save Password</button>
-        </div>
-        <div class="set-card">
-          <div class="set-title">&#128279; Apps Script URL</div>
-          <div class="set-sub">Google Apps Script deployment URL</div>
-          <input class="set-inp" type="text" id="scriptUrl" placeholder="https://script.google.com/...">
-          <button class="set-save" onclick="saveUrl()">Save URL</button>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /appPage -->
-
-<!-- ── EMPLOYEE MODAL ── -->
-<div class="modal-backdrop" id="empModal">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="empModalTitle">Add Employee</h3>
-      <button class="modal-close" onclick="closeEmpModal()">&#215;</button>
-    </div>
-    <div class="modal-body">
-      <div class="m-group">
-        <label class="m-label">Full Name *</label>
-        <input class="m-inp" id="eNm" placeholder="e.g. Rajesh Kumar">
-      </div>
-      <div class="m-group">
-        <label class="m-label">PIN (4-6 digits) *</label>
-        <input class="m-inp" id="ePin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
-      </div>
-      <div class="m-group">
-        <label class="m-label">Contact Number *</label>
-        <input class="m-inp" id="eCont" type="tel" placeholder="10-digit mobile">
-      </div>
-      <div class="m-group">
-        <label class="m-label">Designation</label>
-        <input class="m-inp" id="eDesg" placeholder="e.g. Sales Executive">
-      </div>
-      <div class="m-group">
-        <label class="m-label">Address / City</label>
-        <input class="m-inp" id="eAddr" placeholder="e.g. Prayagraj, UP">
-      </div>
-      <button class="m-save" id="empSaveBtn" onclick="saveEmployee()">Save Employee</button>
+  </div>
+  <!-- Mobile Bottom Nav -->
+  <div class="mob-nav">
+    <div class="mob-nav-row">
+      <div class="mob-nav-item active" onclick="switchTab('overview',this)"><span class="mni">📊</span><span class="mnl">Overview</span></div>
+      <div class="mob-nav-item" onclick="switchTab('sheet',this)"><span class="mni">📄</span><span class="mnl">Sheet</span></div>
+      <div class="mob-nav-item" onclick="switchTab('route',this)"><span class="mni">🗺️</span><span class="mnl">Route</span></div>
+      <div class="mob-nav-item" onclick="switchTab('allowance',this)"><span class="mni">💰</span><span class="mnl">Allow.</span></div>
+      <div class="mob-nav-item" onclick="switchTab('employees',this)"><span class="mni">👥</span><span class="mnl">Staff</span></div>
+      <div class="mob-nav-item" onclick="switchTab('settings',this)"><span class="mni">🔧</span><span class="mnl">Settings</span></div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Employee Modal -->
+<div class="modal-bg" id="empModal">
+  <div class="modal-box">
+    <div class="modal-title" id="empModalTitle">Add Employee</div>
+    <div class="modal-sub">Employee ki details bharein</div>
+    <input type="hidden" id="empOldName">
+    <div class="fgroup"><label class="lbl">Name *</label><input id="emName" placeholder="Full name"></div>
+    <div class="fgroup">
+      <label class="lbl">PIN *</label>
+      <div class="inp-wrap">
+        <input type="password" id="emPin" placeholder="PIN / password">
+        <button class="eye-btn" onclick="toggleEye('emPin',this)">👁️</button>
+      </div>
+    </div>
+    <div class="fgroup"><label class="lbl">Contact *</label><input id="emContact" placeholder="10 digit" type="tel" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"></div>
+    <div class="fgroup"><label class="lbl">Designation</label><input id="emDesig" placeholder="Salesman, Manager etc."></div>
+    <div class="fgroup"><label class="lbl">Address</label><textarea id="emAddr" rows="2" placeholder="Address"></textarea></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" onclick="saveEmployee()">Save</button>
+      <button class="btn ghost" onclick="closeEmpModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Cell Modal -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit Record</div>
+    <div class="modal-sub" id="editModalSub"></div>
+    <input type="hidden" id="editRowIdx">
+    <div class="fgroup"><label class="lbl">Shop Name</label><input id="editShop"></div>
+    <div class="fgroup"><label class="lbl">Shopkeeper</label><input id="editKeeper"></div>
+    <div class="fgroup"><label class="lbl">Area</label><input id="editArea"></div>
+    <div class="fgroup"><label class="lbl">Notes</label><textarea id="editNotes" rows="2"></textarea></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" onclick="saveEdit()">Save</button>
+      <button class="btn ghost" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <script>
-/* ════════════════════════════════════════
-   CONFIG & STATE
-════════════════════════════════════════ */
-var SCRIPT_URL = localStorage.getItem("admin_script_url") ||
-  "https://script.google.com/macros/s/AKfycbwmf9R0WrZuIYbYDOxiVRH6ePRkRtBae1O40rhmPkJ_MDWni7P4ObKeflN3Nkkod5oU/exec";
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+const ORDER_URL    = "order.html";
+const PAYMENT_URL  = "payment.html";
+const RETURN_URL   = "return.html";
+const ADMIN_URL    = "admin.html";
+const MIN_CHECKOUT = 10 * 1000;       // 10 seconds minimum before checkout allowed
+const GPS_INTERVAL = 5 * 60 * 1000;  // 5 minutes GPS ping interval
 
-var CREDS_KEY   = "admin_creds_v2";
-var SESSION_KEY = "admin_session_v2";
+// ══════════════════════════════════════════
+// STORAGE HELPER
+// ══════════════════════════════════════════
+const store = {
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
+  get: (k)    => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return null; } },
+  del: (k)    => { try { localStorage.removeItem(k); } catch(e) {} }
+};
 
-var calState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-var tlSelectedDate = "";
-var allSheetRows  = [];
-var sortColIdx    = -1;
-var sortDir       = 1;
-var employeeList  = [];
-var editingEmp    = null;
-var datesWithData = new Set();
-
-/* ════════════════════════════════════════
-   UTILS
-════════════════════════════════════════ */
-function $(id) { return document.getElementById(id); }
-
-function apiCall(payload) {
-  var url = localStorage.getItem("admin_script_url") || SCRIPT_URL;
-  return fetch(url, {
+// ══════════════════════════════════════════
+// API CALL
+// ══════════════════════════════════════════
+async function apiPost(payload) {
+  const res = await fetch(SCRIPT_URL, {
     method: "POST",
-    headers: {"Content-Type": "text/plain"},
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify(payload)
-  }).then(function(r) { return r.json(); });
+  });
+  return res.json();
 }
 
-function toast(msg, type) {
-  type = type || "inf";
-  var el = $("toast");
-  el.innerHTML = msg;
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function toast(msg, type = "info") {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = msg;
   el.className = "toast " + type + " show";
-  clearTimeout(el._t);
-  el._t = setTimeout(function() { el.classList.remove("show"); }, 4000);
+  setTimeout(() => el.classList.remove("show"), 4000);
 }
 
-function fmtDate(d) {
-  if (!d) return "--";
-  var s = d.toString().substring(0, 10);
-  return s === "Invalid" ? "--" : s;
+// ══════════════════════════════════════════
+// PHOTO COMPRESS
+// ══════════════════════════════════════════
+function compressPhoto(dataUrl) {
+  try {
+    const cv = document.createElement("canvas");
+    const im = new Image();
+    im.src = dataUrl;
+    const mw = 720, sc = im.width > mw ? mw / im.width : 1;
+    cv.width  = (im.width  || 640) * sc;
+    cv.height = (im.height || 480) * sc;
+    cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+    return cv.toDataURL("image/jpeg", 0.5);
+  } catch(e) { return dataUrl; }
 }
 
-function fmtTime(t) {
-  if (!t || t === "--") return "--";
-  var s = t.toString();
-  // Already formatted dd-MM-yyyy HH:mm:ss
-  if (/^\d{2}-\d{2}-\d{4}/.test(s)) return s;
-  // ISO format: 1899-12-30T08:46:44.000Z — extract time only
-  if (s.includes("T")) {
-    try {
-      var d = new Date(s);
-      if (!isNaN(d)) return d.toLocaleTimeString("en-IN", {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-    } catch(e) {}
-    // Fallback: extract HH:MM:SS from ISO string
-    var m = s.match(/T(\d{2}:\d{2}:\d{2})/);
-    if (m) {
-      // Convert UTC to IST (+5:30)
-      var parts = m[1].split(":").map(Number);
-      var totalMin = parts[0]*60 + parts[1] + 330; // +5:30 IST
-      totalMin = ((totalMin % 1440) + 1440) % 1440;
-      var hh = Math.floor(totalMin/60), mm = totalMin%60, ss = parts[2];
-      var ampm = hh>=12?"PM":"AM"; hh = hh%12||12;
-      return String(hh).padStart(2,"0")+":"+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0")+" "+ampm;
-    }
+// ══════════════════════════════════════════
+// DATE FORMAT — dd-M-yyyy
+// ══════════════════════════════════════════
+function fmtDate(val) {
+  if (!val) return "";
+  let d;
+  if (val instanceof Date) {
+    d = val;
+  } else {
+    const s = val.toString();
+    // yyyy-MM-dd
+    const m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m1) d = new Date(+m1[1], +m1[2]-1, +m1[3]);
+    // dd-MM-yyyy
+    const m2 = s.match(/^(\d{2})-(\d{2})-(\d{4})/);
+    if (!d && m2) d = new Date(+m2[3], +m2[2]-1, +m2[1]);
+    if (!d) d = new Date(s);
   }
-  return s;
+  if (isNaN(d)) return val.toString();
+  return d.getDate() + "-" + (d.getMonth()+1) + "-" + d.getFullYear();
 }
 
-function todayStr() {
-  var d = new Date();
-  return d.getFullYear() + "-" +
-    String(d.getMonth()+1).padStart(2,"0") + "-" +
-    String(d.getDate()).padStart(2,"0");
+// ══════════════════════════════════════════
+// TIME FORMAT — HH:MM AM/PM
+// ══════════════════════════════════════════
+function fmtTime(val) {
+  if (!val) return "";
+  const s = val.toString();
+  // Already readable like "10:30:00"
+  const m = s.match(/(\d+):(\d+):?(\d+)?\s*(AM|PM)?/i);
+  if (!m) return s;
+  let h = +m[1], mn = +m[2];
+  if (m[4]) {
+    // already AM/PM
+  } else {
+    // 24h to 12h
+  }
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12  = h % 12 || 12;
+  return h12 + ":" + String(mn).padStart(2,"0") + " " + ampm;
+}
+</script>
+<script>
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+var adminSession  = null;
+var allEmployees  = [];
+var sheetData     = [];
+var currentTab    = "overview";
+
+var CUSTOM_ITEMS = [
+  {id:"show_overview_stats", lbl:"Overview Stats"},
+  {id:"show_overview_table", lbl:"Overview Table"},
+  {id:"show_sheet_maplink",  lbl:"Sheet: Map Links"},
+  {id:"show_sheet_photo",    lbl:"Sheet: Photos"},
+  {id:"show_route_tab",      lbl:"Route Map Tab"},
+  {id:"show_allowance_tab",  lbl:"Allowance Tab"},
+];
+
+// ════════════════════════════════════════
+// EYE TOGGLE
+// ════════════════════════════════════════
+function toggleEye(id, btn) {
+  var inp = document.getElementById(id);
+  if (!inp) return;
+  if (inp.type==="password") { inp.type="text"; btn.textContent="🙈"; }
+  else { inp.type="password"; btn.textContent="👁️"; }
 }
 
-/* ════════════════════════════════════════
-   CLOCK
-════════════════════════════════════════ */
-setInterval(function() {
-  var t = $("tbClock");
-  if (t) t.textContent = new Date().toLocaleTimeString("en-IN");
-}, 1000);
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function toast(msg, type="info") {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast "+type+" show";
+  setTimeout(()=>el.classList.remove("show"), 4000);
+}
 
-/* ════════════════════════════════════════
-   LOGIN
-════════════════════════════════════════ */
-// Admin creds ab sheet mein hain — client pe store nahi
-function getAdminCreds() { return {}; }
-
+// ════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════
 function doLogin() {
-  var u = $("lUser").value.trim();
-  var p = $("lPass").value;
-  if (!u || !p) { $("loginErr").classList.add("show"); return; }
-  var btn = document.querySelector(".login-btn");
-  btn.textContent = "Verifying..."; btn.disabled = true;
-  // Sheet se verify karo — localStorage se nahi
-  apiCall({action:"admin_login", user:u, pass:p})
-    .then(function(res) {
-      if (res.status === "success") {
-        // Token save karo — password nahi
-        localStorage.setItem(SESSION_KEY, JSON.stringify({
-          ok:true, t:Date.now(), token:res.token, user:u
-        }));
-        $("loginPage").style.display = "none";
-        $("appPage").style.display = "flex";
-        onAppInit();
-      } else {
-        $("loginErr").classList.add("show");
-        $("lPass").value = "";
-        $("lPass").focus();
-        setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
-      }
-    })
-    .catch(function() {
-      $("loginErr").textContent = "&#10005; Network error — retry karo";
-      $("loginErr").classList.add("show");
-      setTimeout(function() { $("loginErr").classList.remove("show"); }, 3000);
-    })
-    .finally(function() { btn.textContent = "Enter System →"; btn.disabled = false; });
+  var user = document.getElementById("lUser").value.trim();
+  var pass = document.getElementById("lPass").value;
+  var err  = document.getElementById("loginErr");
+  var btn  = document.getElementById("loginBtn");
+  if (!user || !pass) { showErr("Username aur password darj karo"); return; }
+  btn.classList.add("loading"); btn.textContent = "Logging in...";
+  apiPost({action:"admin_login", user, pass}).then(r => {
+    btn.classList.remove("loading"); btn.textContent = "Login →";
+    if (r.status === "success") {
+      adminSession = {user, token:r.token, t:Date.now()};
+      store.set("adminSess", adminSession);
+      startApp();
+    } else {
+      showErr(r.message || "Galat credentials");
+    }
+  }).catch(e => {
+    btn.classList.remove("loading"); btn.textContent = "Login →";
+    showErr("Server se connection nahi");
+  });
+}
+
+function showErr(msg) {
+  var el = document.getElementById("loginErr");
+  el.textContent = msg;
+  el.style.display = "block";
 }
 
 function doLogout() {
-  localStorage.removeItem(SESSION_KEY);
-  $("appPage").style.display = "none";
-  $("loginPage").style.display = "flex";
-  $("lUser").value = "";
-  $("lPass").value = "";
+  store.del("adminSess");
+  adminSession = null;
+  document.getElementById("appWrap").style.display = "none";
+  document.getElementById("loginWrap").style.display = "flex";
 }
 
-/* ════════════════════════════════════════
-   TAB SWITCHING — FIX: no event.target
-════════════════════════════════════════ */
-function switchTab(name, el, source) {
-  // Deactivate all tabs + bottom nav
-  document.querySelectorAll(".t-tab").forEach(function(t) { t.classList.remove("on"); });
-  document.querySelectorAll(".bn-item").forEach(function(t) { t.classList.remove("on"); });
-  document.querySelectorAll(".tab-pane").forEach(function(p) { p.classList.remove("on"); });
-  // Activate — sync both desktop + mobile nav
-  var desktopTab = $("tab-"+name);
-  var mobileTab  = $("bn-"+name);
-  if (desktopTab) desktopTab.classList.add("on");
-  if (mobileTab)  mobileTab.classList.add("on");
-  var pane = $("pane-"+name);
-  if (pane) pane.classList.add("on");
-  // Load data
-  if (name === "overview")   loadOverview();
-  if (name === "sheet")      { var td=new Date(); $("sheetDateFrom").value=$("sheetDateTo").value=td.toISOString().split("T")[0]; loadSheet(); }
-  if (name === "calendar")   initCalendar();
-  if (name === "tracking")   { loadLive(); populateTrackDropdowns(); }
-  if (name === "employees")  loadEmployees();
-  if (name === "settings")   loadSettings();
-  // Scroll to top
-  var content = document.querySelector(".content");
-  if (content) content.scrollTop = 0;
-}
-
-/* ════════════════════════════════════════
-   APP INIT
-════════════════════════════════════════ */
-function onAppInit() {
-  $("overviewDate").textContent = new Date().toLocaleDateString("en-IN",
-    {weekday:"long", day:"numeric", month:"long", year:"numeric"});
-  var td = todayStr();
-  $("sheetDateFrom").value = td;
-  $("sheetDateTo").value   = td;
-  $("routeDate").value     = td;
+// ════════════════════════════════════════
+// APP START
+// ════════════════════════════════════════
+function startApp() {
+  document.getElementById("loginWrap").style.display = "none";
+  document.getElementById("appWrap").style.display = "flex";
+  document.getElementById("adminUserLbl").textContent = adminSession.user;
+  loadAllEmployees();
   loadOverview();
-  loadEmployees();
+  setDefaultDates();
+  loadCustom();
+  document.getElementById("ratePerKm").value = store.get("ratePerKm") || "2";
 }
 
-/* ════════════════════════════════════════
-   OVERVIEW
-════════════════════════════════════════ */
-function loadOverview() {
-  $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty"><span class="spin"></span> Loading...</td></tr>';
-  apiCall({action:"get_today_attendance"}).then(function(res) {
-    var rows = res.rows || [];
-    $("stIn").textContent     = rows.filter(function(r){return r.checkinTime && !r.checkoutTime;}).length;
-    $("stTotal").textContent  = res.totalEmployees || 0;
-    $("stVisits").textContent = rows.filter(function(r){return r.shopName;}).length;
-    $("stPings").textContent  = res.gpsPings || 0;
-    $("overviewTime").textContent = "Updated: " + new Date().toLocaleTimeString("en-IN");
-    if (!rows.length) {
-      $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty">Aaj koi activity nahi</td></tr>';
-      $("overviewCount").textContent = "0 rows";
-      return;
+function setDefaultDates() {
+  var today = new Date().toISOString().split("T")[0];
+  document.getElementById("sh-from").value  = today;
+  document.getElementById("sh-to").value    = today;
+  document.getElementById("rt-date").value  = today;
+  document.getElementById("al-from").value  = today;
+  document.getElementById("al-to").value    = today;
+  document.getElementById("ov-date").textContent = "("+fmtDate(today)+")";
+}
+
+// ════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════
+function switchTab(name, el) {
+  currentTab = name;
+  document.querySelectorAll(".tab-section").forEach(s=>s.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  // Desktop nav
+  document.querySelectorAll(".desk-nav-item").forEach(i=>i.classList.remove("active"));
+  // Mobile nav
+  document.querySelectorAll(".mob-nav-item").forEach(i=>i.classList.remove("active"));
+  if (el) {
+    el.classList.add("active");
+    // Also activate corresponding other-nav item
+    var tabs = ["overview","sheet","route","allowance","employees","settings"];
+    var idx  = tabs.indexOf(name);
+    document.querySelectorAll(".desk-nav-item")[idx]?.classList.add("active");
+    document.querySelectorAll(".mob-nav-item")[idx]?.classList.add("active");
+  }
+  // Lazy load
+  if (name==="sheet")      loadSheet();
+  if (name==="employees")  renderEmployees();
+  if (name==="allowance")  populateAlEmpSelect();
+}
+
+// ════════════════════════════════════════
+// EMPLOYEES
+// ════════════════════════════════════════
+function loadAllEmployees() {
+  apiPost({action:"get_employees"}).then(r => {
+    if (r.employees) {
+      allEmployees = r.employees;
+      renderEmployees();
+      populateEmpSelects();
     }
-    $("overviewCount").textContent = rows.length + " rows";
-    $("overviewTbody").innerHTML = rows.map(function(r, i) {
-      var isOut = !!r.checkoutTime;
-      return '<tr>' +
-        '<td class="row-num">' + (i+1) + '</td>' +
-        '<td><b>' + (r.empName||"--") + '</b></td>' +
-        '<td>' + fmtTime(r.checkinTime) + '</td>' +
-        '<td>' + (r.shopName||"--") + '</td>' +
-        '<td>' + (r.area||"--") + '</td>' +
-        '<td>' + (r.checkoutTime||"--") + '</td>' +
-        '<td>' + (r.duration||"--") + '</td>' +
-        '<td><span class="cell-chip ' + (isOut?"chip-out":"chip-in") + '">' + (isOut?"OUT":"IN") + '</span></td>' +
-        '<td>' + (r.mapLink ? '<a class="cell-chip chip-map" href="'+r.mapLink+'" target="_blank">&#128205; Map</a>' : '--') + '</td>' +
-        '</tr>';
-    }).join("");
-  }).catch(function(e) {
-    $("overviewTbody").innerHTML = '<tr><td colspan="9" class="sheet-empty" style="color:var(--danger)">&#10005; Error: ' + e.message + '</td></tr>';
   });
 }
 
-/* ════════════════════════════════════════
-   SHEET VIEW — Full raw table
-════════════════════════════════════════ */
-var rawSheetData = [];
-
-function loadSheet() {
-  var from = $("sheetDateFrom").value;
-  var to   = $("sheetDateTo").value;
-  var emp  = $("sheetEmpFilter").value;
-  if (!from) { toast("Start date select karo","err"); return; }
-  $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty"><span class="spin"></span> Loading sheet data...</td></tr>';
-  apiCall({action:"get_sheet_range", dateFrom:from, dateTo:(to||from), empName:emp})
-    .then(function(res) {
-      rawSheetData = res.rows || [];
-      $("sheetLastUpdate").textContent = "Updated: " + new Date().toLocaleTimeString("en-IN");
-      filterSheet();
-    }).catch(function(e) {
-      $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty" style="color:var(--danger)">Error: ' + e.message + '</td></tr>';
+function populateEmpSelects() {
+  ["sh-emp","rt-emp","al-emp"].forEach(id => {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">'+(id==="sh-emp"?"Sab employees":"Employee chunein")+'</option>';
+    allEmployees.forEach(e => {
+      var o = document.createElement("option");
+      o.value = e.name; o.textContent = e.name;
+      sel.appendChild(o);
     });
-}
-
-function filterSheet() {
-  var q = ($("sheetSearch").value || "").toLowerCase();
-  var rows = rawSheetData.filter(function(r) {
-    if (!q) return true;
-    return JSON.stringify(r).toLowerCase().includes(q);
-  });
-  renderSheetTable(rows);
-}
-
-function renderSheetTable(rows) {
-  $("sheetCount").textContent = rows.length + " rows";
-  if (!rows.length) {
-    $("sheetTbody").innerHTML = '<tr><td colspan="14" class="sheet-empty">Koi data nahi — date range check karo</td></tr>';
-    return;
-  }
-  $("sheetTbody").innerHTML = rows.map(function(r, i) {
-    return '<tr>' +
-      '<td class="row-num">' + (i+1) + '</td>' +
-      '<td>' + (fmtDate(r.date)||"--") + '</td>' +
-      '<td style="color:var(--ok);">' + fmtTime(r.checkinTime) + '</td>' +
-      '<td><b>' + (r.empName||"--") + '</b></td>' +
-      '<td>' + (r.empContact||"--") + '</td>' +
-      '<td>' + (r.shopName||"--") + '</td>' +
-      '<td>' + (r.shopkeeperName||"--") + '</td>' +
-      '<td>' + (r.shopkeeperContact||"--") + '</td>' +
-      '<td>' + (r.area||"--") + '</td>' +
-      '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;" title="' + (r.notes||"") + '">' + (r.notes||"--") + '</td>' +
-      '<td>' + (r.mapLink ? '<a class="cell-chip chip-map" href="'+r.mapLink+'" target="_blank">&#128205; Map</a>' : '--') + '</td>' +
-      '<td>' + (r.photo  ? '<a class="cell-chip chip-photo" href="'+r.photo+'"  target="_blank">&#128247; View</a>' : '--') + '</td>' +
-      '<td style="color:var(--danger);">' + fmtTime(r.checkoutTime) + '</td>' +
-      '<td style="color:var(--lime);font-weight:700;">' + (r.duration||"--") + '</td>' +
-      '</tr>';
-  }).join("");
-}
-
-function sortSheet(colIdx) {
-  var headers = document.querySelectorAll("#sheetTbl thead th");
-  headers.forEach(function(h) { h.classList.remove("sort-asc","sort-desc"); });
-  if (sortColIdx === colIdx) sortDir = -sortDir;
-  else { sortColIdx = colIdx; sortDir = 1; }
-  var keys = ["date","checkinTime","empName","empContact","shopName","shopkeeperName","shopkeeperContact","area","notes","mapLink","photo","checkoutTime","duration"];
-  var key = keys[colIdx];
-  rawSheetData.sort(function(a,b) {
-    var av = (a[key]||"").toString().toLowerCase();
-    var bv = (b[key]||"").toString().toLowerCase();
-    return sortDir * av.localeCompare(bv);
-  });
-  headers[colIdx+1].classList.add(sortDir===1?"sort-asc":"sort-desc");
-  filterSheet();
-}
-
-function exportCSV() {
-  var rows = rawSheetData;
-  if (!rows.length) { toast("Koi data nahi export karne ke liye","err"); return; }
-  var headers = ["Date","Check-In","Employee","Contact","Shop","Shopkeeper","Shop Contact","Area","Notes","Map","Photo","Check-Out","Duration"];
-  var csv = headers.join(",") + "\n";
-  rows.forEach(function(r) {
-    csv += [fmtDate(r.date),r.checkinTime,r.empName,r.empContact,r.shopName,
-      r.shopkeeperName,r.shopkeeperContact,r.area,
-      '"'+(r.notes||"").replace(/"/g,'""')+'"',
-      r.mapLink,r.photo,r.checkoutTime,r.duration
-    ].join(",") + "\n";
-  });
-  var blob = new Blob([csv], {type:"text/csv"});
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "attendance_" + todayStr() + ".csv";
-  a.click();
-  toast("CSV downloaded!","ok");
-}
-
-/* ════════════════════════════════════════
-   CALENDAR + TIMELINE
-════════════════════════════════════════ */
-function initCalendar() {
-  renderCal();
-  // Load dates that have data for current month
-  fetchDatesWithData();
-}
-
-function calPrev() { calState.month--; if(calState.month<0){calState.month=11;calState.year--;} renderCal(); fetchDatesWithData(); }
-function calNext() { calState.month++; if(calState.month>11){calState.month=0;calState.year++;} renderCal(); fetchDatesWithData(); }
-
-function renderCal() {
-  var months = ["January","February","March","April","May","June",
-                "July","August","September","October","November","December"];
-  $("calMonthLbl").textContent = months[calState.month] + " " + calState.year;
-  var firstDay = new Date(calState.year, calState.month, 1).getDay();
-  var daysInMonth = new Date(calState.year, calState.month+1, 0).getDate();
-  var today = new Date();
-  var todayKey = today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
-  var html = "";
-  // Blank cells before 1st
-  for (var b = 0; b < firstDay; b++) html += '<div class="cal-day empty"></div>';
-  // Days
-  for (var d = 1; d <= daysInMonth; d++) {
-    var dateStr = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
-    var cls = "cal-day";
-    if (dateStr === todayKey)        cls += " today";
-    if (dateStr === tlSelectedDate)  cls += " selected";
-    if (datesWithData.has(dateStr))  cls += " has-data";
-    html += '<div class="' + cls + '" onclick="selectCalDay(\'' + dateStr + '\')">' + d + '</div>';
-  }
-  $("calDays").innerHTML = html;
-}
-
-function fetchDatesWithData() {
-  // Load all dates in current month that have attendance
-  var from = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-01";
-  var lastDay = new Date(calState.year, calState.month+1, 0).getDate();
-  var to   = calState.year + "-" + String(calState.month+1).padStart(2,"0") + "-" + String(lastDay).padStart(2,"0");
-  apiCall({action:"get_sheet_range", dateFrom:from, dateTo:to, empName:""})
-    .then(function(res) {
-      datesWithData = new Set();
-      (res.rows||[]).forEach(function(r) { datesWithData.add(fmtDate(r.date)); });
-      renderCal();
-    }).catch(function(){});
-}
-
-function selectCalDay(dateStr) {
-  tlSelectedDate = dateStr;
-  renderCal();
-  loadTimeline();
-}
-
-function loadTimeline() {
-  if (!tlSelectedDate) return;
-  var emp = $("tlEmpFilter").value;
-  $("tlDate").textContent = new Date(tlSelectedDate + "T00:00:00").toLocaleDateString("en-IN",
-    {weekday:"long", day:"numeric", month:"long", year:"numeric"});
-  $("tlBody").innerHTML = '<div class="tl-empty"><span class="spin"></span> Loading timeline...</div>';
-  // Fetch attendance + GPS for selected date
-  Promise.all([
-    apiCall({action:"get_sheet_range", dateFrom:tlSelectedDate, dateTo:tlSelectedDate, empName:emp}),
-    apiCall({action:"get_route", name:emp, date:tlSelectedDate})
-  ]).then(function(results) {
-    var attRows = results[0].rows || [];
-    var gpsRows = results[1].route || [];
-    buildTimeline(attRows, gpsRows);
-  }).catch(function(e) {
-    $("tlBody").innerHTML = '<div class="tl-empty" style="color:var(--danger)">Error loading: ' + e.message + '</div>';
+    sel.value = cur;
   });
 }
 
-function buildTimeline(attRows, gpsRows) {
-  if (!attRows.length && !gpsRows.length) {
-    $("tlBody").innerHTML = '<div class="tl-empty">Is din ka koi data nahi &#128197;</div>';
-    $("tlCount").textContent = "";
-    return;
-  }
-  // Group by employee
-  var empMap = {};
-  attRows.forEach(function(r) {
-    var nm = r.empName || "Unknown";
-    if (!empMap[nm]) empMap[nm] = {att:[], gps:[]};
-    empMap[nm].att.push(r);
-  });
-  gpsRows.forEach(function(g) {
-    var nm = g.name || "Unknown";
-    if (!empMap[nm]) empMap[nm] = {att:[], gps:[]};
-    empMap[nm].gps.push(g);
-  });
+function populateAlEmpSelect() { populateEmpSelects(); }
 
-  var total = attRows.length;
-  $("tlCount").textContent = total + " check-in" + (total!==1?"s":"");
-
-  var html = "";
-  Object.keys(empMap).forEach(function(nm) {
-    var data = empMap[nm];
-    var initial = nm.charAt(0).toUpperCase();
-    html += '<div class="tl-emp-block">';
-    html += '<div class="tl-emp-name"><div class="tl-emp-avatar">' + initial + '</div>' + nm + '</div>';
-    html += '<div class="tl-track">';
-
-    // For each attendance row
-    data.att.forEach(function(r) {
-      // Check-in event
-      html += '<div class="tl-event ev-checkin">' +
-        '<div class="ev-time"><span class="ev-dot in"></span>' + (r.checkinTime||"--") + ' &nbsp;&#10003; Check-In</div>' +
-        '<div class="ev-title">&#127970; ' + (r.shopName||"No shop recorded") + '</div>';
-      if (r.shopkeeperName || r.area || r.notes) {
-        html += '<div class="ev-detail">';
-        if (r.shopkeeperName) html += 'Shopkeeper: ' + r.shopkeeperName + '<br>';
-        if (r.shopkeeperContact) html += 'Contact: ' + r.shopkeeperContact + '<br>';
-        if (r.notes) html += 'Notes: ' + r.notes;
-        html += '</div>';
-      }
-      html += '<div class="ev-tags">';
-      if (r.area)     html += '<span class="ev-tag t-area">&#128205; ' + r.area + '</span>';
-      if (r.shopName) html += '<span class="ev-tag t-shop">&#127970; ' + r.shopName + '</span>';
-      if (r.mapLink)  html += '<a class="ev-tag t-area" href="' + r.mapLink + '" target="_blank" style="text-decoration:none;">&#128204; Map</a>';
-      if (r.photo)    html += '<a class="ev-tag" href="' + r.photo + '" target="_blank" style="text-decoration:none;background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.25);">&#128247; Photo</a>';
-      html += '</div></div>';
-
-      // GPS pings for this employee (between checkin and checkout time)
-      if (data.gps.length > 0) {
-        var ciMs = parseTime(r.checkinTime);
-        var coMs = r.checkoutTime ? parseTime(r.checkoutTime) : Infinity;
-        data.gps.forEach(function(g) {
-          var gMs = parseTime(g.time);
-          if (gMs >= ciMs && gMs <= coMs) {
-            html += '<div class="tl-event ev-gps">' +
-              '<div class="ev-time"><span class="ev-dot gps"></span>' + g.time + ' &nbsp;&#128205; GPS Ping</div>' +
-              '<div class="ev-detail">' + Number(g.lat).toFixed(5) + ', ' + Number(g.lng).toFixed(5) +
-              (g.accuracy ? ' &nbsp;|&nbsp; Acc: ~' + Math.round(g.accuracy) + 'm' : '') + '</div>' +
-              '<div class="ev-tags"><a class="ev-tag t-area" href="https://www.google.com/maps?q=' + g.lat + ',' + g.lng + '" target="_blank" style="text-decoration:none;">&#128663; Navigate</a></div>' +
-              '</div>';
-          }
-        });
-      }
-
-      // Check-out event
-      if (r.checkoutTime) {
-        // Field time bar
-        var ciMs = parseTime(r.checkinTime);
-        var coMs = parseTime(r.checkoutTime);
-        var dur = coMs - ciMs;
-        var pct = Math.min(100, Math.round(dur / (8*3600000) * 100));
-        html += '<div class="tl-event ev-checkout">' +
-          '<div class="ev-time"><span class="ev-dot out"></span>' + r.checkoutTime + ' &nbsp;&#8226; Check-Out</div>' +
-          '<div class="ev-title" style="color:var(--danger);">Day Complete</div>' +
-          '<div class="tl-bar-outer"><div class="tl-bar-inner" style="width:' + pct + '%"></div></div>' +
-          '<div class="ev-tags"><span class="ev-tag t-dur">&#9201; ' + (r.duration||"--") + '</span></div>' +
-          '</div>';
-      }
-    });
-
-    html += '</div></div>';
-  });
-  $("tlBody").innerHTML = html;
-}
-
-function parseTime(tStr) {
-  if (!tStr) return 0;
-  // Handles "HH:MM:SS" or "HH:MM:SS AM/PM"
-  var m = tStr.match(/(\d+):(\d+):?(\d*)\s*(AM|PM)?/i);
-  if (!m) return 0;
-  var h = parseInt(m[1]), mn = parseInt(m[2]), s = parseInt(m[3]||0);
-  if (m[4] && m[4].toUpperCase()==="PM" && h < 12) h += 12;
-  if (m[4] && m[4].toUpperCase()==="AM" && h === 12) h = 0;
-  return (h*3600 + mn*60 + s) * 1000;
-}
-
-/* ════════════════════════════════════════
-   LIVE TRACKING
-════════════════════════════════════════ */
-function loadLive() {
-  $("trackGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;"><span class="spin"></span> Loading live locations...</div>';
-  apiCall({action:"get_live_locations"}).then(function(res) {
-    var locs = res.locations || [];
-    if (!locs.length) {
-      $("trackGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px;">Koi active employee nahi abhi</div>';
-      return;
-    }
-    $("trackGrid").innerHTML = locs.map(function(l) {
-      var mapUrl = "https://www.google.com/maps?q=" + l.lat + "," + l.lng;
-      var navUrl = "https://www.google.com/maps/dir//" + l.lat + "," + l.lng;
-      return '<div class="track-card active">' +
-        '<div class="tc-head">' +
-        '<div class="tl-emp-avatar">' + l.name.charAt(0) + '</div>' +
-        '<div><div class="tc-name">' + l.name + '</div>' +
-        '<div class="tc-time">Last ping: ' + l.time + '</div></div>' +
-        '</div>' +
-        '<div class="tc-coords">&#128205; ' + Number(l.lat).toFixed(5) + ', ' + Number(l.lng).toFixed(5) + '</div>' +
-        (l.accuracy ? '<div style="font-size:11px;color:var(--dim);font-family:var(--mono);margin-bottom:10px;">Accuracy: ~' + Math.round(l.accuracy) + 'm</div>' : '') +
-        '<div class="tc-btns">' +
-        '<a class="tc-btn maps" href="' + mapUrl + '" target="_blank">&#128204; Maps</a>' +
-        '<a class="tc-btn nav"  href="' + navUrl + '" target="_blank">&#128663; Navigate</a>' +
-        '</div></div>';
-    }).join("");
-  }).catch(function(e) {
-    $("trackGrid").innerHTML = '<div style="color:var(--danger);font-family:var(--mono);font-size:12px;padding:20px;">Error: ' + e.message + '</div>';
+function renderEmployees() {
+  var grid = document.getElementById("emp-grid");
+  grid.innerHTML = "";
+  allEmployees.forEach(e => {
+    var card = document.createElement("div");
+    card.className = "emp-card";
+    card.innerHTML = `
+      <div class="emp-name">${e.name}</div>
+      <div class="emp-meta">${e.designation||"--"} &nbsp;|&nbsp; ${e.contact||"--"}</div>
+      <div class="emp-actions">
+        <button class="emp-btn edit" onclick='openEmpModal(${JSON.stringify(e)})'>✏️ Edit</button>
+        <button class="emp-btn del" onclick="deleteEmp('${e.name}')">🗑️ Delete</button>
+      </div>`;
+    grid.appendChild(card);
   });
 }
 
-function populateTrackDropdowns() {
-  var sel1 = $("routeEmp");
-  var sel2 = $("tlEmpFilter");
-  var existing = sel1.innerHTML;
-  if (existing.includes("option") && employeeList.length) {
-    var opts = '<option value="">-- Select Employee --</option>' +
-      employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
-    sel1.innerHTML = opts;
-    sel2.innerHTML = '<option value="">All Employees</option>' +
-      employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
-  }
+function openEmpModal(emp) {
+  document.getElementById("empModalTitle").textContent = emp ? "Edit Employee" : "Add Employee";
+  document.getElementById("empOldName").value  = emp ? emp.name : "";
+  document.getElementById("emName").value      = emp ? emp.name : "";
+  document.getElementById("emPin").value       = emp ? emp.pin  : "";
+  document.getElementById("emContact").value   = emp ? emp.contact : "";
+  document.getElementById("emDesig").value     = emp ? (emp.designation||"") : "";
+  document.getElementById("emAddr").value      = emp ? (emp.address||"") : "";
+  document.getElementById("empModal").classList.add("show");
 }
 
-function loadRoute() {
-  var emp  = $("routeEmp").value;
-  var date = $("routeDate").value;
-  if (!emp || !date) { toast("Employee aur date dono select karo","err"); return; }
-  $("routeSection").style.display = "none";
-  $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty"><span class="spin"></span> Loading route...</td></tr>';
-  apiCall({action:"get_route", name:emp, date:date}).then(function(res) {
-    var route = res.route || [];
-    $("routeTitle").textContent = emp + " — " + date + " (" + route.length + " points)";
-    if (!route.length) {
-      $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty">Is date ka koi route nahi</td></tr>';
-      $("routeSection").style.display = "block";
-      return;
-    }
-    var mapsUrl = "https://www.google.com/maps/dir/" + route.map(function(r){return r.lat+","+r.lng;}).join("/");
-    $("routeMapsLink").href = mapsUrl;
-    $("routeTbody").innerHTML = route.map(function(r, i) {
-      return '<tr>' +
-        '<td class="row-num">' + (i+1) + '</td>' +
-        '<td style="color:var(--lime);">' + r.time + '</td>' +
-        '<td>' + Number(r.lat).toFixed(6) + '</td>' +
-        '<td>' + Number(r.lng).toFixed(6) + '</td>' +
-        '<td><span class="cell-chip chip-in">' + (r.status||"tracking") + '</span></td>' +
-        '<td>' + (r.accuracy ? '~'+Math.round(r.accuracy)+'m' : '--') + '</td>' +
-        '<td><a class="cell-chip chip-map" href="https://www.google.com/maps?q=' + r.lat + ',' + r.lng + '" target="_blank">&#128205;</a></td>' +
-        '</tr>';
-    }).join("");
-    $("routeSection").style.display = "block";
-  }).catch(function(e) {
-    $("routeTbody").innerHTML = '<tr><td colspan="7" class="sheet-empty" style="color:var(--danger)">Error: ' + e.message + '</td></tr>';
-    $("routeSection").style.display = "block";
-  });
-}
-
-/* ════════════════════════════════════════
-   EMPLOYEES
-════════════════════════════════════════ */
-function loadEmployees() {
-  $("empGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;"><span class="spin"></span> Loading...</div>';
-  apiCall({action:"get_employees"}).then(function(res) {
-    employeeList = res.employees || [];
-    populateFilters();
-    populateTrackDropdowns();
-    renderEmpGrid();
-  }).catch(function() {
-    $("empGrid").innerHTML = '<div style="color:var(--danger);font-family:var(--mono);font-size:12px;">Error loading employees</div>';
-  });
-}
-
-function populateFilters() {
-  var opts = '<option value="">All Employees</option>' +
-    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
-  $("sheetEmpFilter").innerHTML = opts;
-  $("tlEmpFilter").innerHTML = '<option value="">All Employees</option>' +
-    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
-  $("routeEmp").innerHTML = '<option value="">-- Select Employee --</option>' +
-    employeeList.map(function(e) { return '<option value="'+e.name+'">'+e.name+'</option>'; }).join("");
-}
-
-function renderEmpGrid() {
-  if (!employeeList.length) {
-    $("empGrid").innerHTML = '<div style="color:var(--dim);font-family:var(--mono);font-size:12px;">Koi employee nahi. Add karo.</div>';
-    return;
-  }
-  $("empGrid").innerHTML = employeeList.map(function(e, i) {
-    var init = e.name.charAt(0).toUpperCase();
-    return '<div class="emp-card status-out">' +
-      '<div class="ec-top">' +
-      '<div class="ec-av">' + init + '</div>' +
-      '<div>' +
-      '<div class="ec-name">' + e.name + '</div>' +
-      '<div class="ec-desg">' + (e.designation||"--") + '</div>' +
-      '</div>' +
-      '<span class="ec-status out">ACTIVE</span>' +
-      '</div>' +
-      '<div class="ec-info">' +
-      '&#128222; ' + (e.contact||"--") + '<br>' +
-      '&#128205; ' + (e.address||"--") + '<br>' +
-      '&#128272; PIN: ' + "*".repeat((e.pin||"").length) +
-      '</div>' +
-      '<div class="ec-actions">' +
-      '<button class="ec-btn edit" onclick="openEditEmp(' + i + ')">&#9998; Edit</button>' +
-      '<button class="ec-btn del"  onclick="deleteEmp(\'' + e.name.replace(/'/g,"\\'") + '\')">&#128465; Delete</button>' +
-      '</div>' +
-      '</div>';
-  }).join("");
-}
-
-function openAddEmp() {
-  editingEmp = null;
-  $("empModalTitle").textContent = "Add Employee";
-  ["eNm","ePin","eCont","eDesg","eAddr"].forEach(function(id){ $(id).value = ""; });
-  $("empModal").classList.add("show");
-  setTimeout(function(){ $("eNm").focus(); }, 200);
-}
-function openEditEmp(i) {
-  editingEmp = employeeList[i];
-  $("empModalTitle").textContent = "Edit Employee";
-  $("eNm").value   = editingEmp.name || "";
-  $("ePin").value  = editingEmp.pin  || "";
-  $("eCont").value = editingEmp.contact || "";
-  $("eDesg").value = editingEmp.designation || "";
-  $("eAddr").value = editingEmp.address || "";
-  $("empModal").classList.add("show");
-}
-function closeEmpModal() { $("empModal").classList.remove("show"); }
+function closeEmpModal() { document.getElementById("empModal").classList.remove("show"); }
 
 function saveEmployee() {
-  var nm   = $("eNm").value.trim();
-  var pin  = $("ePin").value.trim();
-  var cont = $("eCont").value.trim();
-  var desg = $("eDesg").value.trim();
-  var addr = $("eAddr").value.trim();
-  if (!nm || !pin || !cont) { toast("Name, PIN, Contact zaroor bharein","err"); return; }
-  if (!/^[0-9]{4,6}$/.test(pin)) { toast("PIN 4-6 digits hona chahiye","err"); return; }
-  var btn = $("empSaveBtn");
-  btn.textContent = "Saving..."; btn.disabled = true;
-  var action = editingEmp ? "update_employee" : "add_employee";
-  apiCall({action:action, oldName:editingEmp?editingEmp.name:"",
-    name:nm, pin:pin, contact:cont, designation:desg, address:addr})
-  .then(function(res) {
-    if (res.status === "success") {
-      toast(editingEmp ? "Employee updated!" : "Employee added!","ok");
+  var name    = document.getElementById("emName").value.trim();
+  var pin     = document.getElementById("emPin").value.trim();
+  var contact = document.getElementById("emContact").value.trim();
+  var desig   = document.getElementById("emDesig").value.trim();
+  var addr    = document.getElementById("emAddr").value.trim();
+  var oldName = document.getElementById("empOldName").value;
+  if (!name || !pin || !contact) { toast("Name, PIN, Contact zaroori hai","error"); return; }
+  if (contact.length !== 10) { toast("10 digit contact number darj karo","error"); return; }
+  var payload = oldName
+    ? {action:"update_employee", oldName, name, pin, contact, designation:desig, address:addr}
+    : {action:"add_employee", name, pin, contact, designation:desig, address:addr};
+  apiPost(payload).then(r => {
+    if (r.status==="success") {
+      toast("Employee save ho gaya ✓","success");
       closeEmpModal();
-      loadEmployees();
-    } else {
-      toast("Error: " + (res.message||"Unknown"),"err");
-    }
-  }).catch(function() { toast("Network error","err"); })
-  .finally(function() { btn.textContent = "Save Employee"; btn.disabled = false; });
+      loadAllEmployees();
+    } else toast(r.message||"Error","error");
+  });
 }
 
 function deleteEmp(name) {
-  if (!confirm('"'+name+'" ko delete karna chahte hain?')) return;
-  apiCall({action:"delete_employee", name:name}).then(function(res) {
-    if (res.status === "success") { toast("Employee deleted","ok"); loadEmployees(); }
-    else toast("Error: " + (res.message||""), "err");
-  }).catch(function() { toast("Network error","err"); });
+  if (!confirm(name+" ko delete karna chahte ho?")) return;
+  apiPost({action:"delete_employee", name}).then(r => {
+    if (r.status==="success") { toast("Deleted ✓","success"); loadAllEmployees(); }
+    else toast(r.message||"Error","error");
+  });
 }
 
-/* ════════════════════════════════════════
-   SETTINGS
-════════════════════════════════════════ */
-function loadSettings() {
-  var savedUrl = localStorage.getItem("admin_script_url") || SCRIPT_URL;
-  $("scriptUrl").value = savedUrl;
+// ════════════════════════════════════════
+// OVERVIEW
+// ════════════════════════════════════════
+function loadOverview() {
+  apiPost({action:"get_today_attendance"}).then(r => {
+    if (!r.rows) return;
+    var checkedIn = r.rows.filter(row=>!row.checkoutTime).length;
+    document.getElementById("ov-checkedin").textContent = checkedIn;
+    document.getElementById("ov-total").textContent     = r.totalEmployees || allEmployees.length;
+    document.getElementById("ov-visits").textContent    = r.rows.length;
+    document.getElementById("ov-gps").textContent       = r.gpsPings || 0;
+    // Table — newest first
+    var rows = [...r.rows].reverse();
+    var tbody = document.getElementById("ov-tbody");
+    tbody.innerHTML = "";
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;">Aaj koi data nahi</td></tr>';
+      return;
+    }
+    rows.forEach(row => {
+      var tr = document.createElement("tr");
+      var badge = row.checkoutTime
+        ? '<span class="badge red">Checked Out</span>'
+        : '<span class="badge green">In Field</span>';
+      tr.innerHTML = `
+        <td><strong>${row.empName}</strong></td>
+        <td>${fmtTime(row.checkinTime)}</td>
+        <td>${row.shopName||"--"}</td>
+        <td>${row.area||"--"}</td>
+        <td>${badge}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
 }
+
+// ════════════════════════════════════════
+// SHEET VIEW
+// ════════════════════════════════════════
+function loadSheet() {
+  var from = document.getElementById("sh-from").value;
+  var to   = document.getElementById("sh-to").value;
+  var emp  = document.getElementById("sh-emp").value;
+  var tbody = document.getElementById("sh-tbody");
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr>';
+  apiPost({action:"get_sheet_range", dateFrom:from, dateTo:to, empName:emp}).then(r => {
+    if (!r.rows) return;
+    sheetData = [...r.rows].reverse(); // Newest first (descending)
+    document.getElementById("sh-count").textContent = "("+sheetData.length+" records)";
+    tbody.innerHTML = "";
+    if (!sheetData.length) {
+      tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted);">Koi data nahi</td></tr>';
+      return;
+    }
+    sheetData.forEach((row, i) => {
+      var tr = document.createElement("tr");
+      var badge = row.checkoutTime
+        ? '<span class="badge red">Out</span>'
+        : '<span class="badge green">In</span>';
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${fmtDate(row.date)}</td>
+        <td><strong>${row.empName}</strong></td>
+        <td>${fmtTime(row.checkinTime)}</td>
+        <td>${row.shopName||"--"}</td>
+        <td>${row.shopkeeperName||"--"}</td>
+        <td>${row.empContact||"--"}</td>
+        <td>${row.area||"--"}</td>
+        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${row.notes||"--"}</td>
+        <td>${row.checkoutTime?fmtTime(row.checkoutTime):"--"} ${badge}</td>
+        <td>${row.duration||"--"}</td>
+        <td><button class="emp-btn edit" onclick="openEditModal(${i})">✏️</button></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function openEditModal(idx) {
+  var row = sheetData[idx];
+  if (!row) return;
+  document.getElementById("editRowIdx").value   = idx;
+  document.getElementById("editModalSub").textContent = row.empName + " — " + fmtDate(row.date);
+  document.getElementById("editShop").value     = row.shopName||"";
+  document.getElementById("editKeeper").value   = row.shopkeeperName||"";
+  document.getElementById("editArea").value     = row.area||"";
+  document.getElementById("editNotes").value    = row.notes||"";
+  document.getElementById("editModal").classList.add("show");
+}
+function closeEditModal() { document.getElementById("editModal").classList.remove("show"); }
+function saveEdit() {
+  var idx = parseInt(document.getElementById("editRowIdx").value);
+  var row = sheetData[idx];
+  if (!row) return;
+  var payload = {
+    action:          "update_attendance_row",
+    date:            row.date,
+    empName:         row.empName,
+    checkinTime:     row.checkinTime,
+    shopName:        document.getElementById("editShop").value.trim(),
+    shopkeeperName:  document.getElementById("editKeeper").value.trim(),
+    area:            document.getElementById("editArea").value.trim(),
+    notes:           document.getElementById("editNotes").value.trim()
+  };
+  apiPost(payload).then(r => {
+    if (r.status==="success") {
+      toast("Updated ✓","success");
+      closeEditModal();
+      loadSheet();
+    } else toast(r.message||"Error","error");
+  });
+}
+
+function exportCSV() {
+  if (!sheetData.length) { toast("Pehle data load karo","error"); return; }
+  var headers = ["Date","Employee","Check-In","Shop","Shopkeeper","Contact","Area","Notes","Check-Out","Duration"];
+  var rows = sheetData.map(r => [
+    fmtDate(r.date), r.empName, fmtTime(r.checkinTime), r.shopName, r.shopkeeperName,
+    r.empContact, r.area, r.notes, r.checkoutTime?fmtTime(r.checkoutTime):"", r.duration
+  ]);
+  var csv = [headers, ...rows].map(r => r.map(c => '"'+(c||"").toString().replace(/"/g,'""')+'"').join(",")).join("\n");
+  var a = document.createElement("a");
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+  a.download = "attendance_"+new Date().toISOString().split("T")[0]+".csv";
+  a.click();
+}
+
+// ════════════════════════════════════════
+// ROUTE MAP
+// ════════════════════════════════════════
+function loadRoute() {
+  var emp  = document.getElementById("rt-emp").value;
+  var date = document.getElementById("rt-date").value;
+  var map  = document.getElementById("routeMap");
+  if (!emp || !date) { toast("Employee aur date chunein","error"); return; }
+  map.innerHTML = '<div class="map-placeholder">Loading...</div>';
+  apiPost({action:"get_route", name:emp, date:date}).then(r => {
+    if (!r.route || !r.route.length) {
+      map.innerHTML = '<div class="map-placeholder">Is date ka koi GPS data nahi mila</div>';
+      return;
+    }
+    // Filter only check-in time (status=tracking only while checked-in)
+    var points = r.route;
+    // Build route stops — reverse geocode using display names
+    map.innerHTML = "";
+    var html = '<div style="padding:12px;">';
+    html += '<div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:12px;">';
+    html += '📍 '+emp+' — '+fmtDate(date)+'</div>';
+    // Draw points
+    points.forEach((pt, i) => {
+      var isFirst = i===0;
+      var isLast  = i===points.length-1;
+      var dotClass = isFirst ? "start" : isLast ? "end" : "";
+      var label = isFirst ? "🟢 Check-In Location" : isLast ? "🔴 Last Known Location" : "📍 Location "+( i+1);
+      html += `<div class="route-stop">
+        <div class="route-dot ${dotClass}"></div>
+        <div>
+          <div class="route-place">${label}</div>
+          <div class="route-time">⏰ ${pt.time} &nbsp;|&nbsp; 📍 ${parseFloat(pt.lat).toFixed(4)}, ${parseFloat(pt.lng).toFixed(4)}</div>
+          <a href="https://maps.google.com/?q=${pt.lat},${pt.lng}" target="_blank" style="font-size:11px;color:var(--accent);font-weight:700;">Google Maps pe dekho →</a>
+        </div>
+      </div>`;
+      if (!isLast) html += '<div class="route-line"></div>';
+    });
+    // Distance
+    var totalM = 0;
+    for (var i=1; i<points.length; i++) {
+      totalM += haversine(points[i-1].lat, points[i-1].lng, points[i].lat, points[i].lng);
+    }
+    var distStr = totalM < 1000 ? Math.round(totalM)+" m" : (totalM/1000).toFixed(2)+" km";
+    html += '<div style="margin-top:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;">';
+    html += '<span style="font-size:13px;font-weight:900;color:var(--accent);">Total Distance: '+distStr+'</span>';
+    html += ' &nbsp;|&nbsp; <span style="font-size:12px;color:var(--muted);">'+points.length+' GPS points</span></div>';
+    html += '</div>';
+    map.innerHTML = html;
+  });
+}
+
+function haversine(lat1,lon1,lat2,lon2) {
+  var R=6371000, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ════════════════════════════════════════
+// ALLOWANCE
+// ════════════════════════════════════════
+function saveRate() {
+  var r = parseFloat(document.getElementById("ratePerKm").value);
+  if (isNaN(r) || r < 0) { toast("Sahi rate darj karo","error"); return; }
+  store.set("ratePerKm", r);
+  toast("Rate save ho gaya: ₹"+r+"/km ✓","success");
+}
+
+function calcAllowance() {
+  var emp  = document.getElementById("al-emp").value;
+  var from = document.getElementById("al-from").value;
+  var to   = document.getElementById("al-to").value;
+  var res  = document.getElementById("allowanceResult");
+  if (!emp) { toast("Employee chunein","error"); return; }
+  var rate = parseFloat(store.get("ratePerKm") || 2);
+  // Get GPS route for date range
+  res.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);">Calculating...</div>';
+  // Fetch all routes for date range
+  var dates = getDatesInRange(from, to);
+  var promises = dates.map(d => apiPost({action:"get_route", name:emp, date:d}));
+  Promise.all(promises).then(results => {
+    var totalM = 0;
+    var dateBreakdown = [];
+    results.forEach((r, i) => {
+      if (!r.route || !r.route.length) return;
+      var dm = 0;
+      for (var j=1; j<r.route.length; j++) {
+        dm += haversine(r.route[j-1].lat, r.route[j-1].lng, r.route[j].lat, r.route[j].lng);
+      }
+      totalM += dm;
+      dateBreakdown.push({date:dates[i], dist:dm});
+    });
+    var totalKm  = totalM/1000;
+    var amount   = totalKm * rate;
+    var paidKey  = "allow_paid_"+emp+"_"+from+"_"+to;
+    var isPaid   = store.get(paidKey);
+    var distStr  = totalM < 1000 ? Math.round(totalM)+"m" : totalKm.toFixed(2)+"km";
+
+    var html = '<div class="allow-card">';
+    html += '<div class="allow-lbl">Total Distance</div>';
+    html += '<div class="allow-val">'+distStr+'</div>';
+    html += '<div style="display:flex;gap:12px;margin-top:8px;">';
+    html += '<div><div style="font-size:11px;color:var(--muted);">Rate</div><div style="font-weight:800;font-size:14px;">₹'+rate+'/km</div></div>';
+    html += '<div><div style="font-size:11px;color:var(--muted);">Allowance</div><div style="font-weight:900;font-size:18px;color:var(--accent);">₹'+amount.toFixed(2)+'</div></div>';
+    html += '</div>';
+    html += isPaid
+      ? '<div class="allow-paid">✓ Allowance paid on '+fmtDate(isPaid)+'</div>'
+      : '<div class="allow-due">⚠️ Allowance due: ₹'+amount.toFixed(2)+'</div>';
+    html += '</div>';
+    // Pay button
+    if (!isPaid) {
+      html += '<button class="btn green" style="max-width:200px;margin-bottom:12px;" onclick="markPaid(\''+emp+'\',\''+from+'\',\''+to+'\')">✓ Mark as Paid</button>';
+    }
+    // Breakdown
+    if (dateBreakdown.length) {
+      html += '<div class="sec-title">📅 Date wise Breakdown</div>';
+      html += '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Distance</th><th>Amount</th></tr></thead><tbody>';
+      dateBreakdown.forEach(d => {
+        var km = d.dist/1000;
+        var ds = d.dist<1000 ? Math.round(d.dist)+"m" : km.toFixed(2)+"km";
+        html += `<tr><td>${fmtDate(d.date)}</td><td>${ds}</td><td>₹${(km*rate).toFixed(2)}</td></tr>`;
+      });
+      html += '</tbody></table></div>';
+    }
+    res.innerHTML = html;
+  });
+}
+
+function markPaid(emp, from, to) {
+  var key = "allow_paid_"+emp+"_"+from+"_"+to;
+  store.set(key, new Date().toISOString().split("T")[0]);
+  toast("Allowance paid mark ho gaya ✓","success");
+  calcAllowance();
+}
+
+function getDatesInRange(from, to) {
+  var dates = [];
+  var cur   = new Date(from);
+  var end   = new Date(to);
+  while (cur <= end) {
+    dates.push(cur.toISOString().split("T")[0]);
+    cur.setDate(cur.getDate()+1);
+  }
+  return dates;
+}
+
+// ════════════════════════════════════════
+// SETTINGS — CHANGE PASSWORD
+// ════════════════════════════════════════
 function changePass() {
-  var newU = $("newUser").value.trim();
-  var newP = $("newPass").value;
-  var conf = $("confPass").value;
-  var curP = $("currentPass") ? $("currentPass").value : "";
-  if (!newU || !newP)    { toast("Sab fields bharein","err"); return; }
-  if (newP !== conf)     { toast("Passwords match nahi karte!","err"); return; }
-  if (newP.length < 4)   { toast("Password kam se kam 4 characters ka ho","err"); return; }
-  var sess = JSON.parse(localStorage.getItem(SESSION_KEY)||"{}");
-  apiCall({
+  var oldP = document.getElementById("sOldPass").value;
+  var newU = document.getElementById("sNewUser").value.trim();
+  var newP = document.getElementById("sNewPass").value;
+  if (!oldP || !newU || !newP) { toast("Sab fields bharein","error"); return; }
+  apiPost({
     action:"admin_change_pass",
-    currentUser: sess.user || "",
-    currentPass: curP,
+    currentUser: adminSession.user,
+    currentPass: oldP,
     newUser: newU,
     newPass: newP
-  }).then(function(res) {
-    if (res.status === "success") {
-      toast("Password update ho gaya! Ab naye credentials se login karo ✓","ok");
-      setTimeout(function() { doLogout(); }, 2000);
-    } else {
-      toast("Error: " + (res.message||"Unknown"),"err");
-    }
-  }).catch(function() { toast("Network error","err"); });
-}
-function saveUrl() {
-  var url = $("scriptUrl").value.trim();
-  if (!url) { toast("URL empty hai","err"); return; }
-  localStorage.setItem("admin_script_url", url);
-  SCRIPT_URL = url;
-  toast("URL saved! ✓","ok");
+  }).then(r => {
+    if (r.status==="success") {
+      toast("Password change ho gaya. Dobara login karo.","success");
+      setTimeout(doLogout, 2000);
+    } else toast(r.message||"Error","error");
+  });
 }
 
-/* ════════════════════════════════════════
-   INIT — Check session
-════════════════════════════════════════ */
-(function init() {
-  var sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-  // Session valid for 8 hours
-  if (sess && sess.ok && (Date.now() - sess.t) < 8 * 3600000) {
-    $("loginPage").style.display = "none";
-    $("appPage").style.display   = "flex";
-    onAppInit();
-  }
-  // Enter key on login
-  $("lUser").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") $("lPass").focus();
+// ════════════════════════════════════════
+// CUSTOMIZATION
+// ════════════════════════════════════════
+function loadCustom() {
+  var grid = document.getElementById("customGrid");
+  grid.innerHTML = "";
+  CUSTOM_ITEMS.forEach(item => {
+    var checked = store.get(item.id) !== false; // default true
+    var div = document.createElement("div");
+    div.className = "custom-item";
+    div.innerHTML = `<input type="checkbox" id="c_${item.id}" ${checked?"checked":""}><label for="c_${item.id}">${item.lbl}</label>`;
+    grid.appendChild(div);
   });
+}
+
+function saveCustom() {
+  CUSTOM_ITEMS.forEach(item => {
+    var cb = document.getElementById("c_"+item.id);
+    if (cb) store.set(item.id, cb.checked);
+  });
+  applyCustom();
+  toast("View preferences save ho gayi ✓","success");
+}
+
+function applyCustom() {
+  var showStats = store.get("show_overview_stats") !== false;
+  var showTable = store.get("show_overview_table") !== false;
+  var el;
+  el = document.querySelector(".stat-grid"); if(el) el.style.display = showStats?"":"none";
+  el = document.querySelector(".tbl-wrap"); if(el) el.style.display = showTable?"":"none";
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+(function init() {
+  var sess = store.get("adminSess");
+  if (sess && sess.t && (Date.now()-sess.t) < 8*3600*1000) {
+    adminSession = sess;
+    startApp();
+  }
 })();
 </script>
 </body>
