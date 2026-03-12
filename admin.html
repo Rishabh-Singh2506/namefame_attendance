@@ -161,8 +161,8 @@ Field Attendance Admin
 
 <script>
 
-  const API_URL="https://script.google.com/macros/s/AKfycbz28GI0lPZV7jcPpzPblWdHp03E5WfSylOfxt4hYbyEI3J8vzCOE-udPdH3_A6eeQ3J/exec"
-/* SIMPLE API POST */
+ const API_URL="https://script.google.com/macros/s/AKfycbz28GI0lPZV7jcPpzPblWdHp03E5WfSylOfxt4hYbyEI3J8vzCOE-udPdH3_A6eeQ3J/exec"
+
 function apiPost(data){
 
 return fetch(API_URL,{
@@ -175,22 +175,6 @@ body:JSON.stringify(data)
 .then(r=>r.json())
 
 }
-  
-function apiPost(data){
-
-return new Promise((resolve,reject)=>{
-
-google.script.run
-.withSuccessHandler(resolve)
-.withFailureHandler(reject)
-.api(data)
-
-})
-
-}
-
-/* TIME FORMAT */
-
 function fmtTime(t){
 if(!t) return ""
 return t
@@ -239,8 +223,7 @@ console.error(e)
 
 }
 
-window.onload=loadEmployees
-
+window.addEventListener("load", loadEmployees)
 </script>
 
 </body>
