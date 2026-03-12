@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check-In Photo • NAMEFAME</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">   <!-- agar styles.css hai to -->
+
+  <style>
+    body { background:#000; color:#fff; font-family:'Nunito',sans-serif; margin:0; height:100vh; overflow:hidden; }
+    .header { position:fixed; top:0; left:0; right:0; background:rgba(37,99,235,0.9); padding:12px; text-align:center; font-weight:700; font-size:18px; z-index:10; }
+    .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#1a1f2e; color:white; padding:12px 24px; border-radius:30px; font-weight:700; opacity:0; transition:all .4s; z-index:999; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(-10px); }
+    .cam-top { margin-top:56px; padding:12px; background:#111; display:flex; align-items:center; justify-content:space-between; }
+    .back { width:44px; height:44px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:12px; color:white; font-size:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+    .gps { position:absolute; bottom:80px; left:16px; right:16px; background:rgba(0,0,0,0.7); padding:10px; border-radius:12px; font-size:13px; text-align:center; display:none; }
+    .actions { position:fixed; bottom:0; left:0; right:0; padding:16px; background:#111; display:flex; gap:12px; }
+    .btn { flex:1; padding:14px; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; border:none; }
+    .capture { background:white; color:black; }
+    .send { background:#16a34a; color:white; display:none; }
+    .retake { background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); display:none; }
+  </style>
+</head>
+<body>
+
+<div class="header" id="empName">Loading...</div>
+
+<div id="toast" class="toast"></div>
+
+<div class="cam-top">
+  <div class="back" onclick="goBack()">←</div>
+  <div>Check-In Selfie Lo</div>
+  <div style="width:44px;"></div> <!-- spacer -->
+</div>
+
+<div style="position:relative; flex:1; height:calc(100vh - 56px - 80px);">
+  <video id="video" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
+  <img id="preview" style="width:100%; height:100%; object-fit:cover; display:none;">
+  <canvas id="canvas" style="display:none;"></canvas>
+  <div class="gps" id="gpsShow">📍 GPS loading...</div>
+</div>
+
+<div class="actions">
+  <button class="btn capture" id="btnCapture" onclick="capture()">📷 Capture</button>
+  <button class="btn retake" id="btnRetake" onclick="retake()">↩ Retake</button>
+  <button class="btn send" id="btnSend" onclick="sendCheckin()">✓ Send</button>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+
+let stream = null;
+let gps = null;
+
+function toast(msg, type = "info") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  setTimeout(() => t.className = "toast", 3000);
+}
+
+async function sendCheckin() {
+  const photo = document.getElementById("preview").src;
+  if (!photo || photo === "") return toast("Photo lo pehle", "error");
+
+  const payload = {
+    action: "checkin",
+    name: currentEmp.name,
+    contact: currentEmp.contact || "",
+    shopName: "",
+    shopkeeperName: "",
+    shopkeeperContact: "",
+    area: "",
+    notes: "",
+    mapLink: gps ? `https://maps.google.com/?q=${gps.lat},${gps.lng}` : "",
+    photo: photo
+  };
+
+  document.getElementById("btnSend").textContent = "Sending...";
+  document.getElementById("btnSend").disabled = true;
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.status === "success") {
+      localStorage.setItem("ci_" + currentEmp.name, JSON.stringify({
+        time: new Date().toLocaleTimeString(),
+        ms: Date.now()
+      }));
+      toast("Check-in ho gaya ✓", "success");
+      setTimeout(() => window.location.href = "index.html", 1200);
+    } else {
+      toast("Error: " + (data.message || "Try again"), "error");
+    }
+  } catch (e) {
+    toast("Network error", "error");
+  } finally {
+    document.getElementById("btnSend").textContent = "✓ Send";
+    document.getElementById("btnSend").disabled = false;
+  }
+}
+
+function capture() {
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  const preview = document.getElementById("preview");
+
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+
+  preview.src = canvas.toDataURL("image/jpeg", 0.7);
+  preview.style.display = "block";
+  video.style.display = "none";
+
+  document.getElementById("btnCapture").style.display = "none";
+  document.getElementById("btnRetake").style.display = "block";
+  document.getElementById("btnSend").style.display = "block";
+}
+
+function retake() {
+  document.getElementById("video").style.display = "block";
+  document.getElementById("preview").style.display = "none";
+  document.getElementById("btnCapture").style.display = "block";
+  document.getElementById("btnRetake").style.display = "none";
+  document.getElementById("btnSend").style.display = "none";
+}
+
+function goBack() {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  window.location.href = "index.html";
+}
+
+// Start camera + GPS
+(async function init() {
+  const emp = JSON.parse(localStorage.getItem("emp"));
+  if (!emp) return window.location.href = "index.html";
+
+  document.getElementById("empName").textContent = emp.name;
+  window.currentEmp = emp; // global for sendCheckin
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" }
+    });
+    document.getElementById("video").srcObject = stream;
+  } catch (e) {
+    toast("Camera access nahi mila", "error");
+  }
+
+  // GPS
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(p => {
+      gps = { lat: p.coords.latitude, lng: p.coords.longitude };
+      document.getElementById("gpsShow").textContent = `📍 ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`;
+      document.getElementById("gpsShow").style.display = "block";
+    }, () => {
+      document.getElementById("gpsShow").textContent = "Location nahi mila";
+      document.getElementById("gpsShow").style.display = "block";
+    }, { enableHighAccuracy: true });
+  }
+})();
+</script>
+</body>
+</html>
