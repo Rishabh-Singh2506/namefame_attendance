@@ -696,7 +696,40 @@ if (IS_INDEX) {
   })();
 
 } // END INDEX.HTML SECTION
+// Global expose — HTML onclick ke liye
+if (IS_INDEX) {
+  window.doLogout      = doLogout;
+  window.goVerify      = goVerify;
+  window.doLogin       = doLogin;
+  window.togglePin     = togglePin;
+  window.setLang       = setLang;
+  window.doCheckin     = doCheckin;
+  window.doCheckout    = doCheckout;
+  window.doNewVisit    = doNewVisit;
+  window.cancelVisit   = cancelVisit;
+  window.saveVisit     = saveVisit;
+  window.openVisitCamera  = openVisitCamera;
+  window.closeVisitCamera = closeVisitCamera;
+  window.vCapture      = vCapture;
+  window.vRetake       = vRetake;
+  window.vAccept       = vAccept;
+  window.doQuickPhoto  = doQuickPhoto;
+  window.closeCam      = closeCam;
+  window.capturePhoto  = capturePhoto;
+  window.retakePhoto   = retakePhoto;
+  window.acceptPhoto   = acceptPhoto;
+  window.loadDist      = loadDist;
+  window.installPWA    = installPWA;
+  window.dismissPWA    = dismissPWA;
+  window.showScreen    = showScreen;
+}
 
+if (IS_CHECKIN) {
+  window.ciFlipCamera    = ciFlipCamera;
+  window.ciCapturePhoto  = ciCapturePhoto;
+  window.ciRetakePhoto   = ciRetakePhoto;
+  window.ciSubmitCheckin = ciSubmitCheckin;
+}
 
 // ══════════════════════════════════════════
 // SECTION C: CHECKIN.HTML — Full Code
