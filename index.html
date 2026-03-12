@@ -438,8 +438,6 @@ var L = {
     ci:"Check-In",ciSub:"Start your day",co:"Check-Out",coSub:"End your day",
     re:"New Visit",reSub:"Log another visit",gSub:"What's on today?"}
 };
-function setLang(l){lang=l;store.set("lang",l);document.querySelectorAll(".lang-chip").forEach((c,i)=>c.classList.toggle("active",(i===0&&l==="hi")||(i===1&&l==="en")));applyLang();}
-function applyLang(){var t=L[lang]||L.hi;["txt-title","txt-sub","txt-start","txt-loginas","txt-verify-h","txt-verify-p","txt-name-lbl","txt-pin-lbl","txt-login-btn","txt-ci","txt-ci-sub","txt-co","txt-co-sub","txt-re","txt-re-sub","gSub"].forEach((id,i)=>{var keys=Object.values(t);var e=document.getElementById(id);if(e&&keys[i])e.textContent=keys[i];});}
 function setText(id,v){var e=document.getElementById(id);if(e&&v)e.textContent=v;}
 
 function applyLang(){
@@ -449,6 +447,12 @@ function applyLang(){
   setText("txt-name-lbl",t.nameLbl);setText("txt-pin-lbl",t.pinLbl);setText("txt-login-btn",t.loginBtn);
   setText("txt-ci",t.ci);setText("txt-ci-sub",t.ciSub);setText("txt-co",t.co);setText("txt-co-sub",t.coSub);
   setText("txt-re",t.re);setText("txt-re-sub",t.reSub);setText("gSub",t.gSub);
+}
+
+function setLang(l){
+  lang=l; store.set("lang",l);
+  document.querySelectorAll(".lang-chip").forEach((c,i)=>c.classList.toggle("active",(i===0&&l==="hi")||(i===1&&l==="en")));
+  applyLang();
 }
 
 // ══ SCREEN NAV ══
@@ -508,7 +512,14 @@ function goToDash(){
   startClock(); refreshDash(); loadDist(); scheduleAutoCheckout();
 }
 
-function doLogout(){stopGps();stopTimer();currentEmp=null;store.del("emp");show("s-land");}
+function doLogout(){
+  stopCam();   // stop any active camera stream
+  stopGps();
+  stopTimer();
+  currentEmp=null;
+  store.del("emp");
+  show("s-land");
+}
 
 function startClock(){
   if(clockInt) clearInterval(clockInt);
@@ -545,14 +556,15 @@ function refreshDash(){
   }
 }
 
-// ══ CHECK-IN — camera opens directly (front cam) ══
+// ══ CHECK-IN — opens camera (front cam) after clicking Check-In on dashboard ══
 function doCheckin(){
-  if(!currentEmp) return;
-  camMode="checkin"; camFacing="user";
+  if(!currentEmp){toast("Pehle login karo","error");return;}
+  camMode="checkin";
+  camFacing="user";  // selfie/front camera
   document.getElementById("camTitle").textContent="📷 Check-In — Selfie Lo";
-  show("s-cam");
-  startCam();
-  getGps();
+  getGps();           // start getting GPS in background
+  show("s-cam");      // navigate to camera screen FIRST
+  startCam();         // then start camera (now screen is active)
 }
 
 function submitCheckin(photoData){
@@ -624,16 +636,22 @@ function doCheckout(){
 function doQuickPhoto(){
   if(!currentEmp) return;
   if(!store.get("ci_"+currentEmp.name)){toast("Pehle check-in karo, phir photo bhejo","error");return;}
-  camMode="quick"; camFacing="environment";
+  camMode="quick";
+  camFacing="environment";
   document.getElementById("camTitle").textContent="📸 Quick Photo";
-  show("s-cam"); startCam();
+  show("s-cam");
+  startCam();
 }
 
 // ══ CAMERA ══
 function startCam(){
+  // Safety: only start camera when camera screen is actually showing
+  if(!document.getElementById("s-cam").classList.contains("active")){return;}
   stopCam();
   var constraints={video:{facingMode:camFacing,width:{ideal:1280},height:{ideal:720}},audio:false};
   navigator.mediaDevices.getUserMedia(constraints).then(stream=>{
+    // Double-check screen still active (user might have pressed back)
+    if(!document.getElementById("s-cam").classList.contains("active")){stream.getTracks().forEach(t=>t.stop());return;}
     camStream=stream;
     var v=document.getElementById("video");
     v.srcObject=stream; v.style.display="block";
@@ -778,8 +796,21 @@ function dismissPWA(){document.getElementById("pwaBanner").classList.remove("sho
 // ══ INIT ══
 (function init(){
   applyLang();
-  var saved=store.get("emp");
-  if(saved){currentEmp=saved;totalDist=parseFloat(store.get("dist_"+saved.name+"_"+todayKey())||0);goToDash();}
+  // Always make sure camera screen is NOT active on load
+  var camScr = document.getElementById("s-cam");
+  if(camScr) camScr.classList.remove("active");
+  stopCam();
+
+  var saved = store.get("emp");
+  if(saved){
+    // Returning user — go straight to dashboard
+    currentEmp = saved;
+    totalDist  = parseFloat(store.get("dist_"+saved.name+"_"+todayKey())||0);
+    goToDash();
+  } else {
+    // Fresh visit — show landing screen
+    show("s-land");
+  }
 })();
 </script>
 </body>
