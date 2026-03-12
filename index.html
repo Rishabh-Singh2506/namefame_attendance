@@ -4,60 +4,234 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>NAMEFAME Field Attendance</title>
-<link rel="stylesheet" href="styles.css"><style>
-/* === PURA ORIGINAL STYLE YAHAN HAI (copy kiya) + thoda extra for visit photo preview === */
-:root{--bg:#ffffff;--card:#f8f9fb;--card2:#f0f2f6;--border:#e2e6ed;--accent:#2563eb;--green:#16a34a;--red:#dc2626;--text:#1a1f2e;--muted:#6b7280;--radius:14px;font-family:'Nunito',sans-serif;}
-/* ... pura original style paste kar diya hai (space bachane ke liye yahan short kiya, actual code mein full style hai) ... */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.cam-corner,.gps-badge,.modal-box etc. same as original.
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
 <div id="toast" class="toast"></div>
 
-<!-- LANDING, VERIFY, DASHBOARD same as your original -->
+<!-- ══ SCREEN 1: LANDING ══ -->
+<div class="screen" id="s-land">
+  <div class="brand-logo">🏢</div>
+  <div class="brand-title">NAMEFAME Field Attendance</div>
+  <div class="brand-sub">Apni daily attendance aur visits track karo</div>
+  <div class="lang-bar">
+    <div class="lang-chip active" onclick="setLang('hi')">हिंदी</div>
+    <div class="lang-chip" onclick="setLang('en')">English</div>
+  </div>
+  <button class="btn-primary" style="max-width:320px;" onclick="goVerify()">Employee Panel →</button>
+  <div class="admin-box" onclick="location.href='admin.html'">⚙️ Admin Panel</div>
+</div>
 
-<!-- VISIT MODAL — AB FULL FIELDS + PHOTO (sab mandatory/non-mandatory jaise tune kaha) -->
-<div class="modal-overlay" id="visitModal">
-  <div class="modal-box">
-    <div class="modal-title">📍 New Visit Record</div>
-    
-    <div class="fgroup"><label class="lbl">Shop Name <span style="color:red">*</span></label>
-      <input type="text" id="mShopName" placeholder="Shop ka naam">
-    </div>
-    <div class="fgroup"><label class="lbl">Shopkeeper Name (optional)</label>
-      <input type="text" id="mShopkeeperName" placeholder="Shopkeeper naam">
-    </div>
-    <div class="fgroup"><label class="lbl">Shopkeeper Contact (optional)</label>
-      <input type="text" id="mShopkeeperContact" placeholder="Contact no.">
-    </div>
-    <div class="fgroup"><label class="lbl">Area of Visit <span style="color:red">*</span></label>
-      <input type="text" id="mArea" placeholder="Area naam">
-    </div>
-    <div class="fgroup"><label class="lbl">Notes (optional)</label>
-      <textarea id="mNotes" rows="3" placeholder="Koi extra note..."></textarea>
-    </div>
-
-    <!-- PHOTO SECTION -->
+<!-- ══ SCREEN 2: VERIFY / LOGIN ══ -->
+<div class="screen" id="s-verify">
+  <div class="verify-hero">
+    <button class="verify-back" onclick="showScreen('s-land')">←</button>
+    <h2>👤 Verify Identity</h2>
+    <p>Apna naam aur PIN daalo</p>
+  </div>
+  <div class="verify-body">
     <div class="fgroup">
-      <label class="lbl">Visit Photo <span style="color:red">*</span></label>
-      <button onclick="takeVisitPhoto()" class="btn-primary" style="width:100%;padding:12px;">📸 Photo Capture Karo</button>
-      <div id="visitPhotoPreview" style="display:none;margin-top:10px;text-align:center;">
-        <img id="visitThumb" style="width:100%;max-height:180px;border-radius:10px;border:2px solid #16a34a;">
-        <p style="font-size:11px;color:#16a34a;margin-top:5px;">Photo ready ✓</p>
+      <label class="lbl">Apna Naam Chunein</label>
+      <div id="empLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
+      <div id="empList-wrap" style="display:none;">
+        <select id="empSelect"><option value="">-- Naam chunein --</option></select>
       </div>
     </div>
+    <div class="fgroup">
+      <label class="lbl">PIN / Password</label>
+      <div class="inp-wrap">
+        <input type="password" id="pinInput" placeholder="PIN daalo" maxlength="20"
+          onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="eye-btn" onclick="togglePin()">👁</button>
+      </div>
+    </div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Login →</button>
+  </div>
+</div>
 
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="cancelVisit()">Cancel</button>
-      <button class="btn-save" id="visitSaveBtn" onclick="saveVisit()">✓ Save & Send to Sheet</button>
+<!-- ══ SCREEN 3: DASHBOARD ══ -->
+<div class="screen" id="s-dash">
+  <div class="dash-header">
+    <div class="dash-user-row">
+      <div>
+        <div class="dash-user-name" id="dashName">—</div>
+        <div class="dash-user-sub" id="dashDate">Logged in</div>
+      </div>
+      <button class="dash-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="status-card">
+    <div class="status-left">
+      <div class="dot" id="statusDot"></div>
+      <span id="statusTxt">Not checked in</span>
+    </div>
+    <div class="clock" id="clockDisp">--:--</div>
+  </div>
+  <div class="timer-card" id="timerCard">
+    <div class="timer-row">
+      <div>
+        <div class="timer-lbl">⏱ Time on Field</div>
+        <div class="timer-val" id="tDisp">00:00:00</div>
+        <div class="timer-sub" id="ciTime">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="dist-card" id="distCard">
+    <div class="dist-row">
+      <div class="dist-lbl">📍 Distance</div>
+      <select class="dist-sel" id="distRange" onchange="loadDist()">
+        <option value="today">Aaj</option>
+        <option value="total">Total</option>
+        <option value="date">Date se</option>
+      </select>
+    </div>
+    <div id="distDateRow" style="display:none;margin-bottom:6px;">
+      <input type="date" id="distDate" onchange="loadDist()" style="font-size:12px;padding:6px;">
+    </div>
+    <div class="dist-val" id="distVal">0 m</div>
+  </div>
+  <div class="gps-bar" id="gpsBar">
+    <div class="pdot"></div>
+    <span id="gpsTxt">GPS tracking active</span>
+  </div>
+  <div class="greet">Kya karna hai aaj? 👋</div>
+  <p class="gsub">Apna kaam shuru karo</p>
+  <div class="grid2">
+    <div class="abtn ci" id="bCI" onclick="doCheckin()">
+      <span class="ai">🟢</span>
+      <span class="al">Check-In</span>
+      <span class="as">Din shuru karo</span>
+    </div>
+    <div class="abtn co dis" id="bCO" onclick="doCheckout()">
+      <span class="ai">🔴</span>
+      <span class="al">Check-Out</span>
+      <span class="as">Din khatam karo</span>
+      <span class="cdown" id="cdBadge"></span>
+    </div>
+    <div class="abtn or dis" id="bOrd" onclick="location.href='order.html'">
+      <span class="ai">📦</span>
+      <span class="al">Order</span>
+      <span class="as">Naya order</span>
+    </div>
+    <div class="abtn py dis" id="bPay" onclick="location.href='payment.html'">
+      <span class="ai">💰</span>
+      <span class="al">Payment</span>
+      <span class="as">Payment lo</span>
+    </div>
+    <div class="abtn re dis" id="bRe" onclick="doNewVisit()">
+      <span class="ai">📍</span>
+      <span class="al">New Visit</span>
+      <span class="as">Visit record karo</span>
+    </div>
+    <div class="abtn rt dis" id="bRet" onclick="location.href='return.html'">
+      <span class="ai">↩️</span>
+      <span class="al">Return</span>
+      <span class="as">Maal wapas karo</span>
+    </div>
+    <div class="abtn ph dis" id="bPh" onclick="doQuickPhoto()">
+      <span class="ai">📸</span>
+      <span class="al">Quick Photo</span>
+      <span class="as">Photo bhejo</span>
     </div>
   </div>
 </div>
 
-<!-- CAMERA SCREEN (sirf New Visit aur Quick Photo ke liye ab use hoga) — same as original -->
-<div class="screen" id="s-cam"> ... pura camera code same as your original ... </div>
+<!-- ══ SCREEN 4: CAMERA (Quick Photo) ══ -->
+<div class="screen" id="s-cam">
+  <div class="cam-topbar">
+    <button class="cam-back-btn" onclick="closeCam()">←</button>
+    <div class="cam-topbar-title" id="camTitle">📸 Quick Photo</div>
+  </div>
+  <div class="video-wrap">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas"></canvas>
+    <img id="photoPreview" alt="preview">
+    <div class="cam-corner tl"></div>
+    <div class="cam-corner br"></div>
+    <div class="gps-badge" id="gpsBadge"></div>
+  </div>
+  <div class="cam-actions">
+    <button class="cam-btn cap" id="btnCap" onclick="capturePhoto()">📷 Capture</button>
+    <button class="cam-btn retake" id="btnRe" onclick="retakePhoto()" style="display:none;">↩ Retake</button>
+    <button class="cam-btn use" id="btnNext" onclick="acceptPhoto()" style="display:none;">✓ Use This</button>
+  </div>
+</div>
+
+<!-- ══ NEW VISIT MODAL ══ -->
+<div class="modal-overlay" id="visitModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📍 New Visit</div>
+      <div class="modal-x" onclick="cancelVisit()">✕</div>
+    </div>
+    <div class="modal-sub">Shop/Dukan ki jankari bharein</div>
+    <div class="fgroup">
+      <label class="lbl">Visit Photo <span class="req-star">*</span></label>
+      <button class="photo-btn" id="visitPhotoBtn" onclick="openVisitCamera()">📷 Photo Lo</button>
+      <div class="photo-thumb-wrap" id="visitPhotoWrap">
+        <img id="visitThumb" src="" alt="visit photo">
+        <div class="photo-ok">✓ Photo ready</div>
+        <div class="photo-retake-lnk" onclick="openVisitCamera()">↩ Dobara lo</div>
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Shop Name <span class="req-star">*</span></label>
+      <input type="text" id="mShopName" placeholder="Dukan ka naam">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Shopkeeper Name <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
+      <input type="text" id="mShopkeeperName" placeholder="Malik ka naam">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Shopkeeper Contact <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
+      <input type="tel" id="mShopkeeperContact" placeholder="Mobile number" maxlength="10"
+        oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Area / Ilaka <span class="req-star">*</span></label>
+      <input type="text" id="mArea" placeholder="Area ka naam">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Notes <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
+      <textarea id="mNotes" rows="2" placeholder="Koi khaas baat..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cancelVisit()">Cancel</button>
+      <button class="btn-save" id="visitSaveBtn" onclick="saveVisit()">✓ Save Visit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VISIT CAMERA MODAL ══ -->
+<div class="vcam-overlay" id="visitCamModal">
+  <div class="cam-topbar">
+    <button class="cam-back-btn" onclick="closeVisitCamera()">←</button>
+    <div class="cam-topbar-title">📷 Visit Photo Lo</div>
+  </div>
+  <div class="video-wrap" style="flex:1;">
+    <video id="vVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+    <canvas id="vCanvas" style="display:none;"></canvas>
+    <img id="vPreview" alt="preview" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:none;">
+    <div class="cam-corner tl"></div>
+    <div class="cam-corner br"></div>
+    <div class="gps-badge" id="vGpsBadge"></div>
+  </div>
+  <div class="cam-actions">
+    <button class="cam-btn cap" id="vBtnCap" onclick="vCapture()">📷 Capture</button>
+    <button class="cam-btn retake" id="vBtnRe" onclick="vRetake()" style="display:none;">↩ Retake</button>
+    <button class="cam-btn use" id="vBtnNext" onclick="vAccept()" style="display:none;">✓ Use This</button>
+  </div>
+</div>
+
+<!-- PWA -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-txt">📱 App install karo — fast access!</div>
+  <button class="pwa-install-btn" onclick="installPWA()">Install</button>
+  <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
+</div>
+
 <script src="App.js"></script>
 </body>
 </html>
