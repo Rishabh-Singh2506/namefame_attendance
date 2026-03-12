@@ -17,47 +17,33 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .screen{position:fixed;inset:0;overflow-y:auto;display:none;flex-direction:column;background:var(--bg);}
 .screen.active{display:flex;animation:fi .25s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-/* TOPBAR — thinner */
-.topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border);}
-.back-btn{width:32px;height:32px;border-radius:9px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.topbar-title{font-size:14px;font-weight:700;flex:1;color:var(--text);}
-
-/* INPUTS */
 label.lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:block;}
-.inp-wrap{position:relative;}
 input,textarea,select{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;appearance:none;transition:border-color .2s;resize:none;}
 input:focus,textarea:focus,select:focus{border-color:var(--accent);}
-.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;}
 .fgroup{margin-bottom:12px;}
-.err-msg{color:var(--red);font-size:11px;margin-top:4px;display:none;}
-.err-msg.show{display:block;}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;max-width:90vw;text-align:center;}
+.inp-wrap{position:relative;}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;max-width:90vw;text-align:center;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.error{background:var(--red);}
 .toast.info{background:var(--accent);}
 .toast.success{background:var(--green);}
-
-/* BUTTONS */
 .btn-primary{width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .2s;}
 .btn-primary:active{opacity:.85;}
 .btn-primary.loading{opacity:.5;pointer-events:none;}
 
-/* ══ LANDING ══ */
+/* LANDING */
 #s-land{align-items:center;justify-content:center;padding:32px 24px;gap:0;}
 .brand-logo{width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:14px;box-shadow:0 8px 32px rgba(37,99,235,.2);}
-.brand-title{font-size:21px;font-weight:900;text-align:center;margin-bottom:4px;}
-.brand-sub{color:var(--muted);font-size:12px;text-align:center;margin-bottom:26px;}
-.lang-bar{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.brand-title{font-size:22px;font-weight:900;text-align:center;margin-bottom:6px;}
+.brand-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:28px;}
+.lang-bar{display:flex;gap:8px;justify-content:center;margin-bottom:22px;}
 .lang-chip{background:var(--card2);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--muted);}
 .lang-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-/* Admin rectangle box */
 .admin-box{margin-top:14px;border:2px solid var(--border);border-radius:12px;padding:14px 24px;cursor:pointer;text-align:center;font-size:13px;font-weight:700;color:var(--muted);background:var(--card);max-width:320px;width:100%;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .admin-box:active{border-color:var(--accent);color:var(--accent);}
 
-/* ══ VERIFY ══ */
+/* VERIFY */
 #s-verify{padding:0;}
 .verify-hero{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:36px 24px 28px;text-align:center;color:#fff;position:relative;}
 .verify-hero h2{font-size:20px;font-weight:900;margin-bottom:5px;}
@@ -65,7 +51,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
 .verify-back{position:absolute;top:12px;left:12px;width:32px;height:32px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:9px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .verify-body{padding:18px 16px;}
 
-/* ══ DASHBOARD ══ */
+/* DASHBOARD */
 #s-dash{padding-bottom:40px;}
 .dash-header{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:10px 14px 30px;color:#fff;}
 .dash-user-row{display:flex;align-items:center;justify-content:space-between;}
@@ -73,30 +59,26 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
 .dash-user-sub{font-size:10px;opacity:.75;margin-top:1px;}
 .dash-logout{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;}
 .status-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin:0 14px;margin-top:-18px;padding:12px 14px;box-shadow:0 4px 20px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center;}
-.status-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);}
+.status-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
 .dot.g{background:var(--green);animation:pu 1.5s infinite;}
 @keyframes pu{0%,100%{opacity:1;}50%{opacity:.3;}}
-.clock{font-size:17px;font-weight:800;color:var(--text);}
-
+.clock{font-size:17px;font-weight:800;}
 .timer-card{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:var(--radius);margin:10px 14px 0;padding:12px 14px;display:none;}
 .timer-card.show{display:block;}
 .timer-row{display:flex;justify-content:space-between;align-items:center;}
 .timer-lbl{font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
 .timer-val{font-size:22px;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;}
 .timer-sub{font-size:11px;color:#6b7280;margin-top:3px;}
-
 .dist-card{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:var(--radius);margin:8px 14px 0;padding:12px 14px;display:none;}
 .dist-card.show{display:block;}
 .dist-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .dist-lbl{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
 .dist-val{font-size:17px;font-weight:900;color:var(--accent);}
 .dist-sel{background:#fff;border:1px solid #bfdbfe;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;font-family:inherit;outline:none;}
-
 .gps-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;margin:6px 14px 0;padding:7px 12px;font-size:11px;color:var(--accent);display:none;align-items:center;gap:8px;font-weight:600;}
 .gps-bar.show{display:flex;}
 .pdot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pu 1.5s infinite;}
-
 .greet{font-size:17px;font-weight:900;margin:14px 14px 2px;}
 .gsub{font-size:12px;color:var(--muted);margin:0 14px 12px;font-weight:600;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 14px;}
@@ -116,10 +98,10 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
 .cdown{display:none;position:absolute;top:5px;right:5px;background:var(--red);color:#fff;border-radius:6px;padding:2px 5px;font-size:9px;font-weight:700;}
 .cdown.show{display:block;}
 
-/* ══ CAMERA ══ */
-#s-cam{background:#111;display:flex;flex-direction:column;}
+/* CAMERA */
+#s-cam{background:#111;}
 .cam-topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#111;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;}
-.cam-back-btn{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cam-back-btn{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .cam-topbar-title{font-size:14px;font-weight:700;flex:1;color:#fff;}
 .video-wrap{position:relative;flex:1;overflow:hidden;min-height:0;}
 #video{width:100%;height:100%;object-fit:cover;display:block;}
@@ -130,158 +112,153 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
 .cam-corner.br{bottom:12px;right:12px;border-width:0 2px 2px 0;}
 .gps-badge{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(0,0,0,.75);border-radius:10px;padding:8px 12px;font-size:11px;color:#fff;display:none;text-align:center;}
 .gps-badge.show{display:block;}
-.cam-bar{display:flex;gap:10px;padding:12px 14px;background:rgba(0,0,0,.9);align-items:center;flex-shrink:0;}
-.btn-flip{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.btn-cap{flex:1;padding:13px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
-.btn-next{flex:1;padding:13px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:none;}
-.btn-re{padding:13px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;display:none;}
+.cam-actions{display:flex;gap:10px;padding:14px;background:#111;flex-shrink:0;}
+.cam-btn{flex:1;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.cam-btn.cap{background:#fff;color:#111;}
+.cam-btn.retake{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);}
+.cam-btn.use{background:var(--green);color:#fff;}
 
-/* ══ VISIT MODAL ══ */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;}
-.modal-overlay.show{display:flex;animation:fi .25s ease;}
-.modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;padding:18px 16px 28px;}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px;}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
-.modal-title{font-size:16px;font-weight:900;}
-.modal-x{background:var(--card2);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:600;}
-.modal-btn{width:100%;padding:14px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px;}
-.modal-btn:active{opacity:.85;}
-.modal-btn.loading{opacity:.5;pointer-events:none;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:900;margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;margin-top:16px;}
+.btn-cancel{flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--muted);}
+.btn-save{flex:2;padding:12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-save.loading{opacity:.5;pointer-events:none;}
 
 /* PWA */
-.pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:12px 14px;z-index:300;align-items:center;gap:10px;}
-.pwa-banner.show{display:flex;}
-.pwa-install-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
-.pwa-close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;cursor:pointer;padding:2px;}
+.pwa-banner{position:fixed;bottom:0;left:0;right:0;background:#1a1f2e;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:800;transform:translateY(100%);transition:transform .3s;}
+.pwa-banner.show{transform:translateY(0);}
+.pwa-banner-txt{flex:1;font-size:12px;font-weight:600;}
+.pwa-install-btn{background:var(--accent);border:none;color:#fff;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pwa-dismiss{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;padding:4px;}
 </style>
 </head>
 <body>
 
 <div id="toast" class="toast"></div>
 
-<!-- ══ LANDING ══ -->
-<div class="screen active" id="s-land">
+<!-- SCREEN 1: LANDING (default) -->
+<div class="screen" id="s-land">
   <div class="brand-logo">🏢</div>
-  <div class="brand-title" id="txt-title">NAMEFAME Field Attendance</div>
-  <div class="brand-sub" id="txt-sub">Apni daily attendance aur visits track karo</div>
+  <div class="brand-title">NAMEFAME Field Attendance</div>
+  <div class="brand-sub">Apni daily attendance aur visits track karo</div>
   <div class="lang-bar">
     <div class="lang-chip active" onclick="setLang('hi')">हिंदी</div>
     <div class="lang-chip" onclick="setLang('en')">English</div>
   </div>
-  <button class="btn-primary" style="max-width:320px;" onclick="goVerify()" id="txt-start">Employee Panel →</button>
-  <div class="admin-box" onclick="location.href=ADMIN_URL">⚙️ Admin Panel</div>
+  <button class="btn-primary" style="max-width:320px;" onclick="goVerify()">Employee Panel →</button>
+  <div class="admin-box" onclick="location.href='admin.html'">⚙️ Admin Panel</div>
 </div>
 
-<!-- ══ VERIFY ══ -->
+<!-- SCREEN 2: VERIFY / LOGIN -->
 <div class="screen" id="s-verify">
   <div class="verify-hero">
-    <button class="verify-back" onclick="show('s-land')">←</button>
-    <h2 id="txt-verify-h">👤 Verify Identity</h2>
-    <p id="txt-verify-p">Apna naam aur PIN darj karo</p>
+    <button class="verify-back" onclick="showScreen('s-land')">←</button>
+    <h2>👤 Verify Identity</h2>
+    <p>Apna naam aur PIN daalo</p>
   </div>
   <div class="verify-body">
-    <div id="empList-wrap" style="display:none;">
-      <div class="fgroup">
-        <label class="lbl" id="txt-name-lbl">Apna naam chunein</label>
-        <select id="empSelect">
-          <option value="">-- Naam chunein --</option>
-        </select>
+    <div class="fgroup">
+      <label class="lbl">Apna Naam Chunein</label>
+      <div id="empLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
+      <div id="empList-wrap" style="display:none;">
+        <select id="empSelect"><option value="">-- Naam chunein --</option></select>
       </div>
-      <div class="fgroup">
-        <label class="lbl" id="txt-pin-lbl">PIN / Password</label>
-        <div class="inp-wrap">
-          <input type="password" id="pinInput" placeholder="PIN darj karo" maxlength="10"
-            onkeydown="if(event.key==='Enter')doLogin()">
-          <button class="eye-btn" onclick="togglePin()" id="eyeBtn">👁️</button>
-        </div>
-        <div class="err-msg" id="pinErr">PIN galat hai ❌</div>
-      </div>
-      <button class="btn-primary" onclick="doLogin()" id="txt-login-btn">Login →</button>
     </div>
-    <div id="empLoading" style="text-align:center;padding:40px;color:var(--muted);font-weight:600;">⏳ Loading employees...</div>
+    <div class="fgroup">
+      <label class="lbl">PIN / Password</label>
+      <div class="inp-wrap">
+        <input type="password" id="pinInput" placeholder="PIN daalo" maxlength="20">
+        <button class="eye-btn" onclick="togglePin()">👁</button>
+      </div>
+    </div>
+    <button class="btn-primary" id="loginBtn" onclick="doLogin()">Login →</button>
   </div>
 </div>
 
-<!-- ══ DASHBOARD ══ -->
+<!-- SCREEN 3: DASHBOARD -->
 <div class="screen" id="s-dash">
   <div class="dash-header">
     <div class="dash-user-row">
       <div>
-        <div id="txt-loginas" style="font-size:10px;opacity:.75;font-weight:600;">Logged in as</div>
-        <div class="dash-user-name" id="dName">--</div>
-        <div class="dash-user-sub" id="dDate">--</div>
+        <div class="dash-user-name" id="dashName">—</div>
+        <div class="dash-user-sub">Logged in</div>
       </div>
       <button class="dash-logout" onclick="doLogout()">Logout</button>
     </div>
   </div>
   <div class="status-card">
     <div class="status-left">
-      <div class="dot" id="sDot"></div>
-      <span id="sTxt">Not checked in</span>
+      <div class="dot" id="statusDot"></div>
+      <span id="statusTxt">Not checked in</span>
     </div>
-    <div class="clock" id="lClock">--:--</div>
+    <div class="clock" id="clockDisp">--:--</div>
   </div>
-  <div class="timer-card" id="tCard">
+  <div class="timer-card" id="timerCard">
     <div class="timer-row">
-      <span class="timer-lbl">⏱ Time on Field</span>
-      <span class="timer-val" id="tDisp">00:00:00</span>
+      <div>
+        <div class="timer-lbl">⏱ Time on Field</div>
+        <div class="timer-val" id="tDisp">00:00:00</div>
+        <div class="timer-sub" id="ciTime">—</div>
+      </div>
     </div>
-    <div class="timer-sub" id="tSub"></div>
   </div>
   <div class="dist-card" id="distCard">
     <div class="dist-row">
-      <span class="dist-lbl">📍 Distance Covered</span>
+      <div class="dist-lbl">📍 Distance</div>
       <select class="dist-sel" id="distRange" onchange="loadDist()">
         <option value="today">Aaj</option>
-        <option value="total">Kul (Total)</option>
-        <option value="date">By Date</option>
+        <option value="total">Total</option>
+        <option value="date">Date se</option>
       </select>
     </div>
-    <div id="distVal" class="dist-val">--</div>
-    <div id="distDateRow" style="display:none;margin-top:6px;">
-      <input type="date" id="distDate" style="padding:6px 10px;font-size:12px;border-radius:8px;border:1px solid #bfdbfe;background:#fff;color:var(--accent);" onchange="loadDist()">
+    <div id="distDateRow" style="display:none;margin-bottom:6px;">
+      <input type="date" id="distDate" onchange="loadDist()" style="font-size:12px;padding:6px;">
     </div>
+    <div class="dist-val" id="distVal">0 m</div>
   </div>
-  <div class="gps-bar" id="pingBar">
+  <div class="gps-bar" id="gpsBar">
     <div class="pdot"></div>
-    <span id="pingTxt">Live tracking active</span>
+    <span id="gpsTxt">GPS tracking active</span>
   </div>
-  <div class="greet">Hello, <span style="color:var(--accent);" id="gName"></span>! 👋</div>
-  <div class="gsub" id="gSub">Aaj kya karna hai?</div>
+  <div class="greet">Kya karna hai aaj? 👋</div>
+  <p class="gsub">Apna kaam shuru karo</p>
   <div class="grid2">
     <div class="abtn ci" id="bCI" onclick="doCheckin()">
       <span class="ai">🟢</span>
-      <span class="al" id="txt-ci">Check-In</span>
-      <span class="as" id="txt-ci-sub">Din shuru karo</span>
+      <span class="al">Check-In</span>
+      <span class="as">Din shuru karo</span>
     </div>
     <div class="abtn co dis" id="bCO" onclick="doCheckout()">
       <span class="ai">🔴</span>
-      <span class="al" id="txt-co">Check-Out</span>
-      <span class="as" id="txt-co-sub">Din khatam karo</span>
+      <span class="al">Check-Out</span>
+      <span class="as">Din khatam karo</span>
       <span class="cdown" id="cdBadge"></span>
     </div>
-    <div class="abtn or dis" id="bOrd" onclick="location.href=ORDER_URL">
-      <span class="ai">📋</span>
-      <span class="al">Take Order</span>
-      <span class="as">Order entry</span>
+    <div class="abtn or dis" id="bOrd" onclick="location.href='order.html'">
+      <span class="ai">📦</span>
+      <span class="al">Order</span>
+      <span class="as">Naya order</span>
     </div>
-    <div class="abtn py dis" id="bPay" onclick="location.href=PAYMENT_URL">
+    <div class="abtn py dis" id="bPay" onclick="location.href='payment.html'">
       <span class="ai">💰</span>
       <span class="al">Payment</span>
-      <span class="as">Collect payment</span>
+      <span class="as">Payment lo</span>
     </div>
     <div class="abtn re dis" id="bRe" onclick="doNewVisit()">
-      <span class="ai">🔄</span>
-      <span class="al" id="txt-re">New Visit</span>
-      <span class="as" id="txt-re-sub">Dobara visit darj karo</span>
+      <span class="ai">📍</span>
+      <span class="al">New Visit</span>
+      <span class="as">Visit record karo</span>
     </div>
-    <div class="abtn rt dis" id="bRet" onclick="location.href=RETURN_URL">
+    <div class="abtn rt dis" id="bRet" onclick="location.href='return.html'">
       <span class="ai">↩️</span>
-      <span class="al">Return Order</span>
-      <span class="as">Wapsi entry</span>
+      <span class="al">Return</span>
+      <span class="as">Maal wapas karo</span>
     </div>
-    <div class="abtn ph" id="bPh" onclick="doQuickPhoto()">
+    <div class="abtn ph dis" id="bPh" onclick="doQuickPhoto()">
       <span class="ai">📸</span>
       <span class="al">Quick Photo</span>
       <span class="as">Photo bhejo</span>
@@ -289,33 +266,11 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
   </div>
 </div>
 
-<!-- ══ NEW VISIT MODAL ══ -->
-<div class="modal-overlay" id="visitModal" onclick="if(event.target===this)cancelVisit()">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title">🔄 New Visit</div>
-      <div class="modal-x" onclick="cancelVisit()">✕</div>
-    </div>
-    <div class="modal-sub">Visit ki location aur details darj karein</div>
-    <div class="fgroup">
-      <label class="lbl">Shop / Area *</label>
-      <input id="mArea" placeholder="Shop ya area ka naam" type="text">
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Notes (optional)</label>
-      <textarea id="mNotes" rows="2" placeholder="Koi khaas baat..."></textarea>
-    </div>
-    <button class="modal-btn" id="visitSaveBtn" onclick="saveVisit()">✓ Save Visit</button>
-  </div>
-</div>
-
-<!-- ══ CAMERA ══ -->
+<!-- SCREEN 4: CAMERA (never active on load) -->
 <div class="screen" id="s-cam">
-  <!-- Custom camera topbar (not generic .topbar) -->
   <div class="cam-topbar">
     <button class="cam-back-btn" onclick="closeCam()">←</button>
-    <span class="cam-topbar-title" id="camTitle">Photo lo</span>
+    <div class="cam-topbar-title" id="camTitle">📷 Photo Lo</div>
   </div>
   <div class="video-wrap">
     <video id="video" autoplay playsinline muted></video>
@@ -325,93 +280,58 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);}
     <div class="cam-corner br"></div>
     <div class="gps-badge" id="gpsBadge"></div>
   </div>
-  <div class="cam-bar">
-    <button class="btn-flip" onclick="flipCam()">🔄</button>
-    <button class="btn-cap" id="btnCap" onclick="capturePhoto()">📷 Photo Lo</button>
-    <button class="btn-next" id="btnNext" onclick="acceptPhoto()">✓ Use This</button>
-    <button class="btn-re" id="btnRe" onclick="retakePhoto()">↩ Retake</button>
+  <div class="cam-actions">
+    <button class="cam-btn cap" id="btnCap" onclick="capturePhoto()">📷 Capture</button>
+    <button class="cam-btn retake" id="btnRe" onclick="retakePhoto()" style="display:none;">↩ Retake</button>
+    <button class="cam-btn use" id="btnNext" onclick="acceptPhoto()" style="display:none;">✓ Use This</button>
+  </div>
+</div>
+
+<!-- VISIT MODAL -->
+<div class="modal-overlay" id="visitModal">
+  <div class="modal-box">
+    <div class="modal-title">📍 New Visit</div>
+    <div class="fgroup">
+      <label class="lbl">Area / Shop Name</label>
+      <input type="text" id="mArea" placeholder="Area ya shop ka naam">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Notes (optional)</label>
+      <textarea id="mNotes" rows="3" placeholder="Koi notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cancelVisit()">Cancel</button>
+      <button class="btn-save" id="visitSaveBtn" onclick="saveVisit()">✓ Save Visit</button>
+    </div>
   </div>
 </div>
 
 <!-- PWA -->
 <div class="pwa-banner" id="pwaBanner">
-  <div style="flex:1;">
-    <div style="font-size:13px;font-weight:800;">📱 Home Screen pe Add karo</div>
-    <div style="font-size:11px;opacity:.8;margin-top:2px;">Fast access — bina browser khole</div>
-  </div>
+  <div class="pwa-banner-txt">📱 App install karo — offline bhi kaam karega!</div>
   <button class="pwa-install-btn" onclick="installPWA()">Install</button>
-  <button class="pwa-close-btn" onclick="dismissPWA()">✕</button>
+  <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
 </div>
 
 <script>
-// ══ CONFIG ══
-const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
-const ORDER_URL   = "order.html";
-const PAYMENT_URL = "payment.html";
-const RETURN_URL  = "return.html";
-const ADMIN_URL   = "admin.html";
-const MIN_CHECKOUT = 10 * 1000;
-const GPS_INTERVAL = 5 * 60 * 1000;
+"use strict";
 
-const store = {
-  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
-  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
-  del:(k)=>{try{localStorage.removeItem(k);}catch(e){}}
+/* ── CONSTANTS ── */
+var SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+var GPS_INTERVAL = 5 * 60 * 1000;
+var MIN_CHECKOUT = 30 * 1000;
+
+/* ── STORE ── */
+var store = {
+  get: function(k){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e){ return null; } },
+  set: function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del: function(k){ try{ localStorage.removeItem(k); } catch(e){} }
 };
 
-async function apiPost(payload) {
-  const res = await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});
-  return res.json();
-}
-
-function toast(msg, type="info") {
-  const el=document.getElementById("toast");
-  el.textContent=msg; el.className="toast "+type+" show";
-  setTimeout(()=>el.classList.remove("show"),4000);
-}
-
-// ══ DATE/TIME FORMAT ══
-function fmtDate(val) {
-  if(!val) return "";
-  let d;
-  if(val instanceof Date){d=val;}
-  else{
-    const s=val.toString();
-    const m1=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if(m1) d=new Date(+m1[1],+m1[2]-1,+m1[3]);
-    const m2=s.match(/^(\d{2})-(\d{2})-(\d{4})/);
-    if(!d&&m2) d=new Date(+m2[3],+m2[2]-1,+m2[1]);
-    if(!d) d=new Date(s);
-  }
-  if(isNaN(d)) return val.toString();
-  return d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
-}
-
-function fmtTime(val) {
-  if(!val) return "";
-  const s=val.toString();
-  // Handle sheet format "dd-MM-yyyy HH:mm:ss"
-  const full=s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
-  if(full){
-    let h=parseInt(full[1]),mn=parseInt(full[2]);
-    const ampm=h>=12?"PM":"AM"; const h12=h%12||12;
-    return h12+":"+String(mn).padStart(2,"0")+" "+ampm;
-  }
-  // Handle "HH:mm:ss" or "h:mm AM/PM"
-  const m=s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
-  if(!m) return s;
-  let h=+m[1],mn=+m[2];
-  if(m[3]&&m[3].toUpperCase()==="PM"&&h<12) h+=12;
-  if(m[3]&&m[3].toUpperCase()==="AM"&&h===12) h=0;
-  const ampm=h>=12?"PM":"AM"; const h12=h%12||12;
-  return h12+":"+String(mn).padStart(2,"0")+" "+ampm;
-}
-</script>
-<script>
-// ══ STATE ══
+/* ── STATE ── */
 var currentEmp   = null;
-var camMode      = "checkin";     // "checkin" | "quick"
-var camFacing    = "user";        // front camera default for check-in
+var camMode      = "";
+var camFacing    = "user";
 var camStream    = null;
 var gpsInterval  = null;
 var gpsPos       = null;
@@ -421,253 +341,247 @@ var clockInt     = null;
 var totalDist    = 0;
 var lastGpsPos   = null;
 var allEmployees = [];
+var toastTimer   = null;
 
-// ══ LANG ══
+/* ── LANG ── */
 var lang = store.get("lang") || "hi";
-var L = {
-  hi:{title:"NAMEFAME फील्ड अटेंडेंस",sub:"अपनी डेली अटेंडेंस ट्रैक करो",
-    start:"Employee Panel →",loginas:"लॉग इन है",
-    verifyH:"👤 पहचान सत्यापित करें",verifyP:"अपना नाम और PIN डालें",
-    nameLbl:"अपना नाम चुनें",pinLbl:"PIN / पासवर्ड",loginBtn:"लॉगिन →",
-    ci:"चेक-इन",ciSub:"दिन शुरू करो",co:"चेक-आउट",coSub:"दिन खत्म करो",
-    re:"नई विज़िट",reSub:"दोबारा विज़िट दर्ज करो",gSub:"आज क्या करना है?"},
-  en:{title:"NAMEFAME Field Attendance",sub:"Track your daily attendance & visits",
-    start:"Employee Panel →",loginas:"Logged in as",
-    verifyH:"👤 Verify Identity",verifyP:"Enter your name and PIN",
-    nameLbl:"Select your name",pinLbl:"PIN / Password",loginBtn:"Login →",
-    ci:"Check-In",ciSub:"Start your day",co:"Check-Out",coSub:"End your day",
-    re:"New Visit",reSub:"Log another visit",gSub:"What's on today?"}
-};
-function setText(id,v){var e=document.getElementById(id);if(e&&v)e.textContent=v;}
-
-function applyLang(){
-  var t=L[lang]||L.hi;
-  setText("txt-title",t.title);setText("txt-sub",t.sub);setText("txt-start",t.start);
-  setText("txt-loginas",t.loginas);setText("txt-verify-h",t.verifyH);setText("txt-verify-p",t.verifyP);
-  setText("txt-name-lbl",t.nameLbl);setText("txt-pin-lbl",t.pinLbl);setText("txt-login-btn",t.loginBtn);
-  setText("txt-ci",t.ci);setText("txt-ci-sub",t.ciSub);setText("txt-co",t.co);setText("txt-co-sub",t.coSub);
-  setText("txt-re",t.re);setText("txt-re-sub",t.reSub);setText("gSub",t.gSub);
-}
-
 function setLang(l){
-  lang=l; store.set("lang",l);
-  document.querySelectorAll(".lang-chip").forEach((c,i)=>c.classList.toggle("active",(i===0&&l==="hi")||(i===1&&l==="en")));
-  applyLang();
+  lang = l;
+  store.set("lang", l);
+  document.querySelectorAll(".lang-chip").forEach(function(c,i){
+    c.classList.toggle("active", (i===0 && l==="hi") || (i===1 && l==="en"));
+  });
 }
 
-// ══ SCREEN NAV ══
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  var el=document.getElementById(id); if(el) el.classList.add("active");
+/* ── TOAST ── */
+function toast(msg, type){
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show" + (type ? " "+type : "");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2800);
 }
 
-// ══ VERIFY / LOGIN ══
-function goVerify(){show("s-verify");loadEmployees();}
+/* ── SCREEN NAVIGATION ──
+   showScreen(id) — only this function switches screens
+   Camera is NEVER shown except when doCheckin() or doQuickPhoto() calls openCamera()
+*/
+function showScreen(id){
+  // If leaving camera screen, stop the stream first
+  if(document.getElementById("s-cam").classList.contains("active") && id !== "s-cam"){
+    stopCam();
+  }
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add("active");
+}
+
+/* ── API ── */
+function apiPost(data){
+  return fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: {"Content-Type":"text/plain"},
+    body: JSON.stringify(data)
+  }).then(function(r){ return r.json(); });
+}
+
+/* ══════════════════════════════════════
+   SCREEN 2: VERIFY / LOGIN
+══════════════════════════════════════ */
+function goVerify(){
+  showScreen("s-verify");
+  loadEmployees();
+}
 
 function loadEmployees(){
-  var wrap=document.getElementById("empList-wrap"),load=document.getElementById("empLoading");
-  wrap.style.display="none"; load.style.display="block"; load.textContent="⏳ Loading...";
-  var cached=store.get("empCache");
-  if(cached&&cached.length){allEmployees=cached;populateEmpSelect(cached);wrap.style.display="block";load.style.display="none";}
-  fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:"get_employees"})})
-    .then(r=>r.json()).then(r=>{
-      if(r.employees&&r.employees.length){allEmployees=r.employees;store.set("empCache",r.employees);populateEmpSelect(r.employees);}
-      else if(!cached||!cached.length){load.textContent="❌ Employees nahi mile.";}
-      wrap.style.display="block";load.style.display="none";
-    }).catch(()=>{
-      if(!cached||!cached.length){load.textContent="⚠️ Network error.";}
-      else{wrap.style.display="block";load.style.display="none";}
+  var wrap = document.getElementById("empList-wrap");
+  var load = document.getElementById("empLoading");
+  wrap.style.display = "none";
+  load.style.display = "block";
+  load.textContent = "⏳ Loading...";
+
+  var cached = store.get("empCache");
+  if(cached && cached.length){
+    allEmployees = cached;
+    populateEmpSelect(cached);
+    wrap.style.display = "block";
+    load.style.display = "none";
+  }
+
+  apiPost({action:"get_employees"})
+    .then(function(r){
+      if(r.employees && r.employees.length){
+        allEmployees = r.employees;
+        store.set("empCache", r.employees);
+        populateEmpSelect(r.employees);
+      } else if(!cached || !cached.length){
+        load.textContent = "❌ Employees nahi mile.";
+        return;
+      }
+      wrap.style.display = "block";
+      load.style.display = "none";
+    })
+    .catch(function(){
+      if(!cached || !cached.length) load.textContent = "⚠️ Network error.";
+      else { wrap.style.display = "block"; load.style.display = "none"; }
     });
 }
 
-function populateEmpSelect(emps){
-  var sel=document.getElementById("empSelect");
-  sel.innerHTML='<option value="">-- Naam chunein --</option>';
-  emps.forEach(e=>{var o=document.createElement("option");o.value=e.name;o.textContent=e.name+(e.designation?" ("+e.designation+")":"");sel.appendChild(o);});
+function populateEmpSelect(list){
+  var sel = document.getElementById("empSelect");
+  sel.innerHTML = '<option value="">-- Naam chunein --</option>';
+  list.forEach(function(e){
+    var o = document.createElement("option");
+    o.value = e.name; o.textContent = e.name;
+    sel.appendChild(o);
+  });
 }
 
-function togglePin(){var inp=document.getElementById("pinInput"),btn=document.getElementById("eyeBtn");if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}else{inp.type="password";btn.textContent="👁️";}}
+function togglePin(){
+  var inp = document.getElementById("pinInput");
+  inp.type = inp.type === "password" ? "text" : "password";
+}
 
 function doLogin(){
-  var name=document.getElementById("empSelect").value;
-  var pin=document.getElementById("pinInput").value.trim();
-  var err=document.getElementById("pinErr"); err.classList.remove("show");
-  if(!name){toast("Naam chunein pehle","error");return;}
-  if(!pin){toast("PIN darj karo","error");return;}
-  var emp=allEmployees.find(e=>e.name===name);
-  if(!emp){toast("Employee nahi mila","error");return;}
-  if(emp.pin.toString()!==pin.toString()){err.classList.add("show");return;}
-  currentEmp=emp; store.set("emp",emp);
-  document.getElementById("pinInput").value="";
+  var name = document.getElementById("empSelect").value.trim();
+  var pin  = document.getElementById("pinInput").value.trim();
+  if(!name){ toast("Pehle apna naam chunein","error"); return; }
+  if(!pin){  toast("PIN daalo","error"); return; }
+  var btn = document.getElementById("loginBtn");
+  btn.classList.add("loading"); btn.textContent = "Checking...";
+  var emp = allEmployees.find(function(e){ return e.name === name; });
+  if(!emp){ btn.classList.remove("loading"); btn.textContent = "Login →"; toast("Employee nahi mila","error"); return; }
+  if(String(emp.pin) !== String(pin)){ btn.classList.remove("loading"); btn.textContent = "Login →"; toast("Galat PIN","error"); return; }
+  currentEmp = emp;
+  store.set("emp", emp);
+  btn.classList.remove("loading"); btn.textContent = "Login →";
+  document.getElementById("pinInput").value = "";
   goToDash();
 }
 
-// ══ DASHBOARD ══
+/* ══════════════════════════════════════
+   SCREEN 3: DASHBOARD
+══════════════════════════════════════ */
 function goToDash(){
-  if(!currentEmp){show("s-land");return;}
-  show("s-dash");
-  document.getElementById("dName").textContent=currentEmp.name;
-  document.getElementById("gName").textContent=currentEmp.name;
-  document.getElementById("dDate").textContent=fmtDate(new Date());
-  startClock(); refreshDash(); loadDist(); scheduleAutoCheckout();
+  showScreen("s-dash");
+  document.getElementById("dashName").textContent = currentEmp.name;
+  totalDist = parseFloat(store.get("dist_"+currentEmp.name+"_"+todayKey())||0);
+  refreshDash();
+  startClock();
+  scheduleAutoCheckout();
 }
 
 function doLogout(){
-  stopCam();   // stop any active camera stream
-  stopGps();
-  stopTimer();
-  currentEmp=null;
+  stopCam(); stopGps(); stopTimer();
+  currentEmp = null;
   store.del("emp");
-  show("s-land");
+  showScreen("s-land");
 }
 
 function startClock(){
   if(clockInt) clearInterval(clockInt);
-  function tick(){var n=new Date(),h=n.getHours(),m=n.getMinutes();var ap=h>=12?"PM":"AM";h=h%12||12;document.getElementById("lClock").textContent=h+":"+(m<10?"0"+m:m)+" "+ap;}
-  tick(); clockInt=setInterval(tick,10000);
+  function tick(){
+    var now=new Date(), h=now.getHours(), m=now.getMinutes();
+    var ampm=h>=12?"PM":"AM", h12=h%12||12;
+    document.getElementById("clockDisp").textContent = h12+":"+String(m).padStart(2,"0")+" "+ampm;
+  }
+  tick(); clockInt = setInterval(tick, 1000);
 }
 
 function refreshDash(){
   if(!currentEmp) return;
-  var sv=store.get("ci_"+currentEmp.name); var isIn=!!sv;
-  var D=id=>document.getElementById(id);
-  D("sDot").className="dot"+(isIn?" g":"");
-  D("sTxt").textContent=isIn?"Checked in ✓":"Not checked in";
-  D("tCard").classList.toggle("show",isIn);
-  D("distCard").classList.toggle("show",isIn);
-  D("pingBar").classList.toggle("show",isIn);
-  if(isIn){
-    // Use sheetTime if available (from server), else fallback to local time
-    var displayTime=fmtTime(sv.sheetTime||sv.time);
-    D("tSub").textContent="Check-In: "+displayTime;
-    startTimer(sv.ms);
-    D("bCI").classList.add("dis"); D("bCO").classList.remove("dis");
-    D("bOrd").classList.remove("dis"); D("bPay").classList.remove("dis");
-    D("bRe").classList.remove("dis"); D("bRet").classList.remove("dis");
-    var elapsed=Date.now()-sv.ms;
-    if(elapsed<MIN_CHECKOUT){D("bCO").classList.add("dis");D("cdBadge").classList.add("show");startCD(sv.ms);}
-    else{D("bCO").classList.remove("dis");D("cdBadge").classList.remove("show");}
-    startGps();
+  var sv   = store.get("ci_"+currentEmp.name);
+  var dot  = document.getElementById("statusDot");
+  var stxt = document.getElementById("statusTxt");
+  var tCard= document.getElementById("timerCard");
+  var dCard= document.getElementById("distCard");
+  var gBar = document.getElementById("gpsBar");
+  var bCI  = document.getElementById("bCI");
+  var bCO  = document.getElementById("bCO");
+  var bRe  = document.getElementById("bRe");
+  var bOrd = document.getElementById("bOrd");
+  var bPay = document.getElementById("bPay");
+  var bRet = document.getElementById("bRet");
+  var bPh  = document.getElementById("bPh");
+
+  if(sv){
+    dot.className = "dot g";
+    stxt.textContent = "✅ Checked in — " + formatTime(sv.sheetTime || sv.time || "");
+    tCard.classList.add("show"); dCard.classList.add("show"); gBar.classList.add("show");
+    bCI.classList.add("dis"); bCO.classList.remove("dis");
+    bRe.classList.remove("dis"); bOrd.classList.remove("dis");
+    bPay.classList.remove("dis"); bRet.classList.remove("dis"); bPh.classList.remove("dis");
+    document.getElementById("ciTime").textContent = "Check-in: " + formatTime(sv.sheetTime || sv.time || "");
+    startTimer(sv.ms); startCD(sv.ms); startGps(); loadDist();
   } else {
-    D("bCI").classList.remove("dis"); D("bCO").classList.add("dis");
-    D("bOrd").classList.add("dis"); D("bPay").classList.add("dis");
-    D("bRe").classList.add("dis"); D("bRet").classList.add("dis");
-    stopTimer(); stopGps(); D("distCard").classList.remove("show");
+    dot.className = "dot";
+    stxt.textContent = "Not checked in";
+    tCard.classList.remove("show"); dCard.classList.remove("show"); gBar.classList.remove("show");
+    bCI.classList.remove("dis"); bCO.classList.add("dis");
+    bRe.classList.add("dis"); bOrd.classList.add("dis");
+    bPay.classList.add("dis"); bRet.classList.add("dis"); bPh.classList.add("dis");
+    stopTimer(); stopGps();
   }
 }
 
-// ══ CHECK-IN — opens camera (front cam) after clicking Check-In on dashboard ══
-function doCheckin(){
-  if(!currentEmp){toast("Pehle login karo","error");return;}
-  camMode="checkin";
-  camFacing="user";  // selfie/front camera
-  document.getElementById("camTitle").textContent="📷 Check-In — Selfie Lo";
-  getGps();           // start getting GPS in background
-  show("s-cam");      // navigate to camera screen FIRST
-  startCam();         // then start camera (now screen is active)
+function formatTime(s){
+  if(!s) return "";
+  var full = s.match(/(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})/);
+  if(full){ var h=parseInt(full[4]),mn=parseInt(full[5]),ampm=h>=12?"PM":"AM",h12=h%12||12; return h12+":"+String(mn).padStart(2,"0")+" "+ampm; }
+  var m=s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+  if(!m) return s;
+  var h=+m[1],mn=+m[2];
+  if(m[3]&&m[3].toUpperCase()==="PM"&&h<12) h+=12;
+  if(m[3]&&m[3].toUpperCase()==="AM"&&h===12) h=0;
+  var ampm=h>=12?"PM":"AM",h12=h%12||12;
+  return h12+":"+String(mn).padStart(2,"0")+" "+ampm;
 }
 
-function submitCheckin(photoData){
-  var now=new Date();
-  var mapLink=gpsPos?"https://maps.google.com/?q="+gpsPos.lat+","+gpsPos.lng:"";
-  var timeStr=now.toLocaleTimeString("en-IN");
-  toast("Check-in ho raha hai...","info");
-  apiPost({
-    action:"checkin", name:currentEmp.name, contact:currentEmp.contact||"",
-    shopName:"", shopkeeperName:"", shopkeeperContact:"", area:"", notes:"",
-    mapLink:mapLink, photo:photoData||"", timestamp:timeStr
-  }).then(r=>{
-    // Store with sheetTime = same timestamp sent to server
-    var sv={time:timeStr, sheetTime:timeStr, ms:now.getTime()};
-    store.set("ci_"+currentEmp.name,sv);
-    toast("Check-in ho gaya! ✓","success");
-    refreshDash();
-  }).catch(err=>toast("Error: "+err.message,"error"));
-}
-
-// ══ NEW VISIT MODAL ══
-function doNewVisit(){
-  if(!currentEmp) return;
-  document.getElementById("mArea").value="";
-  document.getElementById("mNotes").value="";
-  document.getElementById("visitModal").classList.add("show");
-  getGps();
-}
-
-function cancelVisit(){document.getElementById("visitModal").classList.remove("show");}
-
-function saveVisit(){
-  var area=document.getElementById("mArea").value.trim();
-  var notes=document.getElementById("mNotes").value.trim();
-  if(!area){toast("Area ka naam zaroori hai","error");return;}
-  var btn=document.getElementById("visitSaveBtn");
-  btn.classList.add("loading"); btn.textContent="Saving...";
-  var now=new Date();
-  var mapLink=gpsPos?"https://maps.google.com/?q="+gpsPos.lat+","+gpsPos.lng:"";
-  apiPost({
-    action:"checkin", name:currentEmp.name, contact:currentEmp.contact||"",
-    shopName:area, shopkeeperName:"", shopkeeperContact:"", area:area,
-    notes:notes, mapLink:mapLink, photo:"", timestamp:now.toLocaleTimeString("en-IN")
-  }).then(()=>{
-    btn.classList.remove("loading"); btn.textContent="✓ Save Visit";
-    document.getElementById("visitModal").classList.remove("show");
-    toast("Visit save ho gaya! ✓","success");
-    // GPS ping with visit status
-    if(gpsPos){
-      apiPost({action:"gps_ping",name:currentEmp.name,lat:gpsPos.lat,lng:gpsPos.lng,accuracy:0,status:"visit:"+area}).catch(()=>{});
+/* ══════════════════════════════════════
+   SCREEN 4: CAMERA
+   ONLY opened by doCheckin() or doQuickPhoto()
+   NEVER opens automatically
+══════════════════════════════════════ */
+function openCamera(mode, facing, title){
+  camMode   = mode;
+  camFacing = facing;
+  document.getElementById("camTitle").textContent = title;
+  /* reset preview state */
+  document.getElementById("video").style.display        = "block";
+  document.getElementById("photoPreview").style.display = "none";
+  document.getElementById("btnCap").style.display       = "block";
+  document.getElementById("btnNext").style.display      = "none";
+  document.getElementById("btnRe").style.display        = "none";
+  document.getElementById("gpsBadge").classList.remove("show");
+  /* navigate first */
+  showScreen("s-cam");
+  /* then start stream */
+  navigator.mediaDevices.getUserMedia({
+    video: {facingMode: facing, width:{ideal:1280}, height:{ideal:720}},
+    audio: false
+  }).then(function(stream){
+    if(!document.getElementById("s-cam").classList.contains("active")){
+      stream.getTracks().forEach(function(t){ t.stop(); }); return;
     }
-  }).catch(err=>{btn.classList.remove("loading");btn.textContent="✓ Save Visit";toast("Error: "+err.message,"error");});
+    camStream = stream;
+    document.getElementById("video").srcObject = stream;
+    getGps();
+  }).catch(function(err){
+    toast("Camera error: "+err.message, "error");
+    showScreen("s-dash");
+  });
 }
 
-// ══ CHECK-OUT ══
-function doCheckout(){
-  if(!currentEmp) return;
-  var sv=store.get("ci_"+currentEmp.name);
-  if(!sv){toast("Pehle check-in karo","error");return;}
-  var diffMs=Date.now()-sv.ms;
-  var h=Math.floor(diffMs/3600000),m=Math.floor((diffMs%3600000)/60000);
-  if(!confirm("Check-out karna chahte ho?\nTime on field: "+h+"h "+m+"m")) return;
-  apiPost({action:"checkout",name:currentEmp.name,timestamp:new Date().toLocaleTimeString("en-IN"),duration:h+"h "+m+"m"})
-    .then(()=>{store.del("ci_"+currentEmp.name);toast("Check-out ho gaya! ✓","success");stopGps();stopTimer();refreshDash();})
-    .catch(err=>toast("Error: "+err.message,"error"));
+function stopCam(){
+  if(camStream){ camStream.getTracks().forEach(function(t){ t.stop(); }); camStream = null; }
+  var v = document.getElementById("video");
+  if(v) v.srcObject = null;
 }
 
-// ══ QUICK PHOTO — blocked if not checked in ══
-function doQuickPhoto(){
-  if(!currentEmp) return;
-  if(!store.get("ci_"+currentEmp.name)){toast("Pehle check-in karo, phir photo bhejo","error");return;}
-  camMode="quick";
-  camFacing="environment";
-  document.getElementById("camTitle").textContent="📸 Quick Photo";
-  show("s-cam");
-  startCam();
-}
-
-// ══ CAMERA ══
-function startCam(){
-  // Safety: only start camera when camera screen is actually showing
-  if(!document.getElementById("s-cam").classList.contains("active")){return;}
-  stopCam();
-  var constraints={video:{facingMode:camFacing,width:{ideal:1280},height:{ideal:720}},audio:false};
-  navigator.mediaDevices.getUserMedia(constraints).then(stream=>{
-    // Double-check screen still active (user might have pressed back)
-    if(!document.getElementById("s-cam").classList.contains("active")){stream.getTracks().forEach(t=>t.stop());return;}
-    camStream=stream;
-    var v=document.getElementById("video");
-    v.srcObject=stream; v.style.display="block";
-    document.getElementById("photoPreview").style.display="none";
-    document.getElementById("btnCap").style.display="block";
-    document.getElementById("btnNext").style.display="none";
-    document.getElementById("btnRe").style.display="none";
-  }).catch(err=>{toast("Camera error: "+err.message,"error");show("s-dash");});
-}
-
-function stopCam(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}}
-
-function flipCam(){camFacing=camFacing==="environment"?"user":"environment";startCam();}
+function closeCam(){ stopCam(); showScreen("s-dash"); }
 
 function capturePhoto(){
-  var v=document.getElementById("video"),c=document.getElementById("canvas"),p=document.getElementById("photoPreview");
+  var v=document.getElementById("video"), c=document.getElementById("canvas"), p=document.getElementById("photoPreview");
   c.width=v.videoWidth||640; c.height=v.videoHeight||480;
   c.getContext("2d").drawImage(v,0,0);
   var data=c.toDataURL("image/jpeg",0.6);
@@ -686,130 +600,204 @@ function retakePhoto(){
 }
 
 function acceptPhoto(){
-  var data=document.getElementById("photoPreview").src;
-  stopCam(); show("s-dash");
-  if(camMode==="checkin"){submitCheckin(data);}
-  else if(camMode==="quick"){sendQuickPhoto(data);}
+  var data = document.getElementById("photoPreview").src;
+  stopCam(); showScreen("s-dash");
+  if(camMode==="checkin") submitCheckin(data);
+  else if(camMode==="quick") sendQuickPhoto(data);
 }
 
-// ← Back button: always stops cam and goes to dash
-function closeCam(){
-  stopCam();
-  show("s-dash");
+/* ══════════════════════════════════════
+   CHECK-IN
+══════════════════════════════════════ */
+function doCheckin(){
+  if(!currentEmp){ toast("Pehle login karo","error"); return; }
+  if(store.get("ci_"+currentEmp.name)){ toast("Aap pehle se check-in hain","info"); return; }
+  openCamera("checkin", "user", "📷 Check-In — Selfie Lo");
 }
 
+function submitCheckin(photoData){
+  var now=new Date();
+  var mapLink=gpsPos?"https://maps.google.com/?q="+gpsPos.lat+","+gpsPos.lng:"";
+  var timeStr=now.toLocaleTimeString("en-IN");
+  toast("Check-in ho raha hai...","info");
+  apiPost({action:"checkin",name:currentEmp.name,contact:currentEmp.contact||"",
+    shopName:"",shopkeeperName:"",shopkeeperContact:"",area:"",notes:"",
+    mapLink:mapLink,photo:photoData||"",timestamp:timeStr})
+    .then(function(){
+      store.set("ci_"+currentEmp.name,{time:timeStr,sheetTime:timeStr,ms:now.getTime()});
+      toast("Check-in ho gaya! ✓","success"); refreshDash();
+    }).catch(function(err){ toast("Error: "+err.message,"error"); });
+}
+
+/* ══════════════════════════════════════
+   CHECK-OUT
+══════════════════════════════════════ */
+function doCheckout(){
+  if(!currentEmp) return;
+  var sv=store.get("ci_"+currentEmp.name);
+  if(!sv){ toast("Pehle check-in karo","error"); return; }
+  var diffMs=Date.now()-sv.ms,h=Math.floor(diffMs/3600000),m=Math.floor((diffMs%3600000)/60000);
+  if(!confirm("Check-out karna chahte ho?\nField time: "+h+"h "+m+"m")) return;
+  apiPost({action:"checkout",name:currentEmp.name,timestamp:new Date().toLocaleTimeString("en-IN"),duration:h+"h "+m+"m"})
+    .then(function(){ store.del("ci_"+currentEmp.name); toast("Check-out ho gaya! ✓","success"); stopGps(); stopTimer(); refreshDash(); })
+    .catch(function(err){ toast("Error: "+err.message,"error"); });
+}
+
+/* ══════════════════════════════════════
+   NEW VISIT MODAL
+══════════════════════════════════════ */
+function doNewVisit(){
+  if(!currentEmp) return;
+  document.getElementById("mArea").value="";
+  document.getElementById("mNotes").value="";
+  document.getElementById("visitModal").classList.add("show");
+  getGps();
+}
+function cancelVisit(){ document.getElementById("visitModal").classList.remove("show"); }
+function saveVisit(){
+  var area=document.getElementById("mArea").value.trim();
+  var notes=document.getElementById("mNotes").value.trim();
+  if(!area){ toast("Area ka naam zaroori hai","error"); return; }
+  var btn=document.getElementById("visitSaveBtn");
+  btn.classList.add("loading"); btn.textContent="Saving...";
+  var now=new Date(), mapLink=gpsPos?"https://maps.google.com/?q="+gpsPos.lat+","+gpsPos.lng:"";
+  apiPost({action:"checkin",name:currentEmp.name,contact:currentEmp.contact||"",
+    shopName:area,shopkeeperName:"",shopkeeperContact:"",area:area,
+    notes:notes,mapLink:mapLink,photo:"",timestamp:now.toLocaleTimeString("en-IN")})
+    .then(function(){
+      btn.classList.remove("loading"); btn.textContent="✓ Save Visit";
+      document.getElementById("visitModal").classList.remove("show");
+      toast("Visit save ho gaya! ✓","success");
+      if(gpsPos) apiPost({action:"gps_ping",name:currentEmp.name,lat:gpsPos.lat,lng:gpsPos.lng,accuracy:0,status:"visit:"+area}).catch(function(){});
+    }).catch(function(err){ btn.classList.remove("loading"); btn.textContent="✓ Save Visit"; toast("Error: "+err.message,"error"); });
+}
+
+/* ══════════════════════════════════════
+   QUICK PHOTO
+══════════════════════════════════════ */
+function doQuickPhoto(){
+  if(!currentEmp) return;
+  if(!store.get("ci_"+currentEmp.name)){ toast("Pehle check-in karo","error"); return; }
+  openCamera("quick", "environment", "📸 Quick Photo");
+}
 function sendQuickPhoto(data){
   if(!currentEmp) return;
   toast("Photo bheja ja raha hai...","info");
   apiPost({action:"quick_photo",name:currentEmp.name,contact:currentEmp.contact||"",photo:data,lat:gpsPos?gpsPos.lat:"",lng:gpsPos?gpsPos.lng:""})
-    .then(()=>toast("Photo save ho gaya ✓","success"))
-    .catch(()=>toast("Photo bhejne mein error","error"));
+    .then(function(){ toast("Photo save ho gaya ✓","success"); })
+    .catch(function(){ toast("Photo bhejne mein error","error"); });
 }
 
-// ══ GPS ══
+/* ══════════════════════════════════════
+   GPS
+══════════════════════════════════════ */
 function getGps(){
   if(!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(pos=>{
+  navigator.geolocation.getCurrentPosition(function(pos){
     gpsPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
     var b=document.getElementById("gpsBadge");
-    if(b){b.textContent="📍 "+gpsPos.lat.toFixed(5)+", "+gpsPos.lng.toFixed(5);b.classList.add("show");}
+    if(b){ b.textContent="📍 "+gpsPos.lat.toFixed(5)+", "+gpsPos.lng.toFixed(5); b.classList.add("show"); }
     updateDistance(gpsPos);
-  },()=>{},{enableHighAccuracy:true,timeout:10000});
+  },function(){},{enableHighAccuracy:true,timeout:10000});
 }
-
 function startGps(){
   stopGps();
-  gpsInterval=setInterval(()=>{
+  gpsInterval=setInterval(function(){
     if(!currentEmp||!store.get("ci_"+currentEmp.name)) return;
-    navigator.geolocation.getCurrentPosition(pos=>{
+    navigator.geolocation.getCurrentPosition(function(pos){
       gpsPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
       updateDistance(gpsPos);
-      apiPost({action:"gps_ping",name:currentEmp.name,lat:gpsPos.lat,lng:gpsPos.lng,accuracy:pos.coords.accuracy,status:"tracking"}).catch(()=>{});
-    },()=>{},{enableHighAccuracy:true,timeout:10000});
+      apiPost({action:"gps_ping",name:currentEmp.name,lat:gpsPos.lat,lng:gpsPos.lng,accuracy:pos.coords.accuracy,status:"tracking"}).catch(function(){});
+    },function(){},{enableHighAccuracy:true,timeout:10000});
   },GPS_INTERVAL);
 }
-
-function stopGps(){if(gpsInterval){clearInterval(gpsInterval);gpsInterval=null;}}
-
-// ══ DISTANCE ══
+function stopGps(){ if(gpsInterval){ clearInterval(gpsInterval); gpsInterval=null; } }
 function updateDistance(pos){
-  if(lastGpsPos){
+  if(lastGpsPos&&currentEmp){
     var d=haversine(lastGpsPos.lat,lastGpsPos.lng,pos.lat,pos.lng);
-    if(d>20){totalDist+=d;store.set("dist_"+currentEmp.name+"_"+todayKey(),totalDist);}
+    if(d>20){ totalDist+=d; store.set("dist_"+currentEmp.name+"_"+todayKey(),totalDist); }
   }
   lastGpsPos=pos; loadDist();
 }
-
 function haversine(lat1,lon1,lat2,lon2){
   var R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
   var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-
-function todayKey(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
-
+function todayKey(){ var d=new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
 function loadDist(){
   if(!currentEmp) return;
   var range=document.getElementById("distRange").value;
   var dateRow=document.getElementById("distDateRow"),valEl=document.getElementById("distVal");
   dateRow.style.display=range==="date"?"block":"none";
   var metres=0;
-  if(range==="today"){metres=parseFloat(store.get("dist_"+currentEmp.name+"_"+todayKey())||0);}
-  else if(range==="total"){for(var k in localStorage){if(k.startsWith("dist_"+currentEmp.name+"_"))metres+=parseFloat(localStorage[k]||0);}}
-  else if(range==="date"){var d=document.getElementById("distDate").value;if(!d){valEl.textContent="--";return;}var pts=d.split("-");var key=pts[0]+"-"+parseInt(pts[1])+"-"+parseInt(pts[2]);metres=parseFloat(store.get("dist_"+currentEmp.name+"_"+key)||0);}
+  if(range==="today") metres=parseFloat(store.get("dist_"+currentEmp.name+"_"+todayKey())||0);
+  else if(range==="total"){ for(var k in localStorage){ if(k.startsWith("dist_"+currentEmp.name+"_")) metres+=parseFloat(localStorage[k]||0); } }
+  else if(range==="date"){ var dv=document.getElementById("distDate").value; if(!dv){valEl.textContent="--";return;} var pts=dv.split("-"),key=pts[0]+"-"+parseInt(pts[1])+"-"+parseInt(pts[2]); metres=parseFloat(store.get("dist_"+currentEmp.name+"_"+key)||0); }
   valEl.textContent=metres<1000?Math.round(metres)+" m":(metres/1000).toFixed(2)+" km";
 }
 
-// ══ TIMER ══
+/* ══════════════════════════════════════
+   TIMER
+══════════════════════════════════════ */
 function startTimer(startMs){
   stopTimer();
-  function tick(){var diff=Date.now()-startMs,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);document.getElementById("tDisp").textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
+  function tick(){ var diff=Date.now()-startMs,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000); document.getElementById("tDisp").textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); }
   tick(); timerInt=setInterval(tick,1000);
 }
-function stopTimer(){if(timerInt){clearInterval(timerInt);timerInt=null;}}
-
+function stopTimer(){ if(timerInt){ clearInterval(timerInt); timerInt=null; } }
 function startCD(startMs){
   if(cdInt) clearInterval(cdInt);
-  cdInt=setInterval(()=>{var rem=MIN_CHECKOUT-(Date.now()-startMs);if(rem<=0){clearInterval(cdInt);document.getElementById("bCO").classList.remove("dis");document.getElementById("cdBadge").classList.remove("show");}else document.getElementById("cdBadge").textContent=Math.ceil(rem/1000)+"s";},500);
+  cdInt=setInterval(function(){
+    var rem=MIN_CHECKOUT-(Date.now()-startMs);
+    if(rem<=0){ clearInterval(cdInt); document.getElementById("bCO").classList.remove("dis"); var b=document.getElementById("cdBadge"); if(b) b.classList.remove("show"); }
+    else { var b=document.getElementById("cdBadge"); if(b){ b.textContent=Math.ceil(rem/1000)+"s"; b.classList.add("show"); } }
+  },500);
 }
 
-// ══ AUTO CHECKOUT ══
+/* ══════════════════════════════════════
+   AUTO CHECKOUT 10 PM
+══════════════════════════════════════ */
 function scheduleAutoCheckout(){
-  var now=new Date(),cutoff=new Date(now);cutoff.setHours(22,0,0,0);
+  var now=new Date(),cutoff=new Date(now); cutoff.setHours(22,0,0,0);
   if(now>=cutoff) cutoff.setDate(cutoff.getDate()+1);
-  setTimeout(()=>{
+  setTimeout(function(){
     if(!currentEmp) return;
     var sv=store.get("ci_"+currentEmp.name); if(!sv) return;
     var diff=Date.now()-sv.ms,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
     apiPost({action:"checkout",name:currentEmp.name,timestamp:"10:00 PM (Auto)",duration:h+"h "+m+"m (auto)"})
-      .then(()=>{store.del("ci_"+currentEmp.name);stopGps();toast("Auto check-out (10 PM)","info");refreshDash();}).catch(()=>{});
+      .then(function(){ store.del("ci_"+currentEmp.name); stopGps(); toast("Auto check-out (10 PM)","info"); refreshDash(); }).catch(function(){});
   },cutoff.getTime()-now.getTime());
 }
 
-// ══ PWA ══
+/* ══════════════════════════════════════
+   PWA
+══════════════════════════════════════ */
 var deferredPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;if(!localStorage.getItem("pwa_done"))setTimeout(()=>document.getElementById("pwaBanner").classList.add("show"),3000);});
-window.addEventListener("appinstalled",()=>{document.getElementById("pwaBanner").classList.remove("show");localStorage.setItem("pwa_done","1");});
-function installPWA(){if(!deferredPrompt){toast("Safari: Share → Add to Home Screen","info");return;}deferredPrompt.prompt();deferredPrompt.userChoice.then(r=>{if(r.outcome==="accepted")localStorage.setItem("pwa_done","1");deferredPrompt=null;document.getElementById("pwaBanner").classList.remove("show");});}
-function dismissPWA(){document.getElementById("pwaBanner").classList.remove("show");localStorage.setItem("pwa_done","1");}
+window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferredPrompt=e; if(!localStorage.getItem("pwa_done")) setTimeout(function(){ document.getElementById("pwaBanner").classList.add("show"); },3000); });
+window.addEventListener("appinstalled",function(){ document.getElementById("pwaBanner").classList.remove("show"); localStorage.setItem("pwa_done","1"); });
+function installPWA(){ if(!deferredPrompt){ toast("Safari: Share → Add to Home Screen","info"); return; } deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(r){ if(r.outcome==="accepted") localStorage.setItem("pwa_done","1"); deferredPrompt=null; document.getElementById("pwaBanner").classList.remove("show"); }); }
+function dismissPWA(){ document.getElementById("pwaBanner").classList.remove("show"); localStorage.setItem("pwa_done","1"); }
 
-// ══ INIT ══
-(function init(){
-  applyLang();
-  // Always make sure camera screen is NOT active on load
-  var camScr = document.getElementById("s-cam");
-  if(camScr) camScr.classList.remove("active");
+/* ══════════════════════════════════════
+   INIT — page load
+   Rule 1: Landing screen dikhao by default
+   Rule 2: Camera kabhi auto nahi khulta
+   Rule 3: Agar session saved hai to dashboard
+══════════════════════════════════════ */
+(function(){
+  /* Remove active from ALL screens — no screen is active in HTML */
+  document.querySelectorAll(".screen").forEach(function(s){ s.classList.remove("active"); });
+  /* Stop any camera (safety) */
   stopCam();
-
+  /* Decide which screen to show */
   var saved = store.get("emp");
-  if(saved){
-    // Returning user — go straight to dashboard
+  if(saved && saved.name){
     currentEmp = saved;
-    totalDist  = parseFloat(store.get("dist_"+saved.name+"_"+todayKey())||0);
     goToDash();
   } else {
-    // Fresh visit — show landing screen
-    show("s-land");
+    /* Show landing screen */
+    document.getElementById("s-land").classList.add("active");
   }
 })();
 </script>
