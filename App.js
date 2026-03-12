@@ -701,8 +701,8 @@ function ciGetGps() {
     if (b) b.textContent = "📍 " + ciGpsPos.lat.toFixed(5) + ", " + ciGpsPos.lng.toFixed(5) +
       " (±" + Math.round(pos.coords.accuracy) + "m)";
   }, function() {
-    if (b) b.textContent = "📍 GPS unavailable";
-  }, { enableHighAccuracy: true, timeout: 10000 });
+    if (b) b.textContent = "📍 GPS unavailable (code:" + err.code + ")";
+  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0});
 }
 
 function ciSubmitCheckin() {
