@@ -1,551 +1,186 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Field Attendance</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#ffffff;--card:#f8f9fb;--card2:#f0f2f6;--border:#e2e6ed;
-  --accent:#2563eb;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--purple:#7c3aed;--sky:#0ea5e9;
-  --text:#1a1f2e;--muted:#6b7280;--radius:14px;
-  font-family:'Nunito',sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;background:var(--bg);color:var(--text);}
-.screen{position:fixed;inset:0;overflow-y:auto;display:none;flex-direction:column;background:var(--bg);}
-.screen.active{display:flex;animation:fi .25s ease;}
-@keyframes fi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-/* TOPBAR */
-.topbar{display:flex;align-items:center;gap:10px;padding:14px 16px 0;position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid transparent;}
-.back-btn{width:36px;height:36px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.topbar-title{font-size:16px;font-weight:700;flex:1;color:var(--text);}
-/* INPUTS */
-label.lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;display:block;}
-.inp-wrap{position:relative;}
-input,textarea,select{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;appearance:none;transition:border-color .2s;resize:none;}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);}
-input.err-inp{border-color:var(--red);}
-.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;}
-.fgroup{margin-bottom:12px;}
-.err-msg{color:var(--red);font-size:11px;margin-top:4px;display:none;}
-.err-msg.show{display:block;}
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;max-width:90vw;text-align:center;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.error{background:var(--red);}
-.toast.info{background:var(--accent);}
-.toast.success{background:var(--green);}
-/* CARD */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:0 16px 12px;}
-/* BUTTONS */
-.btn-primary{width:100%;padding:15px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .2s;}
-.btn-primary:active{opacity:.85;}
-.btn-primary.loading{opacity:.5;pointer-events:none;}
-.btn-secondary{width:100%;padding:13px;border-radius:12px;background:var(--card2);border:1.5px solid var(--border);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
-/* ══════════════ LANDING ══════════════ */
-#s-land{align-items:center;justify-content:center;padding:40px 24px;min-height:100vh;}
-.brand-logo{width:84px;height:84px;border-radius:22px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:18px;box-shadow:0 8px 32px rgba(37,99,235,.2);}
-.brand-title{font-size:26px;font-weight:900;text-align:center;margin-bottom:6px;}
-.brand-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:36px;}
-.lang-bar{display:flex;gap:8px;justify-content:center;margin-bottom:24px;}
-.lang-chip{background:var(--card2);border:1.5px solid var(--border);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--muted);}
-.lang-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.admin-link{margin-top:14px;font-size:12px;color:var(--muted);cursor:pointer;text-align:center;padding:8px;font-weight:600;}
-.admin-link:hover{color:var(--accent);}
-/* ══════════════ VERIFY ══════════════ */
-#s-verify{padding:0;}
-.verify-hero{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:40px 24px 32px;text-align:center;color:#fff;}
-.verify-hero h2{font-size:22px;font-weight:900;margin-bottom:6px;}
-.verify-hero p{font-size:13px;opacity:.85;}
-.verify-body{padding:20px 16px;}
-/* ══════════════ DASHBOARD ══════════════ */
-#s-dash{padding-bottom:40px;}
-.dash-header{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:20px 16px 40px;color:#fff;position:relative;}
-.dash-user-row{display:flex;align-items:center;justify-content:space-between;}
-.dash-user-name{font-size:20px;font-weight:900;}
-.dash-user-sub{font-size:11px;opacity:.75;margin-top:2px;}
-.dash-logout{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-.status-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin:0 16px;margin-top:-24px;padding:14px 16px;box-shadow:0 4px 20px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center;}
-.status-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
-.dot.g{background:var(--green);animation:pu 1.5s infinite;}
-@keyframes pu{0%,100%{opacity:1;}50%{opacity:.3;}}
-.clock{font-size:18px;font-weight:800;color:var(--text);}
-.timer-card{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:var(--radius);margin:10px 16px 0;padding:12px 16px;display:none;}
-.timer-card.show{display:block;}
-.timer-row{display:flex;justify-content:space-between;align-items:center;}
-.timer-lbl{font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-.timer-val{font-size:24px;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;}
-.timer-sub{font-size:11px;color:#6b7280;margin-top:3px;}
-/* Distance card */
-.dist-card{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:var(--radius);margin:10px 16px 0;padding:12px 16px;display:none;}
-.dist-card.show{display:block;}
-.dist-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.dist-lbl{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
-.dist-val{font-size:18px;font-weight:900;color:var(--accent);}
-.dist-sel{background:#fff;border:1px solid #bfdbfe;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;font-family:inherit;outline:none;}
-.gps-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;margin:8px 16px 0;padding:8px 12px;font-size:11px;color:var(--accent);display:none;align-items:center;gap:8px;font-weight:600;}
-.gps-bar.show{display:flex;}
-.pdot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pu 1.5s infinite;}
-.greet{font-size:18px;font-weight:900;margin:16px 16px 3px;}
-.gsub{font-size:12px;color:var(--muted);margin:0 16px 14px;font-weight:600;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px;}
-.abtn{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04);}
-.abtn.dis{opacity:.35;pointer-events:none;}
-.abtn:not(.dis):active{transform:scale(.97);}
-.abtn .ai{font-size:28px;margin-bottom:6px;display:block;}
-.abtn .al{font-size:12px;font-weight:800;display:block;color:var(--text);}
-.abtn .as{font-size:10px;color:var(--muted);margin-top:2px;display:block;}
-.abtn.ci{border-color:#bbf7d0;background:#f0fdf4;}
-.abtn.co{border-color:#fecaca;background:#fef2f2;}
-.abtn.or{border-color:#fed7aa;background:#fff7ed;}
-.abtn.py{border-color:#e9d5ff;background:#faf5ff;}
-.abtn.re{border-color:#bfdbfe;background:#eff6ff;}
-.abtn.rt{border-color:#fecaca;background:#fef2f2;}
-.abtn.ph{border-color:#d1fae5;background:#ecfdf5;}
-.cdown{display:none;position:absolute;top:6px;right:6px;background:var(--red);color:#fff;border-radius:6px;padding:2px 6px;font-size:9px;font-weight:700;}
-.cdown.show{display:block;}
-/* ══════════════ CAMERA ══════════════ */
-#s-cam{background:#111;}
-.video-wrap{position:relative;flex:1;min-height:200px;overflow:hidden;}
-#video{width:100%;height:100%;object-fit:cover;display:block;}
-#canvas{display:none;}
-#photoPreview{width:100%;height:100%;object-fit:cover;display:none;}
-.cam-corner{position:absolute;width:24px;height:24px;border-color:rgba(255,255,255,.7);border-style:solid;}
-.cam-corner.tl{top:12px;left:12px;border-width:2px 0 0 2px;}
-.cam-corner.br{bottom:12px;right:12px;border-width:0 2px 2px 0;}
-.gps-badge{position:absolute;bottom:12px;left:12px;right:12px;background:rgba(0,0,0,.75);border-radius:10px;padding:8px 12px;font-size:11px;color:#fff;display:none;}
-.gps-badge.show{display:block;}
-.cam-bar{display:flex;gap:10px;padding:12px 14px;background:rgba(0,0,0,.9);align-items:center;}
-.btn-flip{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.btn-cap{flex:1;padding:13px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7c3aed);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
-.btn-next{flex:1;padding:13px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);border:none;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:none;}
-.btn-re{padding:13px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;display:none;}
-/* ══════════════ VISIT MODAL ══════════════ */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;}
-.modal-overlay.show{display:flex;animation:fi .25s ease;}
-.modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;padding:20px 16px 32px;}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.modal-title{font-size:17px;font-weight:900;}
-.modal-x{background:var(--card2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
-.modal-sub{font-size:12px;color:var(--muted);margin-bottom:16px;font-weight:600;}
-.modal-photo-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.modal-photo-thumb{width:60px;height:60px;border-radius:10px;background:var(--card2);border:1.5px dashed var(--border);overflow:hidden;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);}
-.modal-photo-thumb img{width:100%;height:100%;object-fit:cover;}
-.modal-photo-lbl{font-size:12px;color:var(--muted);font-weight:600;}
-.modal-btn{width:100%;padding:15px;border-radius:12px;background:var(--accent);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px;}
-.modal-btn:active{opacity:.85;}
-.modal-btn.loading{opacity:.5;pointer-events:none;}
-/* ══════════════ PHOTO PAGE ══════════════ */
-#s-photo{background:#111;}
-/* ══════════════ PWA BANNER ══════════════ */
-.pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;padding:14px 16px;z-index:300;align-items:center;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.15);}
-.pwa-banner.show{display:flex;}
-.pwa-install-btn{background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
-.pwa-close-btn{background:none;border:none;color:rgba(255,255,255,.7);font-size:22px;cursor:pointer;padding:2px;}
-</style>
-</head>
-<body>
-
-<!-- TOAST -->
-<div id="toast" class="toast"></div>
-
-<!-- ══════════════ LANDING ══════════════ -->
-<div class="screen active" id="s-land">
-  <div class="brand-logo">🏢</div>
-  <div class="brand-title" id="txt-title">Field Attendance</div>
-  <div class="brand-sub" id="txt-sub">Apni daily attendance aur visits track karo</div>
-  <div class="lang-bar">
-    <div class="lang-chip active" onclick="setLang('hi')">हिंदी</div>
-    <div class="lang-chip" onclick="setLang('en')">English</div>
-  </div>
-  <button class="btn-primary" style="max-width:320px;" onclick="goVerify()" id="txt-start">Get Started →</button>
-  <div class="admin-link" onclick="location.href=ADMIN_URL">⚙️ Admin Panel</div>
-</div>
-
-<!-- ══════════════ VERIFY IDENTITY ══════════════ -->
-<div class="screen" id="s-verify">
-  <div class="verify-hero">
-    <h2 id="txt-verify-h">👤 Verify Identity</h2>
-    <p id="txt-verify-p">Apna naam aur PIN darj karo</p>
-  </div>
-  <div class="verify-body">
-    <div id="empList-wrap" style="display:none;">
-      <div class="fgroup">
-        <label class="lbl" id="txt-name-lbl">Apna naam chunein</label>
-        <div class="inp-wrap" style="position:relative;">
-          <select id="empSelect" style="padding-right:32px;">
-            <option value="">-- Naam chunein --</option>
-          </select>
-        </div>
-      </div>
-      <div class="fgroup">
-        <label class="lbl" id="txt-pin-lbl">PIN / Password</label>
-        <div class="inp-wrap" style="position:relative;">
-          <input type="password" id="pinInput" placeholder="PIN darj karo" maxlength="10"
-            onkeydown="if(event.key==='Enter')doLogin()">
-          <button class="eye-btn" onclick="togglePin()" id="eyeBtn">👁️</button>
-        </div>
-        <div class="err-msg" id="pinErr">PIN galat hai ❌</div>
-      </div>
-      <button class="btn-primary" onclick="doLogin()" id="txt-login-btn">Login →</button>
-    </div>
-    <div id="empLoading" style="text-align:center;padding:40px;color:var(--muted);font-weight:600;">⏳ Loading employees...</div>
-  </div>
-</div>
-
-<!-- ══════════════ DASHBOARD ══════════════ -->
-<div class="screen" id="s-dash">
-  <div class="dash-header">
-    <div class="dash-user-row">
-      <div>
-        <div id="txt-loginas" style="font-size:11px;opacity:.75;font-weight:600;">Logged in as</div>
-        <div class="dash-user-name" id="dName">--</div>
-        <div class="dash-user-sub" id="dDate">--</div>
-      </div>
-      <button class="dash-logout" onclick="doLogout()">Logout</button>
-    </div>
-  </div>
-  <div class="status-card">
-    <div class="status-left">
-      <div class="dot" id="sDot"></div>
-      <span id="sTxt">Not checked in</span>
-    </div>
-    <div class="clock" id="lClock">--:--</div>
-  </div>
-  <div class="timer-card" id="tCard">
-    <div class="timer-row">
-      <span class="timer-lbl">⏱ Time on Field</span>
-      <span class="timer-val" id="tDisp">00:00:00</span>
-    </div>
-    <div class="timer-sub" id="tSub"></div>
-  </div>
-  <div class="dist-card" id="distCard">
-    <div class="dist-row">
-      <span class="dist-lbl">📍 Distance Covered</span>
-      <select class="dist-sel" id="distRange" onchange="loadDist()">
-        <option value="today">Aaj</option>
-        <option value="total">Kul (Total)</option>
-        <option value="date">By Date</option>
-      </select>
-    </div>
-    <div id="distVal" class="dist-val">--</div>
-    <div id="distDateRow" style="display:none;margin-top:6px;">
-      <input type="date" id="distDate" style="padding:6px 10px;font-size:12px;border-radius:8px;border:1px solid #bfdbfe;background:#fff;color:var(--accent);" onchange="loadDist()">
-    </div>
-  </div>
-  <div class="gps-bar" id="pingBar">
-    <div class="pdot"></div>
-    <span id="pingTxt">Live tracking active</span>
-  </div>
-  <div class="greet">Hello, <span style="color:var(--accent);" id="gName"></span>! 👋</div>
-  <div class="gsub" id="gSub">Aaj kya karna hai?</div>
-  <div class="grid2">
-    <div class="abtn ci" id="bCI" onclick="doCheckin()">
-      <span class="ai">🟢</span>
-      <span class="al" id="txt-ci">Check-In</span>
-      <span class="as" id="txt-ci-sub">Din shuru karo</span>
-    </div>
-    <div class="abtn co dis" id="bCO" onclick="doCheckout()">
-      <span class="ai">🔴</span>
-      <span class="al" id="txt-co">Check-Out</span>
-      <span class="as" id="txt-co-sub">Din khatam karo</span>
-      <span class="cdown" id="cdBadge"></span>
-    </div>
-    <div class="abtn or dis" id="bOrd" onclick="location.href=ORDER_URL">
-      <span class="ai">📋</span>
-      <span class="al">Take Order</span>
-      <span class="as">Order entry</span>
-    </div>
-    <div class="abtn py dis" id="bPay" onclick="location.href=PAYMENT_URL">
-      <span class="ai">💰</span>
-      <span class="al">Payment</span>
-      <span class="as">Collect payment</span>
-    </div>
-    <div class="abtn re dis" id="bRe" onclick="doNewVisit()">
-      <span class="ai">🔄</span>
-      <span class="al" id="txt-re">New Visit</span>
-      <span class="as" id="txt-re-sub">Dobara visit darj karo</span>
-    </div>
-    <div class="abtn rt dis" id="bRet" onclick="location.href=RETURN_URL">
-      <span class="ai">↩️</span>
-      <span class="al">Return Order</span>
-      <span class="as">Wapsi entry</span>
-    </div>
-    <div class="abtn ph" id="bPh" onclick="doQuickPhoto()">
-      <span class="ai">📸</span>
-      <span class="al">Quick Photo</span>
-      <span class="as">Photo bhejo</span>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ VISIT MODAL ══════════════ -->
-<div class="modal-overlay" id="visitModal" onclick="if(event.target===this)cancelVisit()">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-header">
-      <div class="modal-title" id="visitModalTitle">📍 Visit Details</div>
-      <div class="modal-x" onclick="cancelVisit()">✕</div>
-    </div>
-    <div class="modal-sub" id="visitModalSub">Shop/Dukan ki jankari bharein</div>
-
-    <!-- Photo row inside modal -->
-    <div class="modal-photo-row">
-      <div class="modal-photo-thumb" id="mPhotoThumb" onclick="openVisitCamera()">
-        <img id="mPhotoImg" src="" alt="" style="display:none;">
-        <span id="mPhotoIcon">📷</span>
-      </div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);">Visit Photo</div>
-        <div class="modal-photo-lbl">Tap karke photo lo (optional)</div>
-      </div>
-    </div>
-
-    <div class="fgroup">
-      <label class="lbl">Shop ka naam *</label>
-      <input id="mShop" placeholder="Dukan ka naam" type="text">
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Shopkeeper ka naam *</label>
-      <input id="mKeeper" placeholder="Malik ka naam" type="text">
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Shopkeeper ka contact *</label>
-      <input id="mContact" placeholder="10 digit mobile" type="tel" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')">
-      <div class="err-msg" id="mContactErr">10 digit number chahiye</div>
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Area / Ilaka *</label>
-      <input id="mArea" placeholder="Area ka naam" type="text">
-    </div>
-    <div class="fgroup">
-      <label class="lbl">Notes (optional)</label>
-      <textarea id="mNotes" rows="2" placeholder="Koi khaas baat..."></textarea>
-    </div>
-    <button class="modal-btn" id="visitSaveBtn" onclick="saveVisit()">✓ Save &amp; Check-In</button>
-  </div>
-</div>
-
-<!-- ══════════════ CAMERA (for visit photo & quick photo) ══════════════ -->
-<div class="screen" id="s-cam">
-  <div class="topbar" style="background:#111;border-bottom:1px solid rgba(255,255,255,.1);">
-    <button class="back-btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);color:#fff;" onclick="closeCam()">←</button>
-    <span class="topbar-title" style="color:#fff;" id="camTitle">Photo lo</span>
-  </div>
-  <div class="video-wrap">
-    <video id="video" autoplay playsinline muted></video>
-    <canvas id="canvas"></canvas>
-    <img id="photoPreview" alt="preview">
-    <div class="cam-corner tl"></div>
-    <div class="cam-corner br"></div>
-    <div class="gps-badge" id="gpsBadge"></div>
-  </div>
-  <div class="cam-bar">
-    <button class="btn-flip" onclick="flipCam()" title="Camera flip">🔄</button>
-    <button class="btn-cap" id="btnCap" onclick="capturePhoto()">📷 Photo Lo</button>
-    <button class="btn-next" id="btnNext" onclick="acceptPhoto()">✓ Use This</button>
-    <button class="btn-re" id="btnRe" onclick="retakePhoto()">↩ Retake</button>
-  </div>
-</div>
-
-<!-- PWA BANNER -->
-<div class="pwa-banner" id="pwaBanner">
-  <div style="flex:1;">
-    <div style="font-size:13px;font-weight:800;">📱 Home Screen pe Add karo</div>
-    <div style="font-size:11px;opacity:.8;margin-top:2px;">Fast access — bina browser khole</div>
-  </div>
-  <button class="pwa-install-btn" onclick="installPWA()">Install</button>
-  <button class="pwa-close-btn" onclick="dismissPWA()">✕</button>
-</div>
-
-<script>
 // ══════════════════════════════════════════
-// CONFIG
+// CONFIG + CONSTANTS
 // ══════════════════════════════════════════
-const SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
 const ORDER_URL    = "order.html";
 const PAYMENT_URL  = "payment.html";
 const RETURN_URL   = "return.html";
 const ADMIN_URL    = "admin.html";
-const MIN_CHECKOUT = 10 * 1000;       // 10 seconds minimum before checkout allowed
-const GPS_INTERVAL = 5 * 60 * 1000;  // 5 minutes GPS ping interval
+
+const MIN_CHECKOUT = 10 * 1000;     // 10 seconds minimum
+const GPS_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 // ══════════════════════════════════════════
 // STORAGE HELPER
 // ══════════════════════════════════════════
 const store = {
-  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
-  get: (k)    => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch(e) { return null; } },
-  del: (k)    => { try { localStorage.removeItem(k); } catch(e) {} }
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  get: (k) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } },
+  del: (k) => { try { localStorage.removeItem(k); } catch {} }
 };
 
 // ══════════════════════════════════════════
-// API CALL
+// LANGUAGE SUPPORT
 // ══════════════════════════════════════════
-async function apiPost(payload) {
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify(payload)
-  });
-  return res.json();
-}
+let lang = store.get("lang") || "hi";
 
-// ══════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════
-function toast(msg, type = "info") {
-  const el = document.getElementById("toast");
-  if (!el) return;
-  el.textContent = msg;
-  el.className = "toast " + type + " show";
-  setTimeout(() => el.classList.remove("show"), 4000);
-}
-
-// ══════════════════════════════════════════
-// PHOTO COMPRESS
-// ══════════════════════════════════════════
-function compressPhoto(dataUrl) {
-  try {
-    const cv = document.createElement("canvas");
-    const im = new Image();
-    im.src = dataUrl;
-    const mw = 720, sc = im.width > mw ? mw / im.width : 1;
-    cv.width  = (im.width  || 640) * sc;
-    cv.height = (im.height || 480) * sc;
-    cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
-    return cv.toDataURL("image/jpeg", 0.5);
-  } catch(e) { return dataUrl; }
-}
-
-// ══════════════════════════════════════════
-// DATE FORMAT — dd-M-yyyy
-// ══════════════════════════════════════════
-function fmtDate(val) {
-  if (!val) return "";
-  let d;
-  if (val instanceof Date) {
-    d = val;
-  } else {
-    const s = val.toString();
-    // yyyy-MM-dd
-    const m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m1) d = new Date(+m1[1], +m1[2]-1, +m1[3]);
-    // dd-MM-yyyy
-    const m2 = s.match(/^(\d{2})-(\d{2})-(\d{4})/);
-    if (!d && m2) d = new Date(+m2[3], +m2[2]-1, +m2[1]);
-    if (!d) d = new Date(s);
-  }
-  if (isNaN(d)) return val.toString();
-  return d.getDate() + "-" + (d.getMonth()+1) + "-" + d.getFullYear();
-}
-
-// ══════════════════════════════════════════
-// TIME FORMAT — HH:MM AM/PM
-// ══════════════════════════════════════════
-function fmtTime(val) {
-  if (!val) return "";
-  const s = val.toString();
-  // Already readable like "10:30:00"
-  const m = s.match(/(\d+):(\d+):?(\d+)?\s*(AM|PM)?/i);
-  if (!m) return s;
-  let h = +m[1], mn = +m[2];
-  if (m[4]) {
-    // already AM/PM
-  } else {
-    // 24h to 12h
-  }
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12  = h % 12 || 12;
-  return h12 + ":" + String(mn).padStart(2,"0") + " " + ampm;
-}
-</script>
-<script>
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-var currentEmp   = null;   // {name, pin, contact, designation}
-var visitPhoto   = null;   // base64 photo for current visit
-var camMode      = "visit"; // "visit" | "quick"
-var camFacing    = "environment"; // rear by default
-var camStream    = null;
-var gpsInterval  = null;
-var gpsPos       = null;   // current GPS position
-var timerInt     = null;
-var cdInt        = null;
-var clockInt     = null;
-var totalDist    = 0;      // metres
-var lastGpsPos   = null;   // for distance calc
-var allEmployees = [];
-
-// LANG
-var lang = store.get("lang") || "hi";
-var L = {
+const L = {
   hi: {
-    title:"फील्ड अटेंडेंस", sub:"अपनी डेली अटेंडेंस ट्रैक करो",
-    start:"शुरू करें →", loginas:"लॉग इन है",
-    verifyH:"👤 पहचान सत्यापित करें", verifyP:"अपना नाम और PIN डालें",
-    nameLbl:"अपना नाम चुनें", pinLbl:"PIN / पासवर्ड",
-    loginBtn:"लॉगिन →",
-    ci:"चेक-इन", ciSub:"दिन शुरू करो",
-    co:"चेक-आउट", coSub:"दिन खत्म करो",
-    re:"नई विज़िट", reSub:"दोबारा विज़िट दर्ज करो",
-    gSub:"आज क्या करना है?"
+    title: "फील्ड अटेंडेंस",
+    sub: "अपनी डेली अटेंडेंस और विज़िट ट्रैक करो",
+    start: "शुरू करें →",
+    loginas: "लॉग इन है",
+    verifyH: "👤 पहचान सत्यापित करें",
+    verifyP: "अपना नाम और PIN डालें",
+    nameLbl: "अपना नाम चुनें",
+    pinLbl: "PIN / पासवर्ड",
+    loginBtn: "लॉगिन →",
+    ci: "चेक-इन",
+    ciSub: "दिन शुरू करो",
+    co: "चेक-आउट",
+    coSub: "दिन खत्म करो",
+    re: "नई विज़िट",
+    reSub: "दोबारा विज़िट दर्ज करो",
+    gSub: "आज क्या करना है?",
+    quickPhoto: "Quick Photo",
+    visitPhoto: "Visit Photo lo"
   },
   en: {
-    title:"Field Attendance", sub:"Track your daily attendance & visits",
-    start:"Get Started →", loginas:"Logged in as",
-    verifyH:"👤 Verify Identity", verifyP:"Enter your name and PIN",
-    nameLbl:"Select your name", pinLbl:"PIN / Password",
-    loginBtn:"Login →",
-    ci:"Check-In", ciSub:"Start your day",
-    co:"Check-Out", coSub:"End your day",
-    re:"New Visit", reSub:"Log another visit",
-    gSub:"What's on today?"
+    title: "Field Attendance",
+    sub: "Track your daily attendance & visits",
+    start: "Get Started →",
+    loginas: "Logged in as",
+    verifyH: "👤 Verify Identity",
+    verifyP: "Enter your name and PIN",
+    nameLbl: "Select your name",
+    pinLbl: "PIN / Password",
+    loginBtn: "Login →",
+    ci: "Check-In",
+    ciSub: "Start your day",
+    co: "Check-Out",
+    coSub: "End your day",
+    re: "New Visit",
+    reSub: "Log another visit",
+    gSub: "What's on today?",
+    quickPhoto: "Quick Photo",
+    visitPhoto: "Take Visit Photo"
   }
 };
 
 function setLang(l) {
   lang = l;
   store.set("lang", l);
-  document.querySelectorAll(".lang-chip").forEach((c,i) => {
-    c.classList.toggle("active", (i===0 && l==="hi") || (i===1 && l==="en"));
+  document.querySelectorAll(".lang-chip").forEach((c, i) => {
+    c.classList.toggle("active", (i === 0 && l === "hi") || (i === 1 && l === "en"));
   });
   applyLang();
 }
 
 function applyLang() {
-  var t = L[lang] || L.hi;
-  setText("txt-title", t.title);
-  setText("txt-sub", t.sub);
-  setText("txt-start", t.start);
-  setText("txt-loginas", t.loginas);
-  setText("txt-verify-h", t.verifyH);
-  setText("txt-verify-p", t.verifyP);
-  setText("txt-name-lbl", t.nameLbl);
-  setText("txt-pin-lbl", t.pinLbl);
-  setText("txt-login-btn", t.loginBtn);
-  setText("txt-ci", t.ci);
-  setText("txt-ci-sub", t.ciSub);
-  setText("txt-co", t.co);
-  setText("txt-co-sub", t.coSub);
-  setText("txt-re", t.re);
-  setText("txt-re-sub", t.reSub);
-  setText("gSub", t.gSub);
+  const t = L[lang] || L.hi;
+  document.getElementById("txt-title").textContent = t.title;
+  document.getElementById("txt-sub").textContent = t.sub;
+  document.getElementById("txt-start").textContent = t.start;
+  document.getElementById("txt-loginas").textContent = t.loginas;
+  document.getElementById("txt-verify-h").textContent = t.verifyH;
+  document.getElementById("txt-verify-p").textContent = t.verifyP;
+  document.getElementById("txt-name-lbl").textContent = t.nameLbl;
+  document.getElementById("txt-pin-lbl").textContent = t.pinLbl;
+  document.getElementById("txt-login-btn").textContent = t.loginBtn;
+  document.getElementById("txt-ci").textContent = t.ci;
+  document.getElementById("txt-ci-sub").textContent = t.ciSub;
+  document.getElementById("txt-co").textContent = t.co;
+  document.getElementById("txt-co-sub").textContent = t.coSub;
+  document.getElementById("txt-re").textContent = t.re;
+  document.getElementById("txt-re-sub").textContent = t.reSub;
+  document.getElementById("gSub").textContent = t.gSub;
 }
-function setText(id, v) { var e = document.getElementById(id); if(e && v) e.textContent = v; }
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function toast(msg, type = "info") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove("show"), 4000);
+}
+
+async function apiPost(payload) {
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch (e) {
+    console.error("API error:", e);
+    throw e;
+  }
+}
+
+function compressPhoto(dataUrl) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxW = 720;
+      const scale = img.width > maxW ? maxW / img.width : 1;
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", 0.55));
+    };
+    img.src = dataUrl;
+  });
+}
+
+function fmtDate(val) {
+  if (!val) return "";
+  let d = val instanceof Date ? val : new Date(val);
+  if (isNaN(d)) return val.toString();
+  return `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+}
+
+function fmtTime(val) {
+  if (!val) return "";
+  const timeStr = val.toString().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
+  if (!timeStr) return val;
+  let h = parseInt(timeStr[1]), m = parseInt(timeStr[2]);
+  const ampm = timeStr[3] ? timeStr[3].toUpperCase() : (h >= 12 ? "PM" : "AM");
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+
+// ══════════════════════════════════════════
+// STATE VARIABLES
+// ══════════════════════════════════════════
+let currentEmp   = null;
+let visitPhoto   = null;
+let camMode      = "";
+let camFacing    = "environment";
+let camStream    = null;
+let gpsInterval  = null;
+let gpsPos       = null;
+let timerInt     = null;
+let cdInt        = null;
+let clockInt     = null;
+let totalDist    = 0;
+let lastGpsPos   = null;
+let allEmployees = [];
 
 // ══════════════════════════════════════════
 // SCREEN NAVIGATION
 // ══════════════════════════════════════════
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  var el = document.getElementById(id);
-  if (el) el.classList.add("active");
+  document.getElementById(id)?.classList.add("active");
 }
 
 // ══════════════════════════════════════════
@@ -556,86 +191,74 @@ function goVerify() {
   loadEmployees();
 }
 
-function loadEmployees() {
-  var wrap  = document.getElementById("empList-wrap");
-  var load  = document.getElementById("empLoading");
-  if (!wrap || !load) return;
+// ══════════════════════════════════════════
+// LOAD EMPLOYEES
+// ══════════════════════════════════════════
+async function loadEmployees() {
+  const wrap = document.getElementById("empList-wrap");
+  const load = document.getElementById("empLoading");
   wrap.style.display = "none";
   load.style.display = "block";
-  load.innerHTML = "⏳ Employees load ho rahe hain...";
 
-  // Try cache first — show immediately
-  var cached = store.get("empCache");
-  if (cached && cached.length) {
+  const cached = store.get("empCache");
+  if (cached?.length) {
     allEmployees = cached;
     populateEmpSelect(cached);
     wrap.style.display = "block";
     load.style.display = "none";
   }
 
-  // Always refresh from server
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: {"Content-Type":"text/plain"},
-    body: JSON.stringify({action:"get_employees"})
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(r) {
-    if (r.employees && r.employees.length > 0) {
+  try {
+    const r = await apiPost({ action: "get_employees" });
+    if (r.employees?.length) {
       allEmployees = r.employees;
       store.set("empCache", r.employees);
       populateEmpSelect(r.employees);
-    } else if (!cached || !cached.length) {
-      load.innerHTML = "❌ Employees nahi mile. Admin se puchein.";
-      load.style.display = "block";
     }
     wrap.style.display = "block";
     load.style.display = "none";
-  })
-  .catch(function(e) {
-    console.error("loadEmployees error:", e);
-    if (!cached || !cached.length) {
-      load.innerHTML = "⚠️ Network error. Dobara try karein.";
-      load.style.display = "block";
-    } else {
-      // Already showing cached, just hide loader
-      wrap.style.display = "block";
-      load.style.display = "none";
-    }
-  });
+  } catch {
+    if (!cached?.length) load.innerHTML = "⚠️ Network error. Dobara try karein.";
+    else { wrap.style.display = "block"; load.style.display = "none"; }
+  }
 }
 
 function populateEmpSelect(emps) {
-  var sel = document.getElementById("empSelect");
+  const sel = document.getElementById("empSelect");
   sel.innerHTML = '<option value="">-- Naam chunein --</option>';
   emps.forEach(e => {
-    var o = document.createElement("option");
-    o.value = e.name;
-    o.textContent = e.name + (e.designation ? " ("+e.designation+")" : "");
-    sel.appendChild(o);
+    const opt = document.createElement("option");
+    opt.value = e.name;
+    opt.textContent = e.name + (e.designation ? ` (${e.designation})` : "");
+    sel.appendChild(opt);
   });
 }
 
 function togglePin() {
-  var inp = document.getElementById("pinInput");
-  var btn = document.getElementById("eyeBtn");
+  const inp = document.getElementById("pinInput");
+  const btn = document.getElementById("eyeBtn");
   if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
   else { inp.type = "password"; btn.textContent = "👁️"; }
 }
 
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
 function doLogin() {
-  var name = document.getElementById("empSelect").value;
-  var pin  = document.getElementById("pinInput").value.trim();
-  var err  = document.getElementById("pinErr");
+  const name = document.getElementById("empSelect").value.trim();
+  const pin  = document.getElementById("pinInput").value.trim();
+  const err  = document.getElementById("pinErr");
   err.classList.remove("show");
-  if (!name) { toast("Naam chunein pehle", "error"); return; }
-  if (!pin)  { toast("PIN darj karo", "error"); return; }
-  var emp = allEmployees.find(e => e.name === name);
-  if (!emp) { toast("Employee nahi mila", "error"); return; }
-  if (emp.pin.toString() !== pin.toString()) {
+
+  if (!name) return toast("Naam chunein pehle", "error");
+  if (!pin)  return toast("PIN darj karo", "error");
+
+  const emp = allEmployees.find(e => e.name === name);
+  if (!emp || emp.pin.toString() !== pin.toString()) {
     err.classList.add("show");
     return;
   }
+
   currentEmp = emp;
   store.set("emp", emp);
   document.getElementById("pinInput").value = "";
@@ -646,11 +269,10 @@ function doLogin() {
 // DASHBOARD
 // ══════════════════════════════════════════
 function goToDash() {
-  if (!currentEmp) { show("s-land"); return; }
   show("s-dash");
-  document.getElementById("dName").textContent  = currentEmp.name;
-  document.getElementById("gName").textContent  = currentEmp.name;
-  document.getElementById("dDate").textContent  = fmtDate(new Date());
+  document.getElementById("dName").textContent = currentEmp.name;
+  document.getElementById("gName").textContent = currentEmp.name;
+  document.getElementById("dDate").textContent = fmtDate(new Date());
   startClock();
   refreshDash();
   loadDist();
@@ -671,91 +293,87 @@ function doLogout() {
 function startClock() {
   if (clockInt) clearInterval(clockInt);
   function tick() {
-    var n = new Date();
-    var h = n.getHours(), m = n.getMinutes();
-    var ap = h>=12?"PM":"AM"; h = h%12||12;
-    document.getElementById("lClock").textContent = h+":"+(m<10?"0"+m:m)+" "+ap;
+    const n = new Date();
+    let h = n.getHours(), m = n.getMinutes();
+    const ap = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    document.getElementById("lClock").textContent = h + ":" + (m < 10 ? "0" + m : m) + " " + ap;
   }
   tick();
   clockInt = setInterval(tick, 10000);
 }
 
 // ══════════════════════════════════════════
-// DASHBOARD STATE
+// REFRESH DASHBOARD STATE
 // ══════════════════════════════════════════
 function refreshDash() {
-  if (!currentEmp) return;
-  var sv   = store.get("ci_"+currentEmp.name);
-  var isIn = !!sv;
-  var D    = id => document.getElementById(id);
-  D("sDot").className = "dot" + (isIn ? " g" : "");
-  D("sTxt").textContent = isIn ? "Checked in ✓" : "Not checked in";
-  D("tCard").classList.toggle("show", isIn);
-  D("distCard").classList.toggle("show", isIn);
-  D("pingBar").classList.toggle("show", isIn);
-  if (isIn) {
-    D("tSub").textContent = "Check-In: " + fmtTime(sv.time);
+  const sv = store.get("ci_" + currentEmp.name);
+  const isCheckedIn = !!sv;
+
+  document.getElementById("sDot").className = "dot" + (isCheckedIn ? " g" : "");
+  document.getElementById("sTxt").textContent = isCheckedIn ? "Checked in ✓" : "Not checked in";
+  document.getElementById("tCard").classList.toggle("show", isCheckedIn);
+  document.getElementById("distCard").classList.toggle("show", isCheckedIn);
+  document.getElementById("pingBar").classList.toggle("show", isCheckedIn);
+
+  if (isCheckedIn) {
+    document.getElementById("tSub").textContent = "Check-In: " + fmtTime(sv.time);
     startTimer(sv.ms);
-    D("bCI").classList.add("dis");
-    D("bCO").classList.remove("dis");
-    D("bOrd").classList.remove("dis");
-    D("bPay").classList.remove("dis");
-    D("bRe").classList.remove("dis");
-    D("bRet").classList.remove("dis");
-    var elapsed = Date.now() - sv.ms;
+    document.getElementById("bCI").classList.add("dis");
+    document.getElementById("bCO").classList.remove("dis");
+    document.getElementById("bOrd").classList.remove("dis");
+    document.getElementById("bPay").classList.remove("dis");
+    document.getElementById("bRe").classList.remove("dis");
+    document.getElementById("bRet").classList.remove("dis");
+
+    const elapsed = Date.now() - sv.ms;
     if (elapsed < MIN_CHECKOUT) {
-      D("bCO").classList.add("dis");
-      D("cdBadge").classList.add("show");
+      document.getElementById("bCO").classList.add("dis");
+      document.getElementById("cdBadge").classList.add("show");
       startCD(sv.ms);
     } else {
-      D("bCO").classList.remove("dis");
-      D("cdBadge").classList.remove("show");
+      document.getElementById("bCO").classList.remove("dis");
+      document.getElementById("cdBadge").classList.remove("show");
     }
     startGps();
   } else {
-    D("bCI").classList.remove("dis");
-    D("bCO").classList.add("dis");
-    D("bOrd").classList.add("dis");
-    D("bPay").classList.add("dis");
-    D("bRe").classList.add("dis");
-    D("bRet").classList.add("dis");
+    document.getElementById("bCI").classList.remove("dis");
+    document.getElementById("bCO").classList.add("dis");
+    document.getElementById("bOrd").classList.add("dis");
+    document.getElementById("bPay").classList.add("dis");
+    document.getElementById("bRe").classList.add("dis");
+    document.getElementById("bRet").classList.add("dis");
     stopTimer();
     stopGps();
-    D("distCard").classList.remove("show");
+    document.getElementById("distCard").classList.remove("show");
   }
 }
 
 // ══════════════════════════════════════════
-// CHECKIN
+// CHECK-IN
 // ══════════════════════════════════════════
 function doCheckin() {
-  if (!currentEmp) return;
-  visitPhoto = null;
-  // Clear modal fields
-  ["mShop","mKeeper","mContact","mArea","mNotes"].forEach(id => {
-    var el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  resetModalPhoto();
-  document.getElementById("visitSaveBtn").textContent = "✓ Save & Check-In";
   document.getElementById("visitModalTitle").textContent = "📍 Visit Details";
+  document.getElementById("visitSaveBtn").textContent = "✓ Save & Check-In";
   document.getElementById("visitModal")._mode = "checkin";
-  document.getElementById("visitModal").classList.add("show");
-  getGps();
+  openVisitModal();
 }
 
 function doNewVisit() {
-  if (!currentEmp) return;
+  document.getElementById("visitModalTitle").textContent = "🔄 New Visit";
+  document.getElementById("visitSaveBtn").textContent = "✓ Save Visit";
+  document.getElementById("visitModal")._mode = "reentry";
+  openVisitModal();
+}
+
+function openVisitModal() {
   visitPhoto = null;
   ["mShop","mKeeper","mContact","mArea","mNotes"].forEach(id => {
-    var el = document.getElementById(id);
-    if (el) el.value = "";
+    document.getElementById(id).value = "";
   });
   resetModalPhoto();
-  document.getElementById("visitSaveBtn").textContent = "✓ Save Visit";
-  document.getElementById("visitModalTitle").textContent = "🔄 New Visit";
-  document.getElementById("visitModal")._mode = "reentry";
   document.getElementById("visitModal").classList.add("show");
+  getGps();
 }
 
 function cancelVisit() {
@@ -772,62 +390,70 @@ function resetModalPhoto() {
 
 function openVisitCamera() {
   camMode = "visit";
-  visitPhoto = null;
   document.getElementById("camTitle").textContent = "Visit Photo lo";
   document.getElementById("visitModal").classList.remove("show");
   show("s-cam");
   startCam();
 }
 
-function saveVisit() {
-  var shop    = document.getElementById("mShop").value.trim();
-  var keeper  = document.getElementById("mKeeper").value.trim();
-  var contact = document.getElementById("mContact").value.trim();
-  var area    = document.getElementById("mArea").value.trim();
-  var notes   = document.getElementById("mNotes").value.trim();
-  var contErr = document.getElementById("mContactErr");
+// ══════════════════════════════════════════
+// SAVE VISIT / CHECK-IN
+// ══════════════════════════════════════════
+async function saveVisit() {
+  const shop    = document.getElementById("mShop").value.trim();
+  const keeper  = document.getElementById("mKeeper").value.trim();
+  const contact = document.getElementById("mContact").value.trim();
+  const area    = document.getElementById("mArea").value.trim();
+  const notes   = document.getElementById("mNotes").value.trim();
+  const contErr = document.getElementById("mContactErr");
   contErr.classList.remove("show");
+
   if (!shop || !keeper || !area) { toast("Sab zaroori fields bharein", "error"); return; }
-  if (contact.length !== 10) { contErr.classList.add("show"); return; }
-  var btn  = document.getElementById("visitSaveBtn");
-  var mode = document.getElementById("visitModal")._mode;
+  if (contact.length !== 10)    { contErr.classList.add("show"); return; }
+
+  const btn  = document.getElementById("visitSaveBtn");
+  const mode = document.getElementById("visitModal")._mode;
   btn.classList.add("loading");
   btn.textContent = "Saving...";
-  var now     = new Date();
-  var mapLink = gpsPos ? "https://maps.google.com/?q="+gpsPos.lat+","+gpsPos.lng : "";
-  var payload = {
-    action:           "checkin",
-    name:             currentEmp.name,
-    contact:          currentEmp.contact,
-    shopName:         shop,
-    shopkeeperName:   keeper,
-    shopkeeperContact:contact,
-    area:             area,
-    notes:            notes,
-    mapLink:          mapLink,
-    photo:            visitPhoto || "",
-    timestamp:        now.toLocaleTimeString("en-IN")
+
+  const now     = new Date();
+  const mapLink = gpsPos ? `https://maps.google.com/?q=${gpsPos.lat},${gpsPos.lng}` : "";
+
+  const payload = {
+    action:            "checkin",
+    name:              currentEmp.name,
+    contact:           currentEmp.contact || contact,
+    shopName:          shop,
+    shopkeeperName:    keeper,
+    shopkeeperContact: contact,
+    area:              area,
+    notes:             notes,
+    mapLink:           mapLink,
+    photo:             visitPhoto || "",
+    timestamp:         now.toLocaleTimeString("en-IN")
   };
-  apiPost(payload).then(r => {
-    btn.classList.remove("loading");
+
+  try {
+    await apiPost(payload);
     if (mode === "checkin") {
-      var sv = { time: now.toLocaleTimeString("en-IN"), ms: now.getTime() };
-      store.set("ci_"+currentEmp.name, sv);
-      document.getElementById("visitModal").classList.remove("show");
+      store.set("ci_" + currentEmp.name, {
+        time: now.toLocaleTimeString("en-IN"),
+        ms: now.getTime()
+      });
       toast("Check-in ho gaya! ✓", "success");
       refreshDash();
     } else {
-      document.getElementById("visitModal").classList.remove("show");
       toast("Visit save ho gaya! ✓", "success");
-      btn.textContent = "✓ Save Visit";
     }
+    document.getElementById("visitModal").classList.remove("show");
     visitPhoto = null;
     resetModalPhoto();
-  }).catch(err => {
+  } catch (e) {
+    toast("Error: " + e.message, "error");
+  } finally {
     btn.classList.remove("loading");
-    btn.textContent = mode==="checkin" ? "✓ Save & Check-In" : "✓ Save Visit";
-    toast("Error: " + err.message, "error");
-  });
+    btn.textContent = mode === "checkin" ? "✓ Save & Check-In" : "✓ Save Visit";
+  }
 }
 
 // ══════════════════════════════════════════
@@ -835,24 +461,28 @@ function saveVisit() {
 // ══════════════════════════════════════════
 function doCheckout() {
   if (!currentEmp) return;
-  var sv = store.get("ci_"+currentEmp.name);
+  const sv = store.get("ci_" + currentEmp.name);
   if (!sv) { toast("Pehle check-in karo", "error"); return; }
-  var diffMs  = Date.now() - sv.ms;
-  var h = Math.floor(diffMs/3600000), m = Math.floor((diffMs%3600000)/60000);
-  var dur = h+"h "+m+"m";
+
+  const diffMs = Date.now() - sv.ms;
+  const h = Math.floor(diffMs / 3600000);
+  const m = Math.floor((diffMs % 3600000) / 60000);
+  const dur = h + "h " + m + "m";
+
   if (!confirm("Check-out karna chahte ho?\nTime on field: " + dur)) return;
+
   apiPost({
-    action:"checkout",
-    name: currentEmp.name,
+    action:    "checkout",
+    name:      currentEmp.name,
     timestamp: new Date().toLocaleTimeString("en-IN"),
-    duration: dur
-  }).then(r => {
-    store.del("ci_"+currentEmp.name);
+    duration:  dur
+  }).then(() => {
+    store.del("ci_" + currentEmp.name);
     toast("Check-out ho gaya! ✓", "success");
     stopGps();
     stopTimer();
     refreshDash();
-  }).catch(err => toast("Error: "+err.message, "error"));
+  }).catch(err => toast("Error: " + err.message, "error"));
 }
 
 // ══════════════════════════════════════════
@@ -870,10 +500,13 @@ function doQuickPhoto() {
 // ══════════════════════════════════════════
 function startCam() {
   stopCam();
-  var constraints = { video: { facingMode: camFacing, width:{ideal:1280}, height:{ideal:720} }, audio: false };
+  const constraints = {
+    video: { facingMode: camFacing, width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: false
+  };
   navigator.mediaDevices.getUserMedia(constraints).then(stream => {
     camStream = stream;
-    var v = document.getElementById("video");
+    const v = document.getElementById("video");
     v.srcObject = stream;
     v.style.display = "block";
     document.getElementById("photoPreview").style.display = "none";
@@ -881,7 +514,7 @@ function startCam() {
     document.getElementById("btnNext").style.display = "none";
     document.getElementById("btnRe").style.display = "none";
   }).catch(err => {
-    toast("Camera error: "+err.message, "error");
+    toast("Camera error: " + err.message, "error");
     closeCam();
   });
   getGps();
@@ -897,13 +530,13 @@ function flipCam() {
 }
 
 function capturePhoto() {
-  var v = document.getElementById("video");
-  var c = document.getElementById("canvas");
-  var p = document.getElementById("photoPreview");
+  const v = document.getElementById("video");
+  const c = document.getElementById("canvas");
+  const p = document.getElementById("photoPreview");
   c.width  = v.videoWidth  || 640;
   c.height = v.videoHeight || 480;
   c.getContext("2d").drawImage(v, 0, 0);
-  var data = c.toDataURL("image/jpeg", 0.6);
+  const data = c.toDataURL("image/jpeg", 0.6);
   p.src = data;
   p.style.display = "block";
   v.style.display = "none";
@@ -913,8 +546,8 @@ function capturePhoto() {
 }
 
 function retakePhoto() {
-  var v = document.getElementById("video");
-  var p = document.getElementById("photoPreview");
+  const v = document.getElementById("video");
+  const p = document.getElementById("photoPreview");
   v.style.display = "block";
   p.style.display = "none";
   document.getElementById("btnCap").style.display = "block";
@@ -923,22 +556,19 @@ function retakePhoto() {
 }
 
 function acceptPhoto() {
-  var data = document.getElementById("photoPreview").src;
+  const data = document.getElementById("photoPreview").src;
   stopCam();
   if (camMode === "visit") {
     visitPhoto = data;
-    // Show thumbnail in modal
-    var img  = document.getElementById("mPhotoImg");
-    var icon = document.getElementById("mPhotoIcon");
+    const img  = document.getElementById("mPhotoImg");
+    const icon = document.getElementById("mPhotoIcon");
     img.src = data;
     img.style.display = "block";
     icon.style.display = "none";
-    // Return to modal
     show("s-dash");
     document.getElementById("visitModal").classList.add("show");
     toast("Photo li gayi ✓", "success");
   } else {
-    // Quick photo — send to server
     sendQuickPhoto(data);
     show("s-dash");
   }
@@ -958,7 +588,7 @@ function sendQuickPhoto(data) {
   if (!currentEmp) return;
   toast("Photo bheja ja raha hai...", "info");
   apiPost({
-    action: "quick_photo",
+    action:  "quick_photo",
     name:    currentEmp.name,
     contact: currentEmp.contact,
     photo:   data,
@@ -975,7 +605,7 @@ function getGps() {
   if (!navigator.geolocation) return;
   navigator.geolocation.getCurrentPosition(pos => {
     gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-    var b = document.getElementById("gpsBadge");
+    const b = document.getElementById("gpsBadge");
     if (b) {
       b.textContent = "📍 " + gpsPos.lat.toFixed(5) + ", " + gpsPos.lng.toFixed(5);
       b.classList.add("show");
@@ -988,17 +618,17 @@ function startGps() {
   stopGps();
   gpsInterval = setInterval(() => {
     if (!currentEmp) return;
-    if (!store.get("ci_"+currentEmp.name)) return; // Only track if checked in
+    if (!store.get("ci_" + currentEmp.name)) return;
     navigator.geolocation.getCurrentPosition(pos => {
       gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       updateDistance(gpsPos);
       apiPost({
-        action:"gps_ping",
-        name: currentEmp.name,
-        lat: gpsPos.lat,
-        lng: gpsPos.lng,
+        action:   "gps_ping",
+        name:     currentEmp.name,
+        lat:      gpsPos.lat,
+        lng:      gpsPos.lng,
         accuracy: pos.coords.accuracy,
-        status: "tracking"
+        status:   "tracking"
       }).catch(() => {});
     }, () => {}, { enableHighAccuracy: true });
   }, GPS_INTERVAL);
@@ -1013,59 +643,53 @@ function stopGps() {
 // ══════════════════════════════════════════
 function updateDistance(pos) {
   if (lastGpsPos) {
-    var d = haversine(lastGpsPos.lat, lastGpsPos.lng, pos.lat, pos.lng);
-    if (d > 20) { // ignore < 20m noise
+    const d = haversine(lastGpsPos.lat, lastGpsPos.lng, pos.lat, pos.lng);
+    if (d > 20) {
       totalDist += d;
-      store.set("dist_"+currentEmp.name+"_"+todayKey(), totalDist);
+      store.set("dist_" + currentEmp.name + "_" + todayKey(), totalDist);
     }
   }
   lastGpsPos = pos;
   loadDist();
 }
 
-function haversine(lat1,lon1,lat2,lon2) {
-  var R = 6371000;
-  var dLat = (lat2-lat1)*Math.PI/180;
-  var dLon = (lon2-lon1)*Math.PI/180;
-  var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
-          Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
-          Math.sin(dLon/2)*Math.sin(dLon/2);
-  return R * 2 * Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function todayKey() {
-  var d = new Date();
-  return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+function haversine(lat1, lon1, lat2, lon2) {
+  const R    = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a    = Math.sin(dLat/2) * Math.sin(dLat/2) +
+               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+               Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function loadDist() {
   if (!currentEmp) return;
-  var range    = document.getElementById("distRange").value;
-  var dateRow  = document.getElementById("distDateRow");
-  var valEl    = document.getElementById("distVal");
+  const range   = document.getElementById("distRange").value;
+  const dateRow = document.getElementById("distDateRow");
+  const valEl   = document.getElementById("distVal");
   dateRow.style.display = range === "date" ? "block" : "none";
-  var metres = 0;
+
+  let metres = 0;
   if (range === "today") {
-    metres = parseFloat(store.get("dist_"+currentEmp.name+"_"+todayKey()) || 0);
+    metres = parseFloat(store.get("dist_" + currentEmp.name + "_" + todayKey()) || 0);
   } else if (range === "total") {
-    // Sum all stored distances for this employee
-    for (var k in localStorage) {
-      if (k.startsWith("dist_"+currentEmp.name+"_")) {
+    for (const k in localStorage) {
+      if (k.startsWith("dist_" + currentEmp.name + "_")) {
         metres += parseFloat(localStorage[k] || 0);
       }
     }
   } else if (range === "date") {
-    var d = document.getElementById("distDate").value;
+    const d = document.getElementById("distDate").value;
     if (!d) { valEl.textContent = "--"; return; }
-    var parts = d.split("-");
-    var key = parts[0]+"-"+parseInt(parts[1])+"-"+parseInt(parts[2]);
-    metres = parseFloat(store.get("dist_"+currentEmp.name+"_"+key) || 0);
+    const parts = d.split("-");
+    const key   = parts[0] + "-" + parseInt(parts[1]) + "-" + parseInt(parts[2]);
+    metres = parseFloat(store.get("dist_" + currentEmp.name + "_" + key) || 0);
   }
-  if (metres < 1000) {
-    valEl.textContent = Math.round(metres) + " m";
-  } else {
-    valEl.textContent = (metres/1000).toFixed(2) + " km";
-  }
+
+  valEl.textContent = metres < 1000
+    ? Math.round(metres) + " m"
+    : (metres / 1000).toFixed(2) + " km";
 }
 
 // ══════════════════════════════════════════
@@ -1074,30 +698,33 @@ function loadDist() {
 function startTimer(startMs) {
   stopTimer();
   function tick() {
-    var diff = Date.now() - startMs;
-    var h = Math.floor(diff/3600000);
-    var m = Math.floor((diff%3600000)/60000);
-    var s = Math.floor((diff%60000)/1000);
+    const diff = Date.now() - startMs;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
     document.getElementById("tDisp").textContent =
-      String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+      String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
   }
   tick();
   timerInt = setInterval(tick, 1000);
 }
-function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } }
+
+function stopTimer() {
+  if (timerInt) { clearInterval(timerInt); timerInt = null; }
+}
 
 // COUNTDOWN before checkout enabled
 function startCD(startMs) {
   if (cdInt) clearInterval(cdInt);
   cdInt = setInterval(() => {
-    var elapsed = Date.now() - startMs;
-    var rem     = MIN_CHECKOUT - elapsed;
+    const elapsed = Date.now() - startMs;
+    const rem     = MIN_CHECKOUT - elapsed;
     if (rem <= 0) {
       clearInterval(cdInt);
       document.getElementById("bCO").classList.remove("dis");
       document.getElementById("cdBadge").classList.remove("show");
     } else {
-      document.getElementById("cdBadge").textContent = Math.ceil(rem/1000)+"s";
+      document.getElementById("cdBadge").textContent = Math.ceil(rem / 1000) + "s";
     }
   }, 500);
 }
@@ -1106,28 +733,29 @@ function startCD(startMs) {
 // AUTO CHECKOUT — 10 PM
 // ══════════════════════════════════════════
 function scheduleAutoCheckout() {
-  var now    = new Date();
-  var cutoff = new Date(now);
-  cutoff.setHours(22, 0, 0, 0); // 10:00 PM
-  if (now >= cutoff) cutoff.setDate(cutoff.getDate()+1);
-  var ms = cutoff.getTime() - now.getTime();
+  const now    = new Date();
+  const cutoff = new Date(now);
+  cutoff.setHours(22, 0, 0, 0);
+  if (now >= cutoff) cutoff.setDate(cutoff.getDate() + 1);
+  const ms = cutoff.getTime() - now.getTime();
   setTimeout(() => {
     if (!currentEmp) return;
-    var sv = store.get("ci_"+currentEmp.name);
+    const sv = store.get("ci_" + currentEmp.name);
     if (!sv) return;
-    var diff = Date.now() - sv.ms;
-    var h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000);
+    const diff = Date.now() - sv.ms;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
     apiPost({
-      action:"checkout",
-      name: currentEmp.name,
+      action:    "checkout",
+      name:      currentEmp.name,
       timestamp: "10:00 PM (Auto)",
-      duration: h+"h "+m+"m (auto)"
+      duration:  h + "h " + m + "m (auto)"
     }).then(() => {
-      store.del("ci_"+currentEmp.name);
+      store.del("ci_" + currentEmp.name);
       stopGps();
       toast("Auto check-out ho gaya (10 PM)", "info");
       refreshDash();
-    }).catch(()=>{});
+    }).catch(() => {});
   }, ms);
 }
 
@@ -1144,20 +772,22 @@ window.addEventListener("beforeinstallprompt", e => {
 });
 window.addEventListener("appinstalled", () => {
   document.getElementById("pwaBanner").classList.remove("show");
-  localStorage.setItem("pwa_done","1");
+  localStorage.setItem("pwa_done", "1");
 });
+
 function installPWA() {
   if (!deferredPrompt) { toast("Safari: Share → Add to Home Screen", "info"); return; }
   deferredPrompt.prompt();
   deferredPrompt.userChoice.then(r => {
-    if (r.outcome==="accepted") localStorage.setItem("pwa_done","1");
+    if (r.outcome === "accepted") localStorage.setItem("pwa_done", "1");
     deferredPrompt = null;
     document.getElementById("pwaBanner").classList.remove("show");
   });
 }
+
 function dismissPWA() {
   document.getElementById("pwaBanner").classList.remove("show");
-  localStorage.setItem("pwa_done","1");
+  localStorage.setItem("pwa_done", "1");
 }
 
 // ══════════════════════════════════════════
@@ -1165,15 +795,10 @@ function dismissPWA() {
 // ══════════════════════════════════════════
 (function init() {
   applyLang();
-  // Restore session
-  var saved = store.get("emp");
+  const saved = store.get("emp");
   if (saved) {
     currentEmp = saved;
-    // Restore totalDist
-    totalDist = parseFloat(store.get("dist_"+saved.name+"_"+todayKey()) || 0);
+    totalDist  = parseFloat(store.get("dist_" + saved.name + "_" + todayKey()) || 0);
     goToDash();
   }
 })();
-</script>
-</body>
-</html>
