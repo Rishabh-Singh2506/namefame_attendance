@@ -10,7 +10,7 @@
 // SECTION A: SHARED CONFIG & UTILITIES
 // ══════════════════════════════════════════
 
-var SCRIPT_URL   = "https://script.google.com/macros/s/AKfycbztfxOJsfCSyza8OL9xkpw5t7ncJUJzeFhfmaOgmmh3QnNCZ9Vl3tAwa87FIbMnTlA00A/exec";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz28GI0lPZV7jcPpzPblWdHp03E5WfSylOfxt4hYbyEI3J8vzCOE-udPdH3_A6eeQ3J/exec";
 var GPS_INTERVAL = 5 * 60 * 1000;
 var MIN_CHECKOUT = 30 * 1000;
 
