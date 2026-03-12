@@ -221,7 +221,16 @@ function toast(msg,type="info"){
   setTimeout(()=>el.classList.remove("show"),4000);
 }
 
-function toggleEye(id,btn){var inp=document.getElementById(id);if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}else{inp.type="password";btn.textContent="👁️";}}
+function toggleEye(id, btn) {
+  var inp = document.getElementById(id);
+  if (inp.type === "password") {
+    inp.type = "text";
+    btn.textContent = "🙈";
+  } else {
+    inp.type = "password";
+    btn.textContent = "👁️";
+  }
+}
 
 function fmtDate(val){
   if(!val) return "";
@@ -414,7 +423,7 @@ function changePass(){
 function testConnection(){
   var resultDiv=document.getElementById("test-result");
   resultDiv.innerHTML='<div style="color:var(--muted);font-weight:600;">Testing...</div>';
-  apiPost({action:"get_employees",{}}).then(r=>{
+  apiPost({action:"get_employees"}).then(r=>{
     if(r.status==="success"){
       resultDiv.innerHTML='<div class="badge green" style="display:inline-block;padding:8px 12px;">✓ API Connection successful! Found '+((r.employees||[]).length)+' employees.</div>';
     } else {
