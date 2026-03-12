@@ -1,13 +1,36 @@
 /* ===== ROUTE SYSTEM V2 ===== */
 
+async function loadEmployees(){
+
+const res = await apiPost({
+action:"get_employees"
+})
+
+const sel = document.getElementById("rt-emp")
+
+(res.employees || []).forEach(e=>{
+
+const opt = document.createElement("option")
+opt.value = e
+opt.textContent = e
+
+sel.appendChild(opt)
+
+})
+
+}
+
+
+/* LOAD ROUTE */
+
 async function loadRoute(){
 
-const emp=document.getElementById("rt-emp").value
-const date=document.getElementById("rt-date").value
-const map=document.getElementById("routeMap")
+const emp = document.getElementById("rt-emp").value
+const date = document.getElementById("rt-date").value
+const map = document.getElementById("routeMap")
 
-if(!emp||!date){
-toast("Employee aur date select karo","error")
+if(!emp || !date){
+alert("Employee aur date select karo")
 return
 }
 
@@ -15,14 +38,14 @@ map.innerHTML='<div class="route-loading">Loading route...</div>'
 
 try{
 
-const routeRes=await apiPost({action:"get_route",name:emp,date:date})
-const sheetRes=await apiPost({action:"get_sheet_range",dateFrom:date,dateTo:date,empName:emp})
+const routeRes = await apiPost({action:"get_route",name:emp,date:date})
+const sheetRes = await apiPost({action:"get_sheet_range",dateFrom:date,dateTo:date,empName:emp})
 
-const gpsPoints=routeRes.route||[]
-const visitRows=sheetRes.rows||[]
+const gpsPoints = routeRes.route || []
+const visitRows = sheetRes.rows || []
 
 if(!gpsPoints.length && !visitRows.length){
-map.innerHTML='<div class="route-empty">Koi location data nahi mila</div>'
+map.innerHTML='<div class="route-empty">No location data</div>'
 return
 }
 
@@ -45,28 +68,27 @@ visitRows.forEach(v=>{
 events.push({
 type:"visit",
 time:v.checkinTime,
-area:v.shopName||v.area||"",
-notes:v.notes||"",
+area:v.shopName || v.area || "",
 checkout:v.checkoutTime
 })
 })
 
-/* SORT EVENTS BY TIME */
+/* SORT EVENTS */
 
 events.sort((a,b)=>{
-return timeToMin(a.time)-timeToMin(b.time)
+return timeToMin(a.time) - timeToMin(b.time)
 })
 
-/* DISTANCE CALCULATION */
+/* DISTANCE */
 
-let totalM=0
+let totalM = 0
 
 for(let i=1;i<gpsPoints.length;i++){
 
-let p1=gpsPoints[i-1]
-let p2=gpsPoints[i]
+let p1 = gpsPoints[i-1]
+let p2 = gpsPoints[i]
 
-totalM+=haversine(
+totalM += haversine(
 parseFloat(p1.lat),
 parseFloat(p1.lng),
 parseFloat(p2.lat),
@@ -75,19 +97,19 @@ parseFloat(p2.lng)
 
 }
 
-/* DISTANCE TEXT */
-
-let distStr=
-totalM<1000?
-Math.round(totalM)+" m":
+let distStr =
+totalM < 1000 ?
+Math.round(totalM)+" m" :
 (totalM/1000).toFixed(2)+" km"
 
-/* RENDER HTML */
+
+/* RENDER */
 
 let html=''
 
 html+=`
 <div class="dist-summary">
+
 <div>
 <div class="dist-summary-lbl">Distance</div>
 <div class="dist-summary-val">${distStr}</div>
@@ -102,6 +124,7 @@ html+=`
 <div class="dist-summary-lbl">Visits</div>
 <div class="dist-summary-val">${visitRows.length}</div>
 </div>
+
 </div>
 `
 
@@ -138,19 +161,24 @@ Open Map
 </div>
 `
 
-if(i<events.length-1) html+='<div class="route-line"></div>'
+if(i<events.length-1)
+html+='<div class="route-line"></div>'
 
 })
 
-map.innerHTML=html
+map.innerHTML = html
 
 }
+
 catch(e){
+
 map.innerHTML='<div class="route-empty">Route load error</div>'
 console.error(e)
+
 }
 
 }
+
 
 /* TIME PARSER */
 
@@ -166,7 +194,8 @@ return parseInt(m[1])*60+parseInt(m[2])
 
 }
 
-/* DISTANCE FORMULA */
+
+/* DISTANCE */
 
 function haversine(lat1,lon1,lat2,lon2){
 
