@@ -709,6 +709,14 @@ function ciSubmitCheckin() {
   if (!ciPhotoData)   { toast("Photo lo pehle", "error"); return; }
   if (!ciCurrentEmp)  { toast("Session expired, wapas jao", "error"); return; }
 
+  // GPS nahi aaya to 3 sec wait karo
+  if (!ciGpsPos) {
+    toast("GPS fetch ho raha hai... ruko", "info");
+    setTimeout(function() { ciSubmitCheckin(); }, 3000);
+    return;
+  }
+
+  // ... baaki code same rahega
   var btn = document.getElementById("ciSubmitBtn");
   if (btn) { btn.classList.add("loading"); btn.textContent = "Bhej raha hai..."; }
   setCiState("loading");
