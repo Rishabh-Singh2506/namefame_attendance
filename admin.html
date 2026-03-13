@@ -17,8 +17,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;max-width:90vw;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.error{background:var(--red);}.toast.success{background:var(--green);}.toast.info{background:var(--accent);}
-
-/* ═ LOGIN ═ */
 #loginWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);}
 .login-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px 24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(37,99,235,.1);}
 .login-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;}
@@ -33,8 +31,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 .btn:active{opacity:.85;}.btn.loading{opacity:.5;pointer-events:none;}.btn.danger{background:var(--red);}.btn.green{background:var(--green);}.btn.ghost{background:var(--card2);color:var(--text);border:1.5px solid var(--border);}
 .err-msg{color:var(--red);font-size:12px;margin-bottom:10px;display:none;font-weight:600;}.err-msg.show{display:block;}
 .fgroup{margin-bottom:12px;}
-
-/* ═ APP ═ */
 #appWrap{display:none;flex-direction:column;min-height:100vh;}
 .app-header{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;}
 .app-title{font-size:15px;font-weight:900;}
@@ -50,8 +46,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 .mob-nav-item.active{color:var(--accent);}
 .mob-nav-item .mni{font-size:20px;display:block;}.mob-nav-item .mnl{font-size:9px;font-weight:700;display:block;margin-top:2px;}
 @media(max-width:640px){.desk-nav{display:none;}.mob-nav{display:block;}.app-content{padding:12px 10px 80px;}}
-
-/* ═ STATS / CARDS ═ */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:16px;}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
 .stat-val{font-size:26px;font-weight:900;margin-bottom:2px;}.stat-lbl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
@@ -75,55 +69,15 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
 .emp-btn{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
 .emp-btn.edit{background:#dbeafe;color:var(--accent);}.emp-btn.del{background:#fee2e2;color:var(--red);}
 .tab-section{display:none;}.tab-section.active{display:block;}
-
-/* ═ ROUTE MAP ═ */
-.route-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
-.route-legend{display:flex;gap:16px;padding:10px 14px;background:var(--card2);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;flex-wrap:wrap;}
-.legend-item{display:flex;align-items:center;gap:6px;}
-.legend-dot{width:10px;height:10px;border-radius:50%;}
-.legend-dot.blue{background:var(--accent);}
-.legend-dot.green{background:var(--green);}
-.legend-dot.red{background:var(--red);}
-.route-body{padding:14px;max-height:500px;overflow-y:auto;}
-.route-stop{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
-.route-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px;}
-.route-dot.tracking{background:var(--accent);}
-.route-dot.visit{background:var(--green);}
-.route-dot.checkin{background:var(--green);border:2px solid #15803d;}
-.route-dot.checkout{background:var(--red);border:2px solid #991b1b;}
-.route-line{width:2px;background:var(--border);margin:2px 0 2px 5px;min-height:16px;}
-.route-place{font-size:13px;font-weight:700;color:var(--text);}
-.route-time{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
-.route-area{display:inline-block;background:#dcfce7;color:var(--green);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-top:3px;}
-.route-map-btn{display:inline-flex;align-items:center;gap:4px;background:#eff6ff;border:1px solid #bfdbfe;color:var(--accent);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;margin-top:4px;}
-.gmaps-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none;margin-bottom:12px;}
-.dist-summary{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;}
-.dist-summary-val{font-size:18px;font-weight:900;color:var(--accent);}
-.dist-summary-lbl{font-size:11px;color:var(--accent);font-weight:700;}
-
-/* ═ MODAL ═ */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:16px;}
 .modal-bg.show{display:flex;}
 .modal-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);}
 .modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;font-weight:600;}
-
-/* ═ ALLOWANCE ═ */
-.allow-card{background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1.5px solid #bfdbfe;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
-.allow-val{font-size:22px;font-weight:900;color:var(--accent);}.allow-lbl{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;margin-bottom:4px;}
-.allow-due{background:#fee2e2;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--red);margin-top:8px;}
-.allow-paid{background:#dcfce7;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--green);margin-top:8px;}
-
-/* ═ CUSTOM ═ */
-.custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.custom-item{background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;}
-.custom-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
-.custom-item label{font-size:13px;font-weight:700;cursor:pointer;}
 </style>
 </head>
 <body>
 <div id="toast" class="toast"></div>
 
-<!-- ═ LOGIN ═ -->
 <div id="loginWrap">
   <div class="login-card">
     <div class="login-logo">⚙️</div>
@@ -131,7 +85,7 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
     <div class="login-sub">NAMEFAME Field Attendance</div>
     <div class="fgroup">
       <label class="lbl">Username</label>
-      <input type="text" id="lUser" placeholder="admin" value="admin">
+      <input type="text" id="lUser" placeholder="admin">
     </div>
     <div class="fgroup">
       <label class="lbl">Password</label>
@@ -145,10 +99,9 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
   </div>
 </div>
 
-<!-- ═ APP ═ -->
 <div id="appWrap">
   <div class="app-header">
-    <div class="app-title">⚙️ Admin — NAMEFAME Field Attendance</div>
+    <div class="app-title">⚙️ Admin — NAMEFAME</div>
     <div class="header-right">
       <span id="adminUserLbl" style="font-size:12px;opacity:.8;font-weight:600;"></span>
       <button class="header-btn" onclick="doLogout()">Logout</button>
@@ -156,23 +109,19 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
   </div>
   <div class="desk-nav">
     <div class="desk-nav-item active" onclick="switchTab('overview',this)">📊 Overview</div>
-    <div class="desk-nav-item" onclick="switchTab('sheet',this)">📄 Sheet View</div>
-    <div class="desk-nav-item" onclick="switchTab('route',this)">🗺️ Route Map</div>
-    <div class="desk-nav-item" onclick="switchTab('allowance',this)">💰 Allowance</div>
+    <div class="desk-nav-item" onclick="switchTab('attendance',this)">📋 Attendance</div>
     <div class="desk-nav-item" onclick="switchTab('employees',this)">👥 Employees</div>
     <div class="desk-nav-item" onclick="switchTab('settings',this)">🔧 Settings</div>
   </div>
   <div class="app-content">
 
-    <!-- OVERVIEW -->
     <div class="tab-section active" id="tab-overview">
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-val" id="ov-checkedin" style="color:var(--green);">0</div><div class="stat-lbl">Checked In</div><div class="stat-sub">Aaj</div></div>
-        <div class="stat-card"><div class="stat-val" id="ov-total">0</div><div class="stat-lbl">Total Employees</div><div class="stat-sub">Registered</div></div>
-        <div class="stat-card"><div class="stat-val" id="ov-visits" style="color:var(--purple);">0</div><div class="stat-lbl">Shop Visits</div><div class="stat-sub">Aaj</div></div>
-        <div class="stat-card"><div class="stat-val" id="ov-gps" style="color:var(--accent);">0</div><div class="stat-lbl">GPS Pings</div><div class="stat-sub">Aaj</div></div>
+        <div class="stat-card"><div class="stat-val" id="ov-total">0</div><div class="stat-lbl">Total Employees</div></div>
+        <div class="stat-card"><div class="stat-val" id="ov-visits" style="color:var(--purple);">0</div><div class="stat-lbl">Shop Visits</div></div>
       </div>
-      <div class="sec-title">📋 Aaj ki Activity <span id="ov-date"></span></div>
+      <div class="sec-title">📋 Aaj ki Activity</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Employee</th><th>Check-In</th><th>Shop/Area</th><th>Status</th></tr></thead>
@@ -181,124 +130,70 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
       </div>
     </div>
 
-    <!-- SHEET VIEW -->
-    <div class="tab-section" id="tab-sheet">
+    <div class="tab-section" id="tab-attendance">
       <div class="filter-row">
-        <input type="date" id="sh-from" title="From date">
-        <input type="date" id="sh-to" title="To date">
-        <select id="sh-emp"><option value="">Sab employees</option></select>
-        <button class="filter-btn" onclick="loadSheet()">🔍 Load</button>
-        <button class="filter-btn ghost" onclick="exportCSV()">⬇️ CSV</button>
+        <input type="date" id="att-from">
+        <input type="date" id="att-to">
+        <select id="att-emp"><option value="">All employees</option></select>
+        <button class="filter-btn" onclick="loadAttendance()">🔍 Load</button>
       </div>
-      <div class="sec-title">📄 Sheet Data <span id="sh-count"></span></div>
+      <div class="sec-title">📋 Attendance <span id="att-count"></span></div>
       <div class="tbl-wrap">
         <table>
-          <thead><tr><th>#</th><th>Date</th><th>Employee</th><th>Check-In</th><th>Shop/Area</th><th>Notes</th><th>Check-Out</th><th>Duration</th><th>Action</th></tr></thead>
-          <tbody id="sh-tbody"></tbody>
+          <thead><tr><th>#</th><th>Date</th><th>Employee</th><th>Check-In</th><th>Check-Out</th><th>Duration</th><th>Area</th><th>Status</th></tr></thead>
+          <tbody id="att-tbody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- ROUTE MAP -->
-    <div class="tab-section" id="tab-route">
-      <div class="filter-row">
-        <select id="rt-emp"><option value="">Employee chunein</option></select>
-        <input type="date" id="rt-date">
-        <button class="filter-btn" onclick="loadRoute()">🗺️ Show Route</button>
-      </div>
-      <div class="sec-title">📍 Route — GPS Track + Visit Locations</div>
-      <!-- Legend -->
-      <div class="route-wrap" id="routeWrap">
-        <div class="route-legend">
-          <div class="legend-item"><div class="legend-dot blue"></div><span>GPS Ping (tracking)</span></div>
-          <div class="legend-item"><div class="legend-dot green"></div><span>Visit / Check-In Location</span></div>
-          <div class="legend-item"><div class="legend-dot red"></div><span>Check-Out</span></div>
-        </div>
-        <div class="route-body" id="routeMap">
-          <div style="text-align:center;padding:32px;color:var(--muted);">Employee aur date chunein, phir "Show Route" dabao</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ALLOWANCE -->
-    <div class="tab-section" id="tab-allowance">
-      <div class="filter-row">
-        <select id="al-emp"><option value="">Employee chunein</option></select>
-        <input type="date" id="al-from" title="From">
-        <input type="date" id="al-to" title="To">
-        <button class="filter-btn" onclick="calcAllowance()">💰 Calculate</button>
-      </div>
-      <div id="allowanceResult"></div>
-      <div class="sec-title">⚙️ Rate Settings</div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;max-width:300px;">
-        <div class="fgroup"><label class="lbl">Rate per KM (₹)</label><input type="number" id="ratePerKm" placeholder="2" min="0" step="0.5"></div>
-        <button class="btn" style="max-width:160px;" onclick="saveRate()">Save Rate</button>
-      </div>
-    </div>
-
-    <!-- EMPLOYEES -->
     <div class="tab-section" id="tab-employees">
       <div style="margin-bottom:12px;"><button class="btn" style="max-width:180px;" onclick="openEmpModal()">+ Add Employee</button></div>
       <div class="emp-grid" id="emp-grid"></div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="tab-section" id="tab-settings">
       <div class="sec-title">🔒 Password Change</div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;max-width:400px;">
+        <div class="fgroup"><label class="lbl">Current Username</label><input type="text" id="sOldUser" placeholder="Current username"></div>
         <div class="fgroup"><label class="lbl">Current Password</label><div class="inp-wrap"><input type="password" id="sOldPass" placeholder="Current password"><button class="eye-btn" onclick="toggleEye('sOldPass',this)">👁️</button></div></div>
         <div class="fgroup"><label class="lbl">New Username</label><input type="text" id="sNewUser" placeholder="New username"></div>
         <div class="fgroup"><label class="lbl">New Password</label><div class="inp-wrap"><input type="password" id="sNewPass" placeholder="New password"><button class="eye-btn" onclick="toggleEye('sNewPass',this)">👁️</button></div></div>
         <button class="btn" onclick="changePass()">Update Password</button>
       </div>
-      <div class="sec-title">🎨 Dashboard Customize</div>
-      <div class="custom-grid" id="customGrid"></div>
-      <button class="btn" style="max-width:180px;margin-top:12px;" onclick="saveCustom()">Save View</button>
+
+      <div class="sec-title">🔌 API Test</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;max-width:400px;">
+        <button class="btn green" style="width:100%;" onclick="testConnection()">Test API Connection</button>
+        <div id="test-result" style="margin-top:12px;"></div>
+      </div>
     </div>
 
   </div>
   <div class="mob-nav">
     <div class="mob-nav-row">
       <div class="mob-nav-item active" onclick="switchTab('overview',this)"><span class="mni">📊</span><span class="mnl">Overview</span></div>
-      <div class="mob-nav-item" onclick="switchTab('sheet',this)"><span class="mni">📄</span><span class="mnl">Sheet</span></div>
-      <div class="mob-nav-item" onclick="switchTab('route',this)"><span class="mni">🗺️</span><span class="mnl">Route</span></div>
-      <div class="mob-nav-item" onclick="switchTab('allowance',this)"><span class="mni">💰</span><span class="mnl">Allow.</span></div>
+      <div class="mob-nav-item" onclick="switchTab('attendance',this)"><span class="mni">📋</span><span class="mnl">Attendance</span></div>
       <div class="mob-nav-item" onclick="switchTab('employees',this)"><span class="mni">👥</span><span class="mnl">Staff</span></div>
       <div class="mob-nav-item" onclick="switchTab('settings',this)"><span class="mni">🔧</span><span class="mnl">Settings</span></div>
     </div>
   </div>
 </div>
 
-<!-- Employee Modal -->
 <div class="modal-bg" id="empModal">
   <div class="modal-box">
     <div class="modal-title" id="empModalTitle">Add Employee</div>
     <div class="modal-sub">Employee ki details bharein</div>
     <input type="hidden" id="empOldName">
     <div class="fgroup"><label class="lbl">Name *</label><input id="emName" placeholder="Full name"></div>
-    <div class="fgroup"><label class="lbl">PIN *</label><div class="inp-wrap"><input type="password" id="emPin" placeholder="PIN / password"><button class="eye-btn" onclick="toggleEye('emPin',this)">👁️</button></div></div>
+    <div class="fgroup"><label class="lbl">PIN *</label><div class="inp-wrap"><input type="password" id="emPin" placeholder="PIN"><button class="eye-btn" onclick="toggleEye('emPin',this)">👁️</button></div></div>
     <div class="fgroup"><label class="lbl">Contact *</label><input id="emContact" placeholder="10 digit" type="tel" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"></div>
     <div class="fgroup"><label class="lbl">Designation</label><input id="emDesig" placeholder="Salesman, Manager etc."></div>
-    <div class="fgroup"><label class="lbl">Address</label><textarea id="emAddr" rows="2" placeholder="Address"></textarea></div>
     <div style="display:flex;gap:8px;"><button class="btn" onclick="saveEmployee()">Save</button><button class="btn ghost" onclick="closeEmpModal()">Cancel</button></div>
   </div>
 </div>
 
-<!-- Edit Row Modal -->
-<div class="modal-bg" id="editModal">
-  <div class="modal-box">
-    <div class="modal-title">✏️ Edit Record</div>
-    <div class="modal-sub" id="editModalSub"></div>
-    <input type="hidden" id="editRowIdx">
-    <div class="fgroup"><label class="lbl">Shop/Area Name</label><input id="editShop"></div>
-    <div class="fgroup"><label class="lbl">Notes</label><textarea id="editNotes" rows="2"></textarea></div>
-    <div style="display:flex;gap:8px;"><button class="btn" onclick="saveEdit()">Save</button><button class="btn ghost" onclick="closeEditModal()">Cancel</button></div>
-  </div>
-</div>
-
 <script>
-// ══ CONFIG ══
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
 
 const store = {
   set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
@@ -307,8 +202,17 @@ const store = {
 };
 
 async function apiPost(payload){
-  const res=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});
-  return res.json();
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  } catch(e) {
+    console.error("API Error:", e);
+    return {status:"error", message:e.message};
+  }
 }
 
 function toast(msg,type="info"){
@@ -317,18 +221,27 @@ function toast(msg,type="info"){
   setTimeout(()=>el.classList.remove("show"),4000);
 }
 
+function toggleEye(id,btn){
+  const inp=document.getElementById(id);
+  if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}
+  else{inp.type="password";btn.textContent="👁️";}
+}
+
 function fmtDate(val){
   if(!val) return "";
   let d;
   if(val instanceof Date){d=val;}
-  else{const s=val.toString();const m1=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m1)d=new Date(+m1[1],+m1[2]-1,+m1[3]);const m2=s.match(/^(\d{2})-(\d{2})-(\d{4})/);if(!d&&m2)d=new Date(+m2[3],+m2[2]-1,+m2[1]);if(!d)d=new Date(s);}
-  if(isNaN(d)) return val.toString();
+  else if(typeof val === 'string') {
+    const m1=val.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m1)d=new Date(+m1[1],+m1[2]-1,+m1[3]);
+    const m2=val.match(/^(\d{2})-(\d{2})-(\d{4})/);if(!d&&m2)d=new Date(+m2[3],+m2[2]-1,+m2[1]);
+  }
+  if(!d||isNaN(d)) return String(val);
   return d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
 }
 
 function fmtTime(val){
   if(!val) return "";
-  const s=val.toString();
+  const s=String(val);
   const full=s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
   if(full){let h=parseInt(full[1]),mn=parseInt(full[2]);const ampm=h>=12?"PM":"AM";const h12=h%12||12;return h12+":"+String(mn).padStart(2,"0")+" "+ampm;}
   const m=s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
@@ -339,92 +252,70 @@ function fmtTime(val){
   const ampm=h>=12?"PM":"AM";const h12=h%12||12;
   return h12+":"+String(mn).padStart(2,"0")+" "+ampm;
 }
-</script>
-<script>
-// ══ STATE ══
-var adminSession=null, allEmployees=[], sheetData=[], currentTab="overview";
 
-var CUSTOM_ITEMS=[
-  {id:"show_overview_stats",lbl:"Overview Stats"},
-  {id:"show_overview_table",lbl:"Overview Table"},
-  {id:"show_route_tab",lbl:"Route Map Tab"},
-  {id:"show_allowance_tab",lbl:"Allowance Tab"},
-];
+var adminSession=null, allEmployees=[];
 
-function toggleEye(id,btn){var inp=document.getElementById(id);if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}else{inp.type="password";btn.textContent="👁️";}}
-
-// ══ LOGIN ══
 function doLogin(){
-  var user=document.getElementById("lUser").value.trim();
-  var pass=document.getElementById("lPass").value;
-  var err=document.getElementById("loginErr"),btn=document.getElementById("loginBtn");
-  if(!user||!pass){showErr("Username aur password darj karo");return;}
+  const user=document.getElementById("lUser").value.trim();
+  const pass=document.getElementById("lPass").value;
+  const err=document.getElementById("loginErr"),btn=document.getElementById("loginBtn");
+  if(!user||!pass){err.textContent="Username aur password darj karo";err.classList.add("show");return;}
+  err.classList.remove("show");
   btn.classList.add("loading");btn.textContent="Logging in...";
   apiPost({action:"admin_login",user,pass}).then(r=>{
     btn.classList.remove("loading");btn.textContent="Login →";
-    if(r.status==="success"){adminSession={user,token:r.token,t:Date.now()};store.set("adminSess",adminSession);startApp();}
-    else showErr(r.message||"Galat credentials");
-  }).catch(()=>{btn.classList.remove("loading");btn.textContent="Login →";showErr("Server error");});
+    if(r.status==="success"){adminSession={user,token:r.token,t:Date.now()};store.set("adminSess",adminSession);startApp(adminSession);}
+    else {err.textContent=r.message||"Galat credentials";err.classList.add("show");}
+  }).catch(()=>{btn.classList.remove("loading");btn.textContent="Login →";err.textContent="Server error";err.classList.add("show");});
 }
-function showErr(msg){var el=document.getElementById("loginErr");el.textContent=msg;el.classList.add("show");}
-function doLogout(){store.del("adminSess");adminSession=null;document.getElementById("appWrap").style.display="none";document.getElementById("loginWrap").style.display="flex";}
 
-// ══ APP START ══
-function startApp(){
+function doLogout(){store.del("adminSess");document.getElementById("appWrap").style.display="none";document.getElementById("loginWrap").style.display="flex";}
+
+function startApp(sess){
   document.getElementById("loginWrap").style.display="none";
   document.getElementById("appWrap").style.display="flex";
-  document.getElementById("adminUserLbl").textContent=adminSession.user;
-  loadAllEmployees(); loadOverview(); setDefaultDates(); loadCustom();
-  document.getElementById("ratePerKm").value=store.get("ratePerKm")||"2";
+  document.getElementById("adminUserLbl").textContent=sess.user;
+  loadEmployees();
+  setDefaultDates();
+  loadOverview();
 }
 
 function setDefaultDates(){
-  var today=new Date().toISOString().split("T")[0];
-  ["sh-from","sh-to","rt-date","al-from","al-to"].forEach(id=>{var el=document.getElementById(id);if(el)el.value=today;});
-  document.getElementById("ov-date").textContent="("+fmtDate(today)+")";
+  const today=new Date().toISOString().split("T")[0];
+  document.getElementById("att-from").value=today;
+  document.getElementById("att-to").value=today;
 }
 
-// ══ TAB ══
 function switchTab(name,el){
-  currentTab=name;
   document.querySelectorAll(".tab-section").forEach(s=>s.classList.remove("active"));
-  document.getElementById("tab-"+name).classList.add("active");
   document.querySelectorAll(".desk-nav-item,.mob-nav-item").forEach(i=>i.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
   if(el) el.classList.add("active");
-  var tabs=["overview","sheet","route","allowance","employees","settings"];
-  var idx=tabs.indexOf(name);
-  var dItems=document.querySelectorAll(".desk-nav-item");
-  var mItems=document.querySelectorAll(".mob-nav-item");
-  if(dItems[idx]) dItems[idx].classList.add("active");
-  if(mItems[idx]) mItems[idx].classList.add("active");
-  if(name==="sheet") loadSheet();
-  if(name==="employees") renderEmployees();
-  if(name==="allowance") populateEmpSelects();
 }
 
-// ══ EMPLOYEES ══
-function loadAllEmployees(){
+function loadEmployees(){
   apiPost({action:"get_employees"}).then(r=>{
     if(r.employees){allEmployees=r.employees;renderEmployees();populateEmpSelects();}
   });
 }
-function populateEmpSelects(){
-  ["sh-emp","rt-emp","al-emp"].forEach(id=>{
-    var sel=document.getElementById(id);if(!sel)return;
-    var cur=sel.value;
-    sel.innerHTML='<option value="">'+(id==="sh-emp"?"Sab employees":"Employee chunein")+'</option>';
-    allEmployees.forEach(e=>{var o=document.createElement("option");o.value=e.name;o.textContent=e.name;sel.appendChild(o);});
-    sel.value=cur;
-  });
-}
+
 function renderEmployees(){
-  var grid=document.getElementById("emp-grid"); grid.innerHTML="";
+  const grid=document.getElementById("emp-grid"); grid.innerHTML="";
   allEmployees.forEach(e=>{
-    var card=document.createElement("div"); card.className="emp-card";
+    const card=document.createElement("div"); card.className="emp-card";
     card.innerHTML=`<div class="emp-name">${e.name}</div><div class="emp-meta">${e.designation||"--"} | ${e.contact||"--"}</div><div class="emp-actions"><button class="emp-btn edit" onclick='openEmpModal(${JSON.stringify(e)})'>✏️ Edit</button><button class="emp-btn del" onclick="deleteEmp('${e.name}')">🗑️ Delete</button></div>`;
     grid.appendChild(card);
   });
 }
+
+function populateEmpSelects(){
+  const sel=document.getElementById("att-emp");
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All employees</option>';
+  allEmployees.forEach(e=>{const o=document.createElement("option");o.value=e.name;o.textContent=e.name;sel.appendChild(o);});
+  sel.value=cur;
+}
+
 function openEmpModal(emp){
   document.getElementById("empModalTitle").textContent=emp?"Edit Employee":"Add Employee";
   document.getElementById("empOldName").value=emp?emp.name:"";
@@ -432,306 +323,93 @@ function openEmpModal(emp){
   document.getElementById("emPin").value=emp?emp.pin:"";
   document.getElementById("emContact").value=emp?emp.contact:"";
   document.getElementById("emDesig").value=emp?(emp.designation||""):"";
-  document.getElementById("emAddr").value=emp?(emp.address||""):"";
   document.getElementById("empModal").classList.add("show");
 }
+
 function closeEmpModal(){document.getElementById("empModal").classList.remove("show");}
+
 function saveEmployee(){
-  var name=document.getElementById("emName").value.trim();
-  var pin=document.getElementById("emPin").value.trim();
-  var contact=document.getElementById("emContact").value.trim();
-  var desig=document.getElementById("emDesig").value.trim();
-  var addr=document.getElementById("emAddr").value.trim();
-  var oldName=document.getElementById("empOldName").value;
+  const name=document.getElementById("emName").value.trim();
+  const pin=document.getElementById("emPin").value.trim();
+  const contact=document.getElementById("emContact").value.trim();
+  const desig=document.getElementById("emDesig").value.trim();
+  const oldName=document.getElementById("empOldName").value;
   if(!name||!pin||!contact){toast("Name, PIN, Contact zaroori hai","error");return;}
   if(contact.length!==10){toast("10 digit contact darj karo","error");return;}
-  var payload=oldName?{action:"update_employee",oldName,name,pin,contact,designation:desig,address:addr}:{action:"add_employee",name,pin,contact,designation:desig,address:addr};
-  apiPost(payload).then(r=>{if(r.status==="success"){toast("Saved ✓","success");closeEmpModal();loadAllEmployees();}else toast(r.message||"Error","error");});
-}
-function deleteEmp(name){
-  if(!confirm(name+" ko delete karna chahte ho?")) return;
-  apiPost({action:"delete_employee",name}).then(r=>{if(r.status==="success"){toast("Deleted ✓","success");loadAllEmployees();}else toast(r.message||"Error","error");});
+  const payload=oldName?{action:"update_employee",oldName,name,pin,contact,designation:desig}:{action:"add_employee",name,pin,contact,designation:desig};
+  apiPost(payload).then(r=>{if(r.status==="success"){toast("Saved ✓","success");closeEmpModal();loadEmployees();}else toast(r.message||"Error","error");});
 }
 
-// ══ OVERVIEW ══
+function deleteEmp(name){
+  if(!confirm(name+" ko delete karna chahte ho?")) return;
+  apiPost({action:"delete_employee",name}).then(r=>{if(r.status==="success"){toast("Deleted ✓","success");loadEmployees();}else toast(r.message||"Error","error");});
+}
+
 function loadOverview(){
   apiPost({action:"get_today_attendance"}).then(r=>{
     if(!r.rows) return;
     document.getElementById("ov-checkedin").textContent=r.rows.filter(row=>!row.checkoutTime).length;
     document.getElementById("ov-total").textContent=r.totalEmployees||allEmployees.length;
     document.getElementById("ov-visits").textContent=r.rows.length;
-    document.getElementById("ov-gps").textContent=r.gpsPings||0;
-    var tbody=document.getElementById("ov-tbody"); tbody.innerHTML="";
+    const tbody=document.getElementById("ov-tbody"); tbody.innerHTML="";
     if(!r.rows.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">Aaj koi data nahi</td></tr>';return;}
-    [...r.rows].reverse().forEach(row=>{
-      var tr=document.createElement("tr");
-      var badge=row.checkoutTime?'<span class="badge red">Checked Out</span>':'<span class="badge green">In Field</span>';
+    r.rows.forEach(row=>{
+      const tr=document.createElement("tr");
+      const badge=row.checkoutTime?'<span class="badge red">Out</span>':'<span class="badge green">In</span>';
       tr.innerHTML=`<td><strong>${row.empName}</strong></td><td>${fmtTime(row.checkinTime)}</td><td>${row.shopName||row.area||"--"}</td><td>${badge}</td>`;
       tbody.appendChild(tr);
     });
   });
 }
 
-// ══ SHEET VIEW ══
-function loadSheet(){
-  var from=document.getElementById("sh-from").value,to=document.getElementById("sh-to").value,emp=document.getElementById("sh-emp").value;
-  var tbody=document.getElementById("sh-tbody");
-  tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr>';
+function loadAttendance(){
+  const from=document.getElementById("att-from").value;
+  const to=document.getElementById("att-to").value;
+  const emp=document.getElementById("att-emp").value;
+  const tbody=document.getElementById("att-tbody");
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr>';
   apiPost({action:"get_sheet_range",dateFrom:from,dateTo:to,empName:emp}).then(r=>{
-    if(!r.rows) return;
-    sheetData=[...r.rows].reverse();
-    document.getElementById("sh-count").textContent="("+sheetData.length+" records)";
+    if(!r.rows) {tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;">No data</td></tr>';return;}
+    const rows=[...r.rows].reverse();
+    document.getElementById("att-count").textContent="("+rows.length+" records)";
     tbody.innerHTML="";
-    if(!sheetData.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted);">Koi data nahi</td></tr>';return;}
-    sheetData.forEach((row,i)=>{
-      var tr=document.createElement("tr");
-      var badge=row.checkoutTime?'<span class="badge red">Out</span>':'<span class="badge green">In</span>';
-      tr.innerHTML=`<td>${i+1}</td><td>${fmtDate(row.date)}</td><td><strong>${row.empName}</strong></td><td>${fmtTime(row.checkinTime)}</td><td>${row.shopName||row.area||"--"}</td><td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${row.notes||"--"}</td><td>${row.checkoutTime?fmtTime(row.checkoutTime):"--"} ${badge}</td><td>${row.duration||"--"}</td><td><button class="emp-btn edit" onclick="openEditModal(${i})">✏️</button></td>`;
+    if(!rows.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Koi data nahi</td></tr>';return;}
+    rows.forEach((row,i)=>{
+      const tr=document.createElement("tr");
+      const badge=row.checkoutTime?'<span class="badge red">Out</span>':'<span class="badge green">In</span>';
+      tr.innerHTML=`<td>${i+1}</td><td>${fmtDate(row.date)}</td><td><strong>${row.empName}</strong></td><td>${fmtTime(row.checkinTime)}</td><td>${row.checkoutTime?fmtTime(row.checkoutTime):"--"}</td><td>${row.duration||"--"}</td><td>${row.shopName||row.area||"--"}</td><td>${badge}</td>`;
       tbody.appendChild(tr);
     });
   });
 }
-function openEditModal(idx){
-  var row=sheetData[idx];if(!row)return;
-  document.getElementById("editRowIdx").value=idx;
-  document.getElementById("editModalSub").textContent=row.empName+" — "+fmtDate(row.date);
-  document.getElementById("editShop").value=row.shopName||row.area||"";
-  document.getElementById("editNotes").value=row.notes||"";
-  document.getElementById("editModal").classList.add("show");
-}
-function closeEditModal(){document.getElementById("editModal").classList.remove("show");}
-function saveEdit(){
-  var idx=parseInt(document.getElementById("editRowIdx").value);
-  var row=sheetData[idx];if(!row)return;
-  apiPost({action:"update_attendance_row",date:row.date,empName:row.empName,checkinTime:row.checkinTime,shopName:document.getElementById("editShop").value.trim(),area:document.getElementById("editShop").value.trim(),notes:document.getElementById("editNotes").value.trim()})
-    .then(r=>{if(r.status==="success"){toast("Updated ✓","success");closeEditModal();loadSheet();}else toast(r.message||"Error","error");});
-}
-function exportCSV(){
-  if(!sheetData.length){toast("Pehle data load karo","error");return;}
-  var headers=["Date","Employee","Check-In","Shop/Area","Notes","Check-Out","Duration"];
-  var rows=sheetData.map(r=>[fmtDate(r.date),r.empName,fmtTime(r.checkinTime),r.shopName||r.area,r.notes,r.checkoutTime?fmtTime(r.checkoutTime):"",r.duration]);
-  var csv=[headers,...rows].map(r=>r.map(c=>'"'+(c||"").toString().replace(/"/g,'""')+'"').join(",")).join("\n");
-  var a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);a.download="attendance_"+new Date().toISOString().split("T")[0]+".csv";a.click();
-}
 
-// ══ ROUTE MAP — GPS pings (blue) + Visit locations (green) from sheet ══
-function loadRoute(){
-  var emp=document.getElementById("rt-emp").value;
-  var date=document.getElementById("rt-date").value;
-  var map=document.getElementById("routeMap");
-  if(!emp||!date){toast("Employee aur date chunein","error");return;}
-  map.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Loading...</div>';
-
-  // Fetch both GPS route and attendance data for this day
-  Promise.all([
-    apiPost({action:"get_route",name:emp,date:date}),
-    apiPost({action:"get_sheet_range",dateFrom:date,dateTo:date,empName:emp})
-  ]).then(([routeRes, sheetRes])=>{
-    var gpsPoints = (routeRes.route||[]);
-    var visitRows  = (sheetRes.rows||[]);
-
-    if(!gpsPoints.length && !visitRows.length){
-      map.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);">Is date ka koi data nahi mila</div>';
-      return;
-    }
-
-    // Merge and sort all events by time
-    var events = [];
-
-    // GPS pings — tracking status
-    gpsPoints.forEach(pt=>{
-      events.push({
-        type: pt.status && pt.status.startsWith("visit:") ? "visit_gps" : "tracking",
-        time: pt.time,
-        lat: pt.lat,
-        lng: pt.lng,
-        area: pt.status && pt.status.startsWith("visit:") ? pt.status.replace("visit:","") : null
-      });
-    });
-
-    // Visit rows from sheet — area of visit
-    visitRows.forEach((row,i)=>{
-      if(row.shopName||row.area){
-        events.push({
-          type: "visit_sheet",
-          time: row.checkinTime,
-          lat: null, lng: null,
-          area: row.shopName||row.area||"",
-          notes: row.notes||"",
-          checkinTime: row.checkinTime,
-          checkoutTime: row.checkoutTime,
-          duration: row.duration
-        });
-      }
-    });
-
-    // Sort by time string
-    events.sort((a,b)=>{
-      var ta=timeToMinutes(a.time||""), tb=timeToMinutes(b.time||"");
-      return ta-tb;
-    });
-
-    // Calculate total GPS distance
-    var totalM=0;
-    var trackPts = gpsPoints.filter(p=>!p.status||!p.status.startsWith("visit:"));
-    for(var i=1;i<trackPts.length;i++){
-      totalM+=haversine(trackPts[i-1].lat,trackPts[i-1].lng,trackPts[i].lat,trackPts[i].lng);
-    }
-
-    // Build all GPS waypoints for Google Maps link
-    var allLats = gpsPoints.map(p=>p.lat).filter(Boolean);
-    var allLngs = gpsPoints.map(p=>p.lng).filter(Boolean);
-    var gmapsUrl = buildGMapsUrl(gpsPoints);
-
-    // Render
-    var html='';
-
-    // Distance summary
-    var distStr = totalM<1000 ? Math.round(totalM)+"m" : (totalM/1000).toFixed(2)+"km";
-    html+=`<div class="dist-summary">
-      <div><div class="dist-summary-lbl">📏 Total Distance</div><div class="dist-summary-val">${distStr}</div></div>
-      <div><div class="dist-summary-lbl">📍 GPS Points</div><div class="dist-summary-val">${gpsPoints.length}</div></div>
-      <div><div class="dist-summary-lbl">🏪 Visits</div><div class="dist-summary-val">${visitRows.length}</div></div>
-    </div>`;
-
-    // Google Maps button (full route)
-    if(gpsPoints.length){
-      html+=`<a class="gmaps-btn" href="${gmapsUrl}" target="_blank">🗺️ Google Maps pe Pura Route Dekho →</a>`;
-    }
-
-    // Event list
-    events.forEach((ev,idx)=>{
-      var isLast=idx===events.length-1;
-      var dotClass="", label="", details="", mapLink="";
-
-      if(ev.type==="tracking"){
-        dotClass="tracking";
-        label="📍 GPS Ping";
-        if(ev.lat) mapLink=`<a class="route-map-btn" href="https://maps.google.com/?q=${ev.lat},${ev.lng}" target="_blank">📍 Map</a>`;
-      } else if(ev.type==="visit_gps"){
-        dotClass="visit";
-        label="🏪 Visit GPS — "+ev.area;
-        if(ev.lat) mapLink=`<a class="route-map-btn" href="https://maps.google.com/?q=${ev.lat},${ev.lng}" target="_blank">📍 Map</a>`;
-      } else if(ev.type==="visit_sheet"){
-        dotClass="visit";
-        label="🏪 Visit — "+ev.area;
-      }
-
-      html+=`<div class="route-stop">
-        <div class="route-dot ${dotClass}"></div>
-        <div style="flex:1;">
-          <div class="route-place">${label}</div>
-          <div class="route-time">⏰ ${fmtTime(ev.time)||"--"}</div>
-          ${ev.area&&ev.type!=="tracking"?`<span class="route-area">${ev.area}</span>`:""}
-          ${ev.notes?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">📝 ${ev.notes}</div>`:""}
-          <div style="margin-top:4px;">${mapLink}</div>
-        </div>
-      </div>`;
-      if(!isLast) html+='<div class="route-line"></div>';
-    });
-
-    if(!events.length) html='<div style="text-align:center;padding:24px;color:var(--muted);">Koi location data nahi</div>';
-
-    map.innerHTML=html;
-  });
-}
-
-// Build Google Maps directions URL from GPS points
-function buildGMapsUrl(points){
-  if(!points.length) return "#";
-  if(points.length===1) return `https://maps.google.com/?q=${points[0].lat},${points[0].lng}`;
-  var origin=points[0].lat+","+points[0].lng;
-  var dest=points[points.length-1].lat+","+points[points.length-1].lng;
-  // Max 8 waypoints for Maps URL
-  var mids=points.slice(1,-1);
-  var step=Math.max(1,Math.floor(mids.length/8));
-  var waypts=[];
-  for(var i=0;i<mids.length;i+=step) waypts.push(mids[i].lat+","+mids[i].lng);
-  var url="https://www.google.com/maps/dir/"+origin+"/";
-  waypts.forEach(w=>url+=w+"/");
-  url+=dest;
-  return url;
-}
-
-function timeToMinutes(timeStr){
-  if(!timeStr) return 0;
-  var s=timeStr.toString();
-  // "dd-MM-yyyy HH:mm:ss"
-  var full=s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
-  if(full) return parseInt(full[1])*60+parseInt(full[2]);
-  // "HH:mm:ss" or "h:mm AM/PM"
-  var m=s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
-  if(!m) return 0;
-  var h=+m[1],mn=+m[2];
-  if(m[3]&&m[3].toUpperCase()==="PM"&&h<12) h+=12;
-  if(m[3]&&m[3].toUpperCase()==="AM"&&h===12) h=0;
-  return h*60+mn;
-}
-
-function haversine(lat1,lon1,lat2,lon2){
-  var R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
-  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-// ══ ALLOWANCE ══
-function saveRate(){var r=parseFloat(document.getElementById("ratePerKm").value);if(isNaN(r)||r<0){toast("Sahi rate darj karo","error");return;}store.set("ratePerKm",r);toast("Rate save ho gaya: ₹"+r+"/km ✓","success");}
-function calcAllowance(){
-  var emp=document.getElementById("al-emp").value,from=document.getElementById("al-from").value,to=document.getElementById("al-to").value;
-  var res=document.getElementById("allowanceResult");
-  if(!emp){toast("Employee chunein","error");return;}
-  var rate=parseFloat(store.get("ratePerKm")||2);
-  res.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Calculating...</div>';
-  var dates=getDatesInRange(from,to);
-  Promise.all(dates.map(d=>apiPost({action:"get_route",name:emp,date:d}))).then(results=>{
-    var totalM=0,dateBreakdown=[];
-    results.forEach((r,i)=>{
-      if(!r.route||!r.route.length) return;
-      var dm=0;for(var j=1;j<r.route.length;j++)dm+=haversine(r.route[j-1].lat,r.route[j-1].lng,r.route[j].lat,r.route[j].lng);
-      totalM+=dm;dateBreakdown.push({date:dates[i],dist:dm});
-    });
-    var totalKm=totalM/1000,amount=totalKm*rate;
-    var paidKey="allow_paid_"+emp+"_"+from+"_"+to,isPaid=store.get(paidKey);
-    var distStr=totalM<1000?Math.round(totalM)+"m":totalKm.toFixed(2)+"km";
-    var html=`<div class="allow-card"><div class="allow-lbl">Total Distance</div><div class="allow-val">${distStr}</div><div style="display:flex;gap:16px;margin-top:8px;"><div><div style="font-size:11px;color:var(--muted);">Rate</div><div style="font-weight:800;font-size:14px;">₹${rate}/km</div></div><div><div style="font-size:11px;color:var(--muted);">Allowance</div><div style="font-weight:900;font-size:18px;color:var(--accent);">₹${amount.toFixed(2)}</div></div></div>`;
-    html+=isPaid?`<div class="allow-paid">✓ Paid on ${fmtDate(isPaid)}</div>`:`<div class="allow-due">⚠️ Due: ₹${amount.toFixed(2)}</div>`;
-    html+='</div>';
-    if(!isPaid) html+=`<button class="btn green" style="max-width:180px;margin-bottom:12px;" onclick="markPaid('${emp}','${from}','${to}')">✓ Mark as Paid</button>`;
-    if(dateBreakdown.length){
-      html+='<div class="sec-title">📅 Date Breakdown</div><div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Distance</th><th>Amount</th></tr></thead><tbody>';
-      dateBreakdown.forEach(d=>{var km=d.dist/1000,ds=d.dist<1000?Math.round(d.dist)+"m":km.toFixed(2)+"km";html+=`<tr><td>${fmtDate(d.date)}</td><td>${ds}</td><td>₹${(km*rate).toFixed(2)}</td></tr>`;});
-      html+='</tbody></table></div>';
-    }
-    res.innerHTML=html;
-  });
-}
-function markPaid(emp,from,to){store.set("allow_paid_"+emp+"_"+from+"_"+to,new Date().toISOString().split("T")[0]);toast("Paid mark ho gaya ✓","success");calcAllowance();}
-function getDatesInRange(from,to){var dates=[],cur=new Date(from),end=new Date(to);while(cur<=end){dates.push(cur.toISOString().split("T")[0]);cur.setDate(cur.getDate()+1);}return dates;}
-
-// ══ SETTINGS ══
 function changePass(){
-  var oldP=document.getElementById("sOldPass").value,newU=document.getElementById("sNewUser").value.trim(),newP=document.getElementById("sNewPass").value;
-  if(!oldP||!newU||!newP){toast("Sab fields bharein","error");return;}
-  apiPost({action:"admin_change_pass",currentUser:adminSession.user,currentPass:oldP,newUser:newU,newPass:newP})
-    .then(r=>{if(r.status==="success"){toast("Password changed. Dobara login karo.","success");setTimeout(doLogout,2000);}else toast(r.message||"Error","error");});
-}
-
-// ══ CUSTOMIZATION ══
-function loadCustom(){
-  var grid=document.getElementById("customGrid");grid.innerHTML="";
-  CUSTOM_ITEMS.forEach(item=>{
-    var checked=store.get(item.id)!==false;
-    var div=document.createElement("div");div.className="custom-item";
-    div.innerHTML=`<input type="checkbox" id="c_${item.id}" ${checked?"checked":""}><label for="c_${item.id}">${item.lbl}</label>`;
-    grid.appendChild(div);
+  const oldU=document.getElementById("sOldUser").value.trim();
+  const oldP=document.getElementById("sOldPass").value;
+  const newU=document.getElementById("sNewUser").value.trim();
+  const newP=document.getElementById("sNewPass").value;
+  if(!oldU||!oldP||!newU||!newP){toast("Sab fields bharein","error");return;}
+  apiPost({action:"admin_change_pass",currentUser:oldU,currentPass:oldP,newUser:newU,newPass:newP}).then(r=>{
+    if(r.status==="success"){toast("Password changed. Dobara login karo.","success");setTimeout(doLogout,2000);}
+    else toast(r.message||"Error","error");
   });
 }
-function saveCustom(){CUSTOM_ITEMS.forEach(item=>{var cb=document.getElementById("c_"+item.id);if(cb)store.set(item.id,cb.checked);});toast("Saved ✓","success");}
 
-// ══ INIT ══
+function testConnection(){
+  const resultDiv=document.getElementById("test-result");
+  resultDiv.innerHTML='<div style="color:var(--muted);font-weight:600;">Testing...</div>';
+  apiPost({action:"get_employees"}).then(r=>{
+    if(r.status==="success"){
+      resultDiv.innerHTML='<div class="badge green" style="display:inline-block;padding:8px 12px;">✓ API Connection successful! Found '+((r.employees||[]).length)+' employees.</div>';
+    } else {
+      resultDiv.innerHTML='<div class="badge red" style="display:inline-block;padding:8px 12px;">✗ Error: '+(r.message||"Unknown error")+'</div>';
+    }
+  });
+}
+
 (function init(){
-  var sess=store.get("adminSess");
-  if(sess&&sess.t&&(Date.now()-sess.t)<8*3600*1000){adminSession=sess;startApp();}
+  const sess=store.get("adminSess");
+  if(sess&&sess.t&&(Date.now()-sess.t)<8*3600*1000){startApp(sess);}
 })();
 </script>
 </body>
