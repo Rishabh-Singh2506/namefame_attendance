@@ -1,154 +1,381 @@
 <!DOCTYPE html>
 <html lang="hi">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Admin Panel — NAMEFAME Field Attendance</title>
- <link rel="stylesheet" href="admincss2.css">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Admin Panel — NAMEFAME Field Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--card:#f8f9fb;--card2:#f0f2f6;--border:#e2e6ed;
+  --accent:#2563eb;--green:#16a34a;--red:#dc2626;--text:#1a1f2e;--muted:#6b7280;--radius:12px;
+  font-family:'Nunito',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1f2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;max-width:90vw;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--red);}.toast.success{background:var(--green);}.toast.info{background:var(--accent);}
+#loginWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:32px 24px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(37,99,235,.1);}
+.login-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;}
+.login-title{font-size:20px;font-weight:900;text-align:center;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:24px;}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px;display:block;}
+.inp-wrap{position:relative;margin-bottom:14px;}
+input,select,textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:14px;outline:none;appearance:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px;}
+.btn{padding:12px 24px;border-radius:8px;background:var(--accent);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s;}
+.btn:active{opacity:.85;}.btn.loading{opacity:.5;pointer-events:none;}.btn.danger{background:var(--red);}.btn.green{background:var(--green);}.btn.ghost{background:var(--card2);color:var(--text);border:1.5px solid var(--border);}
+.btn-full{width:100%;}
+.err-msg{color:var(--red);font-size:12px;margin-bottom:10px;display:none;font-weight:600;}.err-msg.show{display:block;}
+.fgroup{margin-bottom:12px;}
+#appWrap{display:none;flex-direction:column;min-height:100vh;}
+.app-header{background:linear-gradient(135deg,#2563eb,#7c3aed);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff;position:sticky;top:0;z-index:100;}
+.app-title{font-size:15px;font-weight:900;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.header-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.desk-nav{background:#fff;border-bottom:2px solid var(--border);display:flex;overflow-x:auto;padding:0 16px;}
+.desk-nav-item{padding:11px 14px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .2s;margin-bottom:-2px;}
+.desk-nav-item.active{color:var(--accent);border-bottom-color:var(--accent);}
+.app-content{flex:1;padding:16px;max-width:1200px;margin:0 auto;width:100%;}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,.06);}
+.mob-nav-row{display:flex;}
+.mob-nav-item{flex:1;padding:10px 4px 6px;text-align:center;cursor:pointer;color:var(--muted);transition:color .2s;}
+.mob-nav-item.active{color:var(--accent);}
+.mob-nav-item .mni{font-size:20px;display:block;}.mob-nav-item .mnl{font-size:9px;font-weight:700;display:block;margin-top:2px;}
+@media(max-width:640px){.desk-nav{display:none;}.mob-nav{display:block;}.app-content{padding:12px 10px 80px;}}
+.sec-title{font-size:14px;font-weight:900;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.sec-title span{color:var(--muted);font-weight:600;}
+.tbl-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:var(--card2);padding:9px 12px;text-align:left;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border);}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card);}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.badge.green{background:#dcfce7;color:var(--green);}.badge.red{background:#fee2e2;color:var(--red);}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center;}
+.filter-row input,.filter-row select{width:auto;flex:1;min-width:110px;max-width:170px;padding:8px 12px;font-size:13px;border-radius:8px;}
+.filter-btn{padding:8px 14px;border-radius:8px;background:var(--accent);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.filter-btn.ghost{background:var(--card2);color:var(--text);border:1.5px solid var(--border);}
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+.emp-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.emp-name{font-size:15px;font-weight:900;margin-bottom:2px;}.emp-meta{font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.emp-actions{display:flex;gap:6px;}
+.emp-btn{flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
+.emp-btn.edit{background:#dbeafe;color:var(--accent);}.emp-btn.del{background:#fee2e2;color:var(--red);}
+.tab-section{display:none;}.tab-section.active{display:block;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.modal-title{font-size:17px;font-weight:900;margin-bottom:4px;}.modal-sub{font-size:12px;color:var(--muted);margin-bottom:18px;font-weight:600;}
+.modal-actions{display:flex;gap:8px;margin-top:16px;}
+.modal-actions .btn{flex:1;}
+</style>
 </head>
-
 <body>
-  <div id="toast" class="toast"></div>
+<div id="toast" class="toast"></div>
 
-  <!-- ═ LOGIN ═ -->
-  <div id="loginWrap">
-    <div class="login-card">
-      <div class="login-logo">⚙️</div>
-      <div class="login-title">Admin Panel</div>
-      <div class="login-sub">NAMEFAME Field Attendance</div>
-      <div class="fgroup">
-        <label class="lbl">Username</label>
-        <input type="text" id="lUser" placeholder="admin">
+<div id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">⚙️</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">NAMEFAME Field Attendance</div>
+    <div class="fgroup">
+      <label class="lbl">Username</label>
+      <input type="text" id="lUser" placeholder="admin">
+    </div>
+    <div class="fgroup">
+      <label class="lbl">Password</label>
+      <div class="inp-wrap">
+        <input type="password" id="lPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="eye-btn" onclick="toggleEye('lPass',this)">👁️</button>
       </div>
-      <div class="fgroup">
-        <label class="lbl">Password</label>
-        <div class="inp-wrap">
-          <input type="password" id="lPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
-          <button class="eye-btn" onclick="toggleEye('lPass',this)">👁️</button>
-        </div>
-      </div>
-      <div class="err-msg" id="loginErr"></div>
-      <button class="btn btn-full" onclick="doLogin()" id="loginBtn">Login →</button>
+    </div>
+    <div class="err-msg" id="loginErr"></div>
+    <button class="btn btn-full" onclick="doLogin()" id="loginBtn">Login →</button>
+  </div>
+</div>
+
+<div id="appWrap">
+  <div class="app-header">
+    <div class="app-title">⚙️ Admin — NAMEFAME</div>
+    <div class="header-right">
+      <span id="adminUserLbl" style="font-size:12px;opacity:.8;font-weight:600;"></span>
+      <button class="header-btn" onclick="doLogout()">Logout</button>
     </div>
   </div>
+  <div class="desk-nav">
+    <div class="desk-nav-item active" onclick="switchTab('employees',this)">👥 Employees</div>
+    <div class="desk-nav-item" onclick="switchTab('attendance',this)">📋 Attendance</div>
+    <div class="desk-nav-item" onclick="switchTab('settings',this)">🔧 Settings</div>
+  </div>
+  <div class="app-content">
 
-  <!-- ═ APP ═ -->
-  <div id="appWrap">
-    <div class="app-header">
-      <div class="app-title">⚙️ Admin — NAMEFAME</div>
-      <div class="header-right">
-        <span id="adminUserLbl" style="font-size:12px;opacity:.8;font-weight:600;"></span>
-        <button class="header-btn" onclick="doLogout()">Logout</button>
+    <div class="tab-section active" id="tab-employees">
+      <div style="margin-bottom:12px;"><button class="btn" onclick="openEmpModal()">+ Add Employee</button></div>
+      <div class="sec-title">👥 Employees List</div>
+      <div class="emp-grid" id="emp-grid"></div>
+    </div>
+
+    <div class="tab-section" id="tab-attendance">
+      <div class="filter-row">
+        <input type="date" id="att-from" title="From date">
+        <input type="date" id="att-to" title="To date">
+        <select id="att-emp"><option value="">All employees</option></select>
+        <button class="filter-btn" onclick="loadAttendance()">🔍 Load</button>
+      </div>
+      <div class="sec-title">📋 Attendance Records <span id="att-count"></span></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Employee</th><th>Check-In</th><th>Check-Out</th><th>Duration</th><th>Area</th><th>Status</th></tr></thead>
+          <tbody id="att-tbody"></tbody>
+        </table>
       </div>
     </div>
-    <div class="desk-nav">
-      <div class="desk-nav-item active" onclick="switchTab('employees',this)">👥 Employees</div>
-      <div class="desk-nav-item" onclick="switchTab('attendance',this)">📋 Attendance</div>
-      <div class="desk-nav-item" onclick="switchTab('settings',this)">🔧 Settings</div>
+
+    <div class="tab-section" id="tab-settings">
+      <div class="sec-title">🔒 Password Change</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;max-width:400px;">
+        <div class="fgroup"><label class="lbl">Current Username</label><input type="text" id="sOldUser" placeholder="Current username"></div>
+        <div class="fgroup"><label class="lbl">Current Password</label><div class="inp-wrap"><input type="password" id="sOldPass" placeholder="Current password"><button class="eye-btn" onclick="toggleEye('sOldPass',this)">👁️</button></div></div>
+        <div class="fgroup"><label class="lbl">New Username</label><input type="text" id="sNewUser" placeholder="New username"></div>
+        <div class="fgroup"><label class="lbl">New Password</label><div class="inp-wrap"><input type="password" id="sNewPass" placeholder="New password"><button class="eye-btn" onclick="toggleEye('sNewPass',this)">👁️</button></div></div>
+        <button class="btn" onclick="changePass()">Update Password</button>
+      </div>
+
+      <div class="sec-title">🔌 API Connection Test</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;max-width:400px;">
+        <button class="btn green" style="width:100%;" onclick="testConnection()">Test API Connection</button>
+        <div id="test-result" style="margin-top:12px;"></div>
+      </div>
     </div>
-    <div class="app-content">
 
-      <!-- EMPLOYEES -->
-      <div class="tab-section active" id="tab-employees">
-        <div style="margin-bottom:12px;"><button class="btn" onclick="openEmpModal()">+ Add Employee</button></div>
-        <div class="sec-title">👥 Employees List</div>
-        <div class="emp-grid" id="emp-grid"></div>
-      </div>
-
-      <!-- ATTENDANCE -->
-      <div class="tab-section" id="tab-attendance">
-        <div class="filter-row">
-          <input type="date" id="att-from" title="From date">
-          <input type="date" id="att-to" title="To date">
-          <select id="att-emp">
-            <option value="">All employees</option>
-          </select>
-          <button class="filter-btn" onclick="loadAttendance()">🔍 Load</button>
-        </div>
-        <div class="sec-title">📋 Attendance Records <span id="att-count"></span></div>
-        <div class="tbl-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Employee</th>
-                <th>Check-In</th>
-                <th>Check-Out</th>
-                <th>Duration</th>
-                <th>Area</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="att-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
-      <div class="tab-section" id="tab-settings">
-        <div class="sec-title">🔒 Password Change</div>
-        <div
-          style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;max-width:400px;">
-          <div class="fgroup"><label class="lbl">Current Username</label><input type="text" id="sOldUser"
-              placeholder="Current username"></div>
-          <div class="fgroup"><label class="lbl">Current Password</label>
-            <div class="inp-wrap"><input type="password" id="sOldPass" placeholder="Current password"><button
-                class="eye-btn" onclick="toggleEye('sOldPass',this)">👁️</button></div>
-          </div>
-          <div class="fgroup"><label class="lbl">New Username</label><input type="text" id="sNewUser"
-              placeholder="New username"></div>
-          <div class="fgroup"><label class="lbl">New Password</label>
-            <div class="inp-wrap"><input type="password" id="sNewPass" placeholder="New password"><button
-                class="eye-btn" onclick="toggleEye('sNewPass',this)">👁️</button></div>
-          </div>
-          <button class="btn" onclick="changePass()">Update Password</button>
-        </div>
-
-        <div class="sec-title">🔌 API Connection Test</div>
-        <div
-          style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;max-width:400px;">
-          <button class="btn green" style="width:100%;" onclick="testConnection()">Test API Connection</button>
-          <div id="test-result" style="margin-top:12px;"></div>
-        </div>
-      </div>
-
-    </div>
-    <div class="mob-nav">
-      <div class="mob-nav-row">
-        <div class="mob-nav-item active" onclick="switchTab('employees',this)"><span class="mni">👥</span><span
-            class="mnl">Staff</span></div>
-        <div class="mob-nav-item" onclick="switchTab('attendance',this)"><span class="mni">📋</span><span
-            class="mnl">Attendance</span></div>
-        <div class="mob-nav-item" onclick="switchTab('settings',this)"><span class="mni">🔧</span><span
-            class="mnl">Settings</span></div>
-      </div>
+  </div>
+  <div class="mob-nav">
+    <div class="mob-nav-row">
+      <div class="mob-nav-item active" onclick="switchTab('employees',this)"><span class="mni">👥</span><span class="mnl">Staff</span></div>
+      <div class="mob-nav-item" onclick="switchTab('attendance',this)"><span class="mni">📋</span><span class="mnl">Attendance</span></div>
+      <div class="mob-nav-item" onclick="switchTab('settings',this)"><span class="mni">🔧</span><span class="mnl">Settings</span></div>
     </div>
   </div>
+</div>
 
-  <!-- Employee Modal -->
-  <div class="modal-bg" id="empModal">
-    <div class="modal-box">
-      <div class="modal-title" id="empModalTitle">Add Employee</div>
-      <div class="modal-sub">Employee ki details bharein</div>
-      <input type="hidden" id="empOldName">
-      <div class="fgroup"><label class="lbl">Name *</label><input id="emName" placeholder="Full name"></div>
-      <div class="fgroup"><label class="lbl">PIN *</label>
-        <div class="inp-wrap"><input type="password" id="emPin" placeholder="PIN / password"><button class="eye-btn"
-            onclick="toggleEye('emPin',this)">👁️</button></div>
-      </div>
-      <div class="fgroup"><label class="lbl">Contact *</label><input id="emContact" placeholder="10 digit" type="tel"
-          maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"></div>
-      <div class="fgroup"><label class="lbl">Designation</label><input id="emDesig"
-          placeholder="Salesman, Manager etc."></div>
-      <div class="modal-actions"><button class="btn" onclick="saveEmployee()">Save</button><button class="btn ghost"
-          onclick="closeEmpModal()">Cancel</button></div>
-    </div>
+<div class="modal-bg" id="empModal">
+  <div class="modal-box">
+    <div class="modal-title" id="empModalTitle">Add Employee</div>
+    <div class="modal-sub">Employee ki details bharein</div>
+    <input type="hidden" id="empOldName">
+    <div class="fgroup"><label class="lbl">Name *</label><input id="emName" placeholder="Full name"></div>
+    <div class="fgroup"><label class="lbl">PIN *</label><div class="inp-wrap"><input type="password" id="emPin" placeholder="PIN"><button class="eye-btn" onclick="toggleEye('emPin',this)">👁️</button></div></div>
+    <div class="fgroup"><label class="lbl">Contact *</label><input id="emContact" placeholder="10 digit" type="tel" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"></div>
+    <div class="fgroup"><label class="lbl">Designation</label><input id="emDesig" placeholder="Salesman, Manager etc."></div>
+    <div class="modal-actions"><button class="btn" onclick="saveEmployee()">Save</button><button class="btn ghost" onclick="closeEmpModal()">Cancel</button></div>
   </div>
-  <script src="adminjs2.js"></script>
+</div>
 
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+
+const store = {
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
+  get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
+  del:(k)=>{try{localStorage.removeItem(k);}catch(e){}}
+};
+
+async function apiPost(payload){
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  } catch(e) {
+    console.error("API Error:", e);
+    return {status:"error", message:e.message};
+  }
+}
+
+function toast(msg,type="info"){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.className="toast "+type+" show";
+  setTimeout(()=>el.classList.remove("show"),4000);
+}
+
+function toggleEye(id,btn){
+  const inp=document.getElementById(id);
+  if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}
+  else{inp.type="password";btn.textContent="👁️";}
+}
+
+function fmtDate(val){
+  if(!val) return "";
+  let d;
+  if(val instanceof Date){d=val;}
+  else if(typeof val === 'string') {
+    const m1=val.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m1)d=new Date(+m1[1],+m1[2]-1,+m1[3]);
+    const m2=val.match(/^(\d{2})-(\d{2})-(\d{4})/);if(!d&&m2)d=new Date(+m2[3],+m2[2]-1,+m2[1]);
+  }
+  if(!d||isNaN(d)) return String(val);
+  return d.getDate()+"-"+(d.getMonth()+1)+"-"+d.getFullYear();
+}
+
+function fmtTime(val){
+  if(!val) return "";
+  const s=String(val);
+  const full=s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
+  if(full){let h=parseInt(full[1]),mn=parseInt(full[2]);const ampm=h>=12?"PM":"AM";const h12=h%12||12;return h12+":"+String(mn).padStart(2,"0")+" "+ampm;}
+  const m=s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+  if(!m) return s;
+  let h=+m[1],mn=+m[2];
+  if(m[3]&&m[3].toUpperCase()==="PM"&&h<12)h+=12;
+  if(m[3]&&m[3].toUpperCase()==="AM"&&h===12)h=0;
+  const ampm=h>=12?"PM":"AM";const h12=h%12||12;
+  return h12+":"+String(mn).padStart(2,"0")+" "+ampm;
+}
+
+var adminSession=null, allEmployees=[];
+
+function doLogin(){
+  const user=document.getElementById("lUser").value.trim();
+  const pass=document.getElementById("lPass").value;
+  const err=document.getElementById("loginErr"),btn=document.getElementById("loginBtn");
+  if(!user||!pass){err.textContent="Username aur password darj karo";err.classList.add("show");return;}
+  err.classList.remove("show");
+  btn.classList.add("loading");btn.textContent="Logging in...";
+  apiPost({action:"admin_login",user,pass}).then(r=>{
+    btn.classList.remove("loading");btn.textContent="Login →";
+    if(r.status==="success"){adminSession={user,token:r.token,t:Date.now()};store.set("adminSess",adminSession);startApp(adminSession);}
+    else {err.textContent=r.message||"Galat credentials";err.classList.add("show");}
+  }).catch(()=>{btn.classList.remove("loading");btn.textContent="Login →";err.textContent="Server error";err.classList.add("show");});
+}
+
+function doLogout(){store.del("adminSess");document.getElementById("appWrap").style.display="none";document.getElementById("loginWrap").style.display="flex";}
+
+function startApp(sess){
+  document.getElementById("loginWrap").style.display="none";
+  document.getElementById("appWrap").style.display="flex";
+  document.getElementById("adminUserLbl").textContent=sess.user;
+  loadEmployees();
+  setDefaultDates();
+}
+
+function setDefaultDates(){
+  const today=new Date().toISOString().split("T")[0];
+  document.getElementById("att-from").value=today;
+  document.getElementById("att-to").value=today;
+}
+
+function switchTab(name,el){
+  document.querySelectorAll(".tab-section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".desk-nav-item,.mob-nav-item").forEach(i=>i.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+  if(el) el.classList.add("active");
+}
+
+function loadEmployees(){
+  apiPost({action:"get_employees"}).then(r=>{
+    if(r.employees){allEmployees=r.employees;renderEmployees();populateEmpSelects();}
+  });
+}
+
+function renderEmployees(){
+  const grid=document.getElementById("emp-grid"); grid.innerHTML="";
+  allEmployees.forEach(e=>{
+    const card=document.createElement("div"); card.className="emp-card";
+    card.innerHTML=`<div class="emp-name">${e.name}</div><div class="emp-meta">${e.designation||"--"} | ${e.contact||"--"}</div><div class="emp-actions"><button class="emp-btn edit" onclick='openEmpModal(${JSON.stringify(e)})'>✏️ Edit</button><button class="emp-btn del" onclick="deleteEmp('${e.name}')">🗑️ Delete</button></div>`;
+    grid.appendChild(card);
+  });
+}
+
+function populateEmpSelects(){
+  const sel=document.getElementById("att-emp");
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All employees</option>';
+  allEmployees.forEach(e=>{const o=document.createElement("option");o.value=e.name;o.textContent=e.name;sel.appendChild(o);});
+  sel.value=cur;
+}
+
+function openEmpModal(emp){
+  document.getElementById("empModalTitle").textContent=emp?"Edit Employee":"Add Employee";
+  document.getElementById("empOldName").value=emp?emp.name:"";
+  document.getElementById("emName").value=emp?emp.name:"";
+  document.getElementById("emPin").value=emp?emp.pin:"";
+  document.getElementById("emContact").value=emp?emp.contact:"";
+  document.getElementById("emDesig").value=emp?(emp.designation||""):"";
+  document.getElementById("empModal").classList.add("show");
+}
+
+function closeEmpModal(){document.getElementById("empModal").classList.remove("show");}
+
+function saveEmployee(){
+  const name=document.getElementById("emName").value.trim();
+  const pin=document.getElementById("emPin").value.trim();
+  const contact=document.getElementById("emContact").value.trim();
+  const desig=document.getElementById("emDesig").value.trim();
+  const oldName=document.getElementById("empOldName").value;
+  if(!name||!pin||!contact){toast("Name, PIN, Contact zaroori hai","error");return;}
+  if(contact.length!==10){toast("10 digit contact darj karo","error");return;}
+  const payload=oldName?{action:"update_employee",oldName,name,pin,contact,designation:desig}:{action:"add_employee",name,pin,contact,designation:desig};
+  apiPost(payload).then(r=>{if(r.status==="success"){toast("Saved ✓","success");closeEmpModal();loadEmployees();}else toast(r.message||"Error","error");});
+}
+
+function deleteEmp(name){
+  if(!confirm(name+" ko delete karna chahte ho?")) return;
+  apiPost({action:"delete_employee",name}).then(r=>{if(r.status==="success"){toast("Deleted ✓","success");loadEmployees();}else toast(r.message||"Error","error");});
+}
+
+function loadAttendance(){
+  const from=document.getElementById("att-from").value;
+  const to=document.getElementById("att-to").value;
+  const emp=document.getElementById("att-emp").value;
+  const tbody=document.getElementById("att-tbody");
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr>';
+  apiPost({action:"get_sheet_range",dateFrom:from,dateTo:to,empName:emp}).then(r=>{
+    if(!r.rows) {tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;">No data</td></tr>';return;}
+    const rows=[...r.rows].reverse();
+    document.getElementById("att-count").textContent="("+rows.length+" records)";
+    tbody.innerHTML="";
+    if(!rows.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Koi data nahi</td></tr>';return;}
+    rows.forEach((row,i)=>{
+      const tr=document.createElement("tr");
+      const badge=row.checkoutTime?'<span class="badge red">Out</span>':'<span class="badge green">In</span>';
+      tr.innerHTML=`<td>${i+1}</td><td>${fmtDate(row.date)}</td><td><strong>${row.empName}</strong></td><td>${fmtTime(row.checkinTime)}</td><td>${row.checkoutTime?fmtTime(row.checkoutTime):"--"}</td><td>${row.duration||"--"}</td><td>${row.shopName||row.area||"--"}</td><td>${badge}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function changePass(){
+  const oldU=document.getElementById("sOldUser").value.trim();
+  const oldP=document.getElementById("sOldPass").value;
+  const newU=document.getElementById("sNewUser").value.trim();
+  const newP=document.getElementById("sNewPass").value;
+  if(!oldU||!oldP||!newU||!newP){toast("Sab fields bharein","error");return;}
+  apiPost({action:"admin_change_pass",currentUser:oldU,currentPass:oldP,newUser:newU,newPass:newP}).then(r=>{
+    if(r.status==="success"){toast("Password changed. Dobara login karo.","success");setTimeout(doLogout,2000);}
+    else toast(r.message||"Error","error");
+  });
+}
+
+function testConnection(){
+  const resultDiv=document.getElementById("test-result");
+  resultDiv.innerHTML='<div style="color:var(--muted);font-weight:600;">Testing...</div>';
+  apiPost({action:"get_employees"}).then(r=>{
+    if(r.status==="success"){
+      resultDiv.innerHTML='<div class="badge green" style="display:inline-block;padding:8px 12px;">✓ API Connection successful! Found '+((r.employees||[]).length)+' employees.</div>';
+    } else {
+      resultDiv.innerHTML='<div class="badge red" style="display:inline-block;padding:8px 12px;">✗ Error: '+(r.message||"Unknown error")+'</div>';
+    }
+  });
+}
+
+(function init(){
+  const sess=store.get("adminSess");
+  if(sess&&sess.t&&(Date.now()-sess.t)<8*3600*1000){startApp(sess);}
+})();
+</script>
 </body>
-
 </html>
