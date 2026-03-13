@@ -193,8 +193,8 @@ tbody tr:last-child td{border-bottom:none;}tbody tr:hover{background:var(--card)
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw9mOk2W233gyeUyABitzWleqVWz7yhM5x1G1VwNx0-isNlqB7EZW8a35aTUtx3XIQ2/exec";
-const store = {
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxHP-kxYkyB10Dhgmi7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+  const store = {
   set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},
   get:(k)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
   del:(k)=>{try{localStorage.removeItem(k);}catch(e){}}
