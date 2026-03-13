@@ -1,5 +1,253 @@
 /* ===== ROUTE SYSTEM V2 ===== */
 
+  
+    // ══ CONFIG ══
+    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+
+    const store = {
+      set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
+      get: (k) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+      del: (k) => { try { localStorage.removeItem(k); } catch (e) { } }
+    };
+
+    async function apiPost(payload) {
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        return res.json();
+      } catch (e) {
+        console.error("API Error:", e);
+        return { status: "error", message: e.message };
+      }
+    }
+
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.textContent = msg; el.className = "toast " + type + " show";
+      setTimeout(() => el.classList.remove("show"), 4000);
+    }
+
+    function toggleEye(id, btn) {
+      var inp = document.getElementById(id);
+      if (inp.type === "password") {
+        inp.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        inp.type = "password";
+        btn.textContent = "👁️";
+      }
+    }
+
+    function fmtDate(val) {
+      if (!val) return "";
+      let d;
+      if (val instanceof Date) { d = val; }
+      else if (typeof val === 'string') {
+        const m1 = val.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m1) d = new Date(+m1[1], +m1[2] - 1, +m1[3]);
+        const m2 = val.match(/^(\d{2})-(\d{2})-(\d{4})/); if (!d && m2) d = new Date(+m2[3], +m2[2] - 1, +m2[1]);
+      }
+      if (!d || isNaN(d)) return String(val);
+      return d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
+    }
+
+    function fmtTime(val) {
+      if (!val) return "";
+      const s = String(val);
+      const full = s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
+      if (full) { let h = parseInt(full[1]), mn = parseInt(full[2]); const ampm = h >= 12 ? "PM" : "AM"; const h12 = h % 12 || 12; return h12 + ":" + String(mn).padStart(2, "0") + " " + ampm; }
+      const m = s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
+      if (!m) return s;
+      let h = +m[1], mn = +m[2];
+      if (m[3] && m[3].toUpperCase() === "PM" && h < 12) h += 12;
+      if (m[3] && m[3].toUpperCase() === "AM" && h === 12) h = 0;
+      const ampm = h >= 12 ? "PM" : "AM"; const h12 = h % 12 || 12;
+      return h12 + ":" + String(mn).padStart(2, "0") + " " + ampm;
+    }
+
+    // ══ LOGIN ══
+    function doLogin() {
+      var user = document.getElementById("lUser").value.trim();
+      var pass = document.getElementById("lPass").value;
+      var err = document.getElementById("loginErr"), btn = document.getElementById("loginBtn");
+      if (!user || !pass) { err.textContent = "Username aur password darj karo"; err.classList.add("show"); return; }
+      err.classList.remove("show");
+      btn.classList.add("loading"); btn.textContent = "Logging in...";
+      apiPost({ action: "admin_login", user, pass }).then(r => {
+        btn.classList.remove("loading"); btn.textContent = "Login →";
+        if (r.status === "success") {
+          const adminSession = { user, token: r.token, t: Date.now() };
+          store.set("adminSess", adminSession);
+          startApp(adminSession);
+        }
+        else { err.textContent = r.message || "Galat credentials"; err.classList.add("show"); }
+      }).catch(e => { btn.classList.remove("loading"); btn.textContent = "Login →"; err.textContent = "Server error"; err.classList.add("show"); });
+    }
+
+    function doLogout() { store.del("adminSess"); document.getElementById("appWrap").style.display = "none"; document.getElementById("loginWrap").style.display = "flex"; }
+
+    // ══ APP START ══
+    function startApp(sess) {
+      document.getElementById("loginWrap").style.display = "none";
+      document.getElementById("appWrap").style.display = "flex";
+      document.getElementById("adminUserLbl").textContent = sess.user;
+      loadEmployees();
+      setDefaultDates();
+    }
+
+    function setDefaultDates() {
+      var today = new Date().toISOString().split("T")[0];
+      document.getElementById("att-from").value = today;
+      document.getElementById("att-to").value = today;
+      document.getElementById("rt-date").value = today;
+    }
+
+    // ══ TAB SWITCH ══
+    function switchTab(name, el) {
+      document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".desk-nav-item,.mob-nav-item").forEach(i => i.classList.remove("active"));
+      document.getElementById("tab-" + name).classList.add("active");
+      if (el) el.classList.add("active");
+    }
+
+    // ══ EMPLOYEES ══
+    function loadEmployees() {
+      apiPost({ action: "get_employees" }).then(r => {
+        if (r.employees) {
+          renderEmployees(r.employees);
+          populateEmpSelects(r.employees);
+        }
+      });
+    }
+
+    function renderEmployees(emps) {
+      var grid = document.getElementById("emp-grid"); grid.innerHTML = "";
+      emps.forEach(e => {
+        var card = document.createElement("div"); card.className = "emp-card";
+        card.innerHTML = `
+      <div class="emp-name">${e.name}</div>
+      <div class="emp-meta">${e.designation || "--"} | ${e.contact || "--"}</div>
+      <div class="emp-actions">
+        <button class="emp-btn edit" onclick='openEmpModal(${JSON.stringify(e)})'>✏️ Edit</button>
+        <button class="emp-btn del" onclick="deleteEmp('${e.name}')">🗑️ Delete</button>
+      </div>
+    `;
+        grid.appendChild(card);
+      });
+    }
+
+    function populateEmpSelects(emps) {
+      var sel = document.getElementById("att-emp");
+      var cur = sel.value;
+      sel.innerHTML = '<option value="">All employees</option>';
+      emps.forEach(e => { var o = document.createElement("option"); o.value = e.name; o.textContent = e.name; sel.appendChild(o); });
+      sel.value = cur;
+    }
+
+    function openEmpModal(emp) {
+      document.getElementById("empModalTitle").textContent = emp ? "Edit Employee" : "Add Employee";
+      document.getElementById("empOldName").value = emp ? emp.name : "";
+      document.getElementById("emName").value = emp ? emp.name : "";
+      document.getElementById("emPin").value = emp ? emp.pin : "";
+      document.getElementById("emContact").value = emp ? emp.contact : "";
+      document.getElementById("emDesig").value = emp ? (emp.designation || "") : "";
+      document.getElementById("empModal").classList.add("show");
+    }
+
+    function closeEmpModal() { document.getElementById("empModal").classList.remove("show"); }
+
+    function saveEmployee() {
+      var name = document.getElementById("emName").value.trim();
+      var pin = document.getElementById("emPin").value.trim();
+      var contact = document.getElementById("emContact").value.trim();
+      var desig = document.getElementById("emDesig").value.trim();
+      var oldName = document.getElementById("empOldName").value;
+
+      if (!name || !pin || !contact) { toast("Name, PIN, Contact zaroori hai", "error"); return; }
+      if (contact.length !== 10) { toast("10 digit contact darj karo", "error"); return; }
+
+      var payload = oldName
+        ? { action: "update_employee", oldName, name, pin, contact, designation: desig }
+        : { action: "add_employee", name, pin, contact, designation: desig };
+
+      apiPost(payload).then(r => {
+        if (r.status === "success") { toast("Saved ✓", "success"); closeEmpModal(); loadEmployees(); }
+        else toast(r.message || "Error", "error");
+      });
+    }
+
+    function deleteEmp(name) {
+      if (!confirm(name + " ko delete karna chahte ho?")) return;
+      apiPost({ action: "delete_employee", name }).then(r => {
+        if (r.status === "success") { toast("Deleted ✓", "success"); loadEmployees(); }
+        else toast(r.message || "Error", "error");
+      });
+    }
+
+    // ══ ATTENDANCE ══
+    function loadAttendance() {
+      var from = document.getElementById("att-from").value;
+      var to = document.getElementById("att-to").value;
+      var emp = document.getElementById("att-emp").value;
+      var tbody = document.getElementById("att-tbody");
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr>';
+
+      apiPost({ action: "get_sheet_range", dateFrom: from, dateTo: to, empName: emp }).then(r => {
+        if (!r.rows) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;">No data</td></tr>'; return; }
+        var rows = [...r.rows].reverse();
+        document.getElementById("att-count").textContent = "(" + rows.length + " records)";
+        tbody.innerHTML = "";
+        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);">Koi data nahi</td></tr>'; return; }
+        rows.forEach((row, i) => {
+          var tr = document.createElement("tr");
+          var badge = row.checkoutTime ? '<span class="badge red">Out</span>' : '<span class="badge green">In</span>';
+          tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${fmtDate(row.date)}</td>
+        <td><strong>${row.empName}</strong></td>
+        <td>${fmtTime(row.checkinTime)}</td>
+        <td>${row.checkoutTime ? fmtTime(row.checkoutTime) : "--"}</td>
+        <td>${row.duration || "--"}</td>
+        <td>${row.shopName || row.area || "--"}</td>
+        <td>${badge}</td>
+      `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    // ══ SETTINGS ══
+    function changePass() {
+      var oldU = document.getElementById("sOldUser").value.trim();
+      var oldP = document.getElementById("sOldPass").value;
+      var newU = document.getElementById("sNewUser").value.trim();
+      var newP = document.getElementById("sNewPass").value;
+      if (!oldU || !oldP || !newU || !newP) { toast("Sab fields bharein", "error"); return; }
+      apiPost({ action: "admin_change_pass", currentUser: oldU, currentPass: oldP, newUser: newU, newPass: newP })
+        .then(r => { if (r.status === "success") { toast("Password changed. Dobara login karo.", "success"); setTimeout(doLogout, 2000); } else toast(r.message || "Error", "error"); });
+    }
+
+    function testConnection() {
+      var resultDiv = document.getElementById("test-result");
+      resultDiv.innerHTML = '<div style="color:var(--muted);font-weight:600;">Testing...</div>';
+      apiPost({ action: "get_employees" }).then(r => {
+        if (r.status === "success") {
+          resultDiv.innerHTML = '<div class="badge green" style="display:inline-block;padding:8px 12px;">✓ API Connection successful! Found ' + ((r.employees || []).length) + ' employees.</div>';
+        } else {
+          resultDiv.innerHTML = '<div class="badge red" style="display:inline-block;padding:8px 12px;">✗ Error: ' + (r.message || "Unknown error") + '</div>';
+        }
+      });
+    }
+
+    // ══ INIT ══
+    (function init() {
+      var sess = store.get("adminSess");
+      if (sess && sess.t && (Date.now() - sess.t) < 8 * 3600 * 1000) { startApp(sess); }
+    })();
+
+
 async function loadEmployees(){
 
 const res = await apiPost({
