@@ -630,9 +630,13 @@ function dismissPWA() {
   localStorage.setItem("pwa_done","1");
 }
 
-// ══════════════════════════════════════════
-// SECTION C: CHECKIN.HTML FUNCTIONS
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════════════
+// SECTION C (UPDATED): CHECKIN.HTML FUNCTIONS - WITH 2-PHOTO & ODOMETER
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Photo collection state
+var ciPhotos = [];  // Array to store up to 2 photos
+var ciOdometerStart = null;  // Store odometer reading
 
 function setCiState(name) {
   document.querySelectorAll(".ci-state").forEach(function(el) { el.classList.remove("active"); });
@@ -692,6 +696,75 @@ function ciRetakePhoto() {
   if (!ciCamStream) ciStartCamera();
 }
 
+// NEW: Accept photo and add to collection
+function ciAcceptPhoto() {
+  if (!ciPhotoData || ciPhotos.length >= 2) {
+    toast("Photo save nahi ho paya", "error");
+    return;
+  }
+  
+  ciPhotos.push(ciPhotoData);
+  
+  // Display photo in grid
+  if (ciPhotos.length === 1) {
+    var img1 = document.getElementById("ciPhoto1Img");
+    img1.src = ciPhotoData;
+    img1.style.display = "block";
+    document.getElementById("ciPhoto1Slot").querySelector(".ci-photo-placeholder").style.display = "none";
+  } else if (ciPhotos.length === 2) {
+    var img2 = document.getElementById("ciPhoto2Img");
+    img2.src = ciPhotoData;
+    img2.style.display = "block";
+    document.getElementById("ciPhoto2Slot").querySelector(".ci-photo-placeholder").style.display = "none";
+  }
+  
+  // Update counter
+  var counter = document.getElementById("ciPhotoCount");
+  if (counter) counter.textContent = ciPhotos.length;
+  
+  // If 2 photos taken, show odometer input
+  if (ciPhotos.length === 2) {
+    ciPhotoData = null;
+    ciStopCamera();
+    setTimeout(function() {
+      setCiState("odometer");
+      document.getElementById("ciOdometerInput").focus();
+    }, 500);
+  } else {
+    // Take another photo
+    ciPhotoData = null;
+    setCiState("photo-collection");
+  }
+}
+
+// NEW: Take another photo after first one accepted
+function ciTakeAnotherPhoto() {
+  ciPhotoData = null;
+  if (!ciCamStream) ciStartCamera();
+  document.getElementById("ci-preview").style.display = "none";
+  document.getElementById("ciVideo").style.display = "block";
+  setCiState("capture");
+  var fb = document.getElementById("ciFlipBtn");
+  if (fb) { fb.style.opacity = "1"; fb.style.pointerEvents = "auto"; }
+}
+
+// NEW: Handle odometer submission
+function ciSubmitOdometer() {
+  var odoInput = document.getElementById("ciOdometerInput");
+  var odoVal = odoInput.value.trim();
+  
+  if (!odoVal || isNaN(odoVal)) {
+    toast("Valid odometer reading daalo", "error");
+    return;
+  }
+  
+  ciOdometerStart = parseInt(odoVal);
+  odoInput.value = "";
+  
+  // Move to submit check-in
+  ciSubmitCheckin();
+}
+
 function ciGetGps() {
   var b = document.getElementById("ciGpsBadge");
   if (b) { b.textContent = "📍 GPS fetch ho raha hai..."; b.classList.add("show"); }
@@ -701,13 +774,21 @@ function ciGetGps() {
     if (b) b.textContent = "📍 " + ciGpsPos.lat.toFixed(5) + ", " + ciGpsPos.lng.toFixed(5) +
       " (±" + Math.round(pos.coords.accuracy) + "m)";
   }, function() {
-    if (b) b.textContent = "📍 GPS unavailable (code:" + err.code + ")";
+    if (b) b.textContent = "📍 GPS unavailable";
   }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0});
 }
 
 function ciSubmitCheckin() {
-  if (!ciPhotoData)   { toast("Photo lo pehle", "error"); return; }
-  if (!ciCurrentEmp)  { toast("Session expired, wapas jao", "error"); return; }
+  // Check if we have both photos
+  if (ciPhotos.length < 2) {
+    toast("Dono photos zaroori hain", "error");
+    return;
+  }
+  
+  if (!ciCurrentEmp) {
+    toast("Session expired, wapas jao", "error");
+    return;
+  }
 
   // GPS nahi aaya to 3 sec wait karo
   if (!ciGpsPos) {
@@ -716,7 +797,12 @@ function ciSubmitCheckin() {
     return;
   }
 
-  // ... baaki code same rahega
+  // Odometer nahi set kiya
+  if (ciOdometerStart === null) {
+    toast("Odometer reading daalo", "error");
+    return;
+  }
+
   var btn = document.getElementById("ciSubmitBtn");
   if (btn) { btn.classList.add("loading"); btn.textContent = "Bhej raha hai..."; }
   setCiState("loading");
@@ -725,27 +811,50 @@ function ciSubmitCheckin() {
   var timeStr = now.toLocaleTimeString("en-IN");
   var mapLink = ciGpsPos ? "https://maps.google.com/?q=" + ciGpsPos.lat + "," + ciGpsPos.lng : "";
 
+  // Send both photos + odometer data
   apiPost({
     action: "checkin",
     name: ciCurrentEmp.name,
     contact: ciCurrentEmp.contact || "",
     shopName: "", shopkeeperName: "", shopkeeperContact: "",
-    area: "", notes: "Check-in selfie",
+    area: "", notes: "Check-in selfies",
     mapLink: mapLink,
-    photo: ciPhotoData,
+    photo1: ciPhotos[0] || "",      // First photo
+    photo2: ciPhotos[1] || "",      // Second photo
+    odometerStart: ciOdometerStart,  // Odometer reading
     timestamp: timeStr
   }).then(function() {
     store.set("ci_" + ciCurrentEmp.name, { time: timeStr, ms: now.getTime() });
+    store.set("odoStart_" + ciCurrentEmp.name + "_" + todayKey(), ciOdometerStart);
     store.set("checkinDone", "1");
     ciStopCamera();
     setCiState("done");
     var dm = document.getElementById("ciDoneMsg");
-    if (dm) dm.textContent = ciCurrentEmp.name + " | " + timeStr + (ciGpsPos ? " | GPS ✓" : "");
+    if (dm) {
+      dm.textContent = ciCurrentEmp.name + " | " + timeStr + 
+        " | Odometer: " + ciOdometerStart + " km" + 
+        (ciGpsPos ? " | GPS ✓" : "");
+    }
   }).catch(function(err) {
     toast("Error: " + err.message, "error");
     setCiState("preview");
     if (btn) { btn.classList.remove("loading"); btn.textContent = "✓ Check-In Karo"; }
   });
+}
+
+// Reset photo collection on page reload
+function resetCiPhotoCollection() {
+  ciPhotos = [];
+  ciOdometerStart = null;
+  ciPhotoData = null;
+  document.getElementById("ciPhoto1Img").style.display = "none";
+  document.getElementById("ciPhoto1Img").src = "";
+  document.getElementById("ciPhoto1Slot").querySelector(".ci-photo-placeholder").style.display = "block";
+  document.getElementById("ciPhoto2Img").style.display = "none";
+  document.getElementById("ciPhoto2Img").src = "";
+  document.getElementById("ciPhoto2Slot").querySelector(".ci-photo-placeholder").style.display = "block";
+  var counter = document.getElementById("ciPhotoCount");
+  if (counter) counter.textContent = "0";
 }
 
 // ══════════════════════════════════════════
@@ -793,6 +902,10 @@ if (IS_CHECKIN) {
       if (nameEl) nameEl.textContent = ciCurrentEmp.name;
       if (roleEl) roleEl.textContent = ciCurrentEmp.designation || "Field Employee";
       if (dateEl) dateEl.textContent = fmtDateLong(new Date());
+      
+      // Reset photo collection on fresh load
+      resetCiPhotoCollection();
+      
       ciStartCamera();
     }
   }
@@ -829,4 +942,8 @@ window.dismissPWA       = dismissPWA;
 window.ciFlipCamera     = ciFlipCamera;
 window.ciCapturePhoto   = ciCapturePhoto;
 window.ciRetakePhoto    = ciRetakePhoto;
-window.ciSubmitCheckin  = ciSubmitCheckin;
+window.ciAcceptPhoto       = ciAcceptPhoto;
+window.ciTakeAnotherPhoto  = ciTakeAnotherPhoto;
+window.ciSubmitOdometer    = ciSubmitOdometer;
+window.ciSubmitCheckin     = ciSubmitCheckin;
+window.resetCiPhotoCollection = resetCiPhotoCollection;
