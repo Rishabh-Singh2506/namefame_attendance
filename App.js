@@ -287,21 +287,106 @@ function doCheckout() {
   if (!currentEmp) return;
   var sv = store.get("ci_" + currentEmp.name);
   if (!sv) { toast("Pehle check-in karo", "error"); return; }
+  
+  // Show checkout modal
+  document.getElementById("checkoutModal").classList.add("show");
+  document.getElementById("checkoutOdometerInput").value = "";
+  document.getElementById("checkoutPhotoPreview").style.display = "none";
+  document.getElementById("checkoutVideo").style.display = "block";
+  document.getElementById("checkoutBtnCap").style.display = "block";
+  document.getElementById("checkoutBtnNext").style.display = "none";
+  document.getElementById("checkoutBtnRe").style.display = "none";
+  checkoutPhotoData = null;
+  
+  // Start camera
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: false
+  }).then(function(stream) {
+    checkoutCamStream = stream;
+    document.getElementById("checkoutVideo").srcObject = stream;
+  }).catch(function(err) {
+    toast("Camera error: " + err.message, "error");
+    closeCheckoutModal();
+  });
+}
+
+function captureCheckoutPhoto() {
+  var v = document.getElementById("checkoutVideo");
+  var c = document.getElementById("checkoutCanvas");
+  var p = document.getElementById("checkoutPhotoPreview");
+  c.width = v.videoWidth||640; c.height = v.videoHeight||480;
+  c.getContext("2d").drawImage(v,0,0);
+  var data = c.toDataURL("image/jpeg",0.7);
+  p.src = data; p.style.display = "block"; v.style.display = "none";
+  document.getElementById("checkoutBtnCap").style.display = "none";
+  document.getElementById("checkoutBtnNext").style.display = "block";
+  document.getElementById("checkoutBtnRe").style.display = "block";
+  checkoutPhotoData = data;
+}
+
+function retakeCheckoutPhoto() {
+  document.getElementById("checkoutVideo").style.display = "block";
+  document.getElementById("checkoutPhotoPreview").style.display = "none";
+  document.getElementById("checkoutBtnCap").style.display = "block";
+  document.getElementById("checkoutBtnNext").style.display = "none";
+  document.getElementById("checkoutBtnRe").style.display = "none";
+  checkoutPhotoData = null;
+}
+
+function submitCheckout() {
+  var odoInput = document.getElementById("checkoutOdometerInput").value.trim();
+  
+  if (!checkoutPhotoData) { toast("Photo lo pehle", "error"); return; }
+  if (!odoInput || isNaN(odoInput)) { toast("Valid odometer daalo", "error"); return; }
+  
+  var odometerEnd = parseInt(odoInput);
+  var sv = store.get("ci_" + currentEmp.name);
   var diff = Date.now() - sv.ms;
   var h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000);
-  if (!confirm("Check-out karna chahte ho?\nField time: " + h + "h " + m + "m")) return;
+  
+  var btn = document.getElementById("checkoutSubmitBtn");
+  btn.classList.add("loading"); btn.textContent = "Submitting...";
+  
   apiPost({
     action: "checkout",
     name: currentEmp.name,
     timestamp: new Date().toLocaleTimeString("en-IN"),
-    duration: h + "h " + m + "m"
+    duration: h + "h " + m + "m",
+    odometerEnd: odometerEnd,
+    photo: checkoutPhotoData,
+    areaCovered: m + " min field time"
   }).then(function() {
     store.del("ci_" + currentEmp.name);
+    closeCheckoutModal();
     toast("Check-out ho gaya! ✓", "success");
     stopGps(); stopTimer(); refreshDash();
-  }).catch(function(err) { toast("Error: " + err.message, "error"); });
+    btn.classList.remove("loading"); btn.textContent = "✓ Check-Out";
+  }).catch(function(err) { 
+    toast("Error: " + err.message, "error");
+    btn.classList.remove("loading"); btn.textContent = "✓ Check-Out";
+  });
 }
 
+function closeCheckoutModal() {
+  if (checkoutCamStream) { 
+    checkoutCamStream.getTracks().forEach(function(t) { t.stop(); }); 
+    checkoutCamStream = null; 
+  }
+  document.getElementById("checkoutModal").classList.remove("show");
+  checkoutPhotoData = null;
+}
+
+// Add state variable at top with other vars
+var checkoutPhotoData = null;
+var checkoutCamStream = null;
+
+// Expose to window
+window.doCheckout = doCheckout;
+window.captureCheckoutPhoto = captureCheckoutPhoto;
+window.retakeCheckoutPhoto = retakeCheckoutPhoto;
+window.submitCheckout = submitCheckout;
+window.closeCheckoutModal = closeCheckoutModal;
 function doNewVisit() {
   if (!currentEmp) return;
   visitPhotoData = null;
