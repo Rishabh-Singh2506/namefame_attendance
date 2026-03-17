@@ -104,12 +104,41 @@
       <span class="al">Check-In</span>
       <span class="as">Din shuru karo</span>
     </div>
-    <div class="abtn co dis" id="bCO" onclick="doCheckout()">
-      <span class="ai">🔴</span>
-      <span class="al">Check-Out</span>
-      <span class="as">Din khatam karo</span>
-      <span class="cdown" id="cdBadge"></span>
+    <!-- ══ CHECKOUT MODAL ══ -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🔴 Check-Out</div>
+      <div class="modal-x" onclick="closeCheckoutModal()">✕</div>
     </div>
+    <div class="modal-sub">Odometer photo + ending reading daalo</div>
+    
+    <div class="fgroup">
+      <label class="lbl">Odometer Photo <span class="req-star">*</span></label>
+      <div class="video-wrap" style="height:240px;margin-bottom:12px;border-radius:8px;overflow:hidden;">
+        <video id="checkoutVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
+        <canvas id="checkoutCanvas" style="display:none;"></canvas>
+        <img id="checkoutPhotoPreview" alt="photo" style="width:100%;height:100%;object-fit:cover;display:none;">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="cam-btn cap" id="checkoutBtnCap" style="flex:1;" onclick="captureCheckoutPhoto()">📷 Capture</button>
+        <button class="cam-btn retake" id="checkoutBtnRe" style="flex:1;display:none;" onclick="retakeCheckoutPhoto()">↩ Retake</button>
+        <button class="cam-btn use" id="checkoutBtnNext" style="flex:1;display:none;" onclick="document.getElementById('checkoutOdometerInput').focus()">✓ Next</button>
+      </div>
+    </div>
+    
+    <div class="fgroup">
+      <label class="lbl">Ending Odometer <span class="req-star">*</span></label>
+      <input type="number" id="checkoutOdometerInput" placeholder="जैसे: 45150" min="0" step="1">
+    </div>
+    
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCheckoutModal()">Cancel</button>
+      <button class="btn-save" id="checkoutSubmitBtn" onclick="submitCheckout()">✓ Check-Out</button>
+    </div>
+  </div>
+</div>
+    
     <div class="abtn or dis" id="bOrd" onclick="location.href='order.html'">
       <span class="ai">📦</span>
       <span class="al">Order</span>
