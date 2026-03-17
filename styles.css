@@ -240,3 +240,368 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); }
 .ci-no-login h2 { font-size: 18px; font-weight: 900; color: #fff; }
 .ci-no-login p { font-size: 13px; color: rgba(255,255,255,.55); }
 .btn-go-back-ci { padding: 14px 28px; border-radius: 12px; background: var(--accent); border: none; color: #fff; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CSS ADDITIONS FOR UPDATED CHECK-IN
+   (Add these to your existing styles.css)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Photo Counter Badge */
+.ci-photo-counter {
+  position: fixed;
+  bottom: 280px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  display: none;
+}
+
+.ci-photo-counter.show {
+  display: block;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Photo Collection Grid */
+.ci-photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.ci-photo-item {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  border: 2px dashed #ccc;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+}
+
+.ci-photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: none;
+}
+
+.ci-photo-placeholder {
+  text-align: center;
+  font-size: 48px;
+  color: #aaa;
+  transition: all 0.3s ease;
+}
+
+.ci-photo-item img:not([style*="display: none"]) + .ci-photo-placeholder {
+  display: none;
+}
+
+/* Photo Actions */
+.ci-photo-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.btn-take-another {
+  flex: 1;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-take-another:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-accept-photo {
+  flex: 1;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-accept-photo:active {
+  transform: scale(0.95);
+}
+
+/* Odometer Input Section */
+.ci-odometer-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  padding: 24px 20px;
+  margin-bottom: 20px;
+}
+
+.ci-odo-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.ci-odo-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ci-odo-input {
+  flex: 1;
+  padding: 14px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: #fff;
+  color: #333;
+}
+
+.ci-odo-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: #fff;
+}
+
+.ci-odo-input::placeholder {
+  color: #999;
+}
+
+/* Number input spin buttons hide */
+.ci-odo-input::-webkit-outer-spin-button,
+.ci-odo-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ci-odo-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.ci-odo-unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  min-width: 50px;
+  text-align: center;
+}
+
+.ci-odo-hint {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Continue Button */
+.btn-continue-odo {
+  width: 100%;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.btn-continue-odo:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* Hint text styling */
+.ci-hint {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Update existing state styling for better spacing */
+.ci-state {
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.ci-state.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Spinner update */
+.ci-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.spin {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(102, 126, 234, 0.2);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin-txt {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Preview Actions Styling */
+.ci-preview-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-retake-ci {
+  flex: 1;
+  padding: 12px 16px;
+  background: #f0f0f0;
+  color: #333;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-retake-ci:active {
+  background: #e0e0e0;
+  transform: scale(0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .ci-photo-grid {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .ci-odometer-section {
+    padding: 20px 16px;
+  }
+
+  .ci-odo-input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .ci-photo-counter {
+    bottom: 260px;
+    right: 16px;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .ci-odometer-section {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  }
+
+  .ci-photo-grid {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
+  }
+
+  .ci-odo-label {
+    color: #fff;
+  }
+
+  .ci-odo-input {
+    background: #1f1f1f;
+    color: #fff;
+    border-color: #444;
+  }
+
+  .ci-odo-input:focus {
+    border-color: #667eea;
+  }
+
+  .ci-odo-unit {
+    background: #1f1f1f;
+    color: #ccc;
+    border-color: #444;
+  }
+
+  .ci-odo-hint {
+    color: #aaa;
+  }
+
+  .ci-hint {
+    color: #aaa;
+  }
+
+  .btn-retake-ci {
+    background: #333;
+    color: #fff;
+    border-color: #555;
+  }
+
+  .btn-retake-ci:active {
+    background: #444;
+  }
+}
