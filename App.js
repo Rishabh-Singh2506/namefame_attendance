@@ -11,6 +11,13 @@
 // ══════════════════════════════════════════
 
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+
+
+var ciPhotos = [];  // Array to store up to 2 photos
+var ciOdometerStart = null;
+var checkoutPhotoData = null;
+var checkoutCamStream = null;
+
 var GPS_INTERVAL = 5 * 60 * 1000;
 var MIN_CHECKOUT = 30 * 1000;
 
@@ -376,10 +383,6 @@ function closeCheckoutModal() {
   document.getElementById("checkoutModal").classList.remove("show");
   checkoutPhotoData = null;
 }
-
-// Add state variable at top with other vars
-var checkoutPhotoData = null;
-var checkoutCamStream = null;
 
 // Expose to window
 window.doCheckout = doCheckout;
