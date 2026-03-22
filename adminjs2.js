@@ -2,7 +2,7 @@
 
   
     // ══ CONFIG ══
-    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxWP-kxYkyBl0DhgmiK7DZuXzUug-UYJv4Z7D-N5AstUIh9gdjrByVXJ-vGJBOdNYz/exec";
+   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBAIGox6yRF4VNbN80zFDkjqL4DQy8F0YlJzVoW41jHAwWJyosm9s-u_sbBsEN4/exec";
 
     const store = {
       set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
