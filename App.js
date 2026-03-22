@@ -409,6 +409,10 @@ function cancelVisit() {
 }
 
 function saveVisit() {
+  if (!currentEmp) { 
+    toast("Login expire hua, wapas login karo", "error"); 
+    return; 
+  }
   var shopName          = document.getElementById("mShopName").value.trim();
   var shopkeeperName    = document.getElementById("mShopkeeperName").value.trim();
   var shopkeeperContact = document.getElementById("mShopkeeperContact").value.trim();
@@ -443,9 +447,10 @@ function saveVisit() {
     document.getElementById("visitModal").classList.remove("show");
     visitPhotoData = null;
     toast("Visit save ho gaya! ✓", "success");
+    
   }).catch(function(err) {
     btn.classList.remove("loading"); btn.textContent = "✓ Save Visit";
-    console.error("API Error:", err);
+    console.error("API Error Visit save failed:", err);
     toast("Error: " + err.message, "error");
   });
 }
@@ -833,11 +838,23 @@ function ciAcceptPhoto() {
 // NEW: Take another photo after first one accepted
 function ciTakeAnotherPhoto() {
   ciPhotoData = null;
-  ciCamFacing = "environment";//for rear camera start on second photo
-  if (!ciCamStream) ciStartCamera();
-  document.getElementById("ci-preview").style.display = "none";
-  document.getElementById("ciVideo").style.display = "block";
-  setCiState("capture");
+  ciStopCamera();
+  
+  // Checkout वाली logic copy करो
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+    audio: false
+  }).then(function(stream) {
+    ciCamStream = stream;
+    document.getElementById("ciVideo").srcObject = stream;
+    document.getElementById("ciVideo").style.display = "block";
+    document.getElementById("ci-preview").style.display = "none";
+    setCiState("capture");
+    ciGetGps();
+  }).catch(function(err) {
+    toast("Camera error: " + err.message, "error");
+  });
+  
   var fb = document.getElementById("ciFlipBtn");
   if (fb) { fb.style.opacity = "1"; fb.style.pointerEvents = "auto"; }
 }
