@@ -435,13 +435,17 @@ function saveVisit() {
     mapLink: mapLink,
     photo: visitPhotoData || "",
     timestamp: new Date().toLocaleTimeString("en-IN")
-  }).then(function() {
+  }).then(function(r) {
+    console.log("API Response:", r); 
+    store.set("ci_" + ciCurrentEmp.name, { time: timeStr, ms: now.getTime() });
+    // ... rest ...
     btn.classList.remove("loading"); btn.textContent = "✓ Save Visit";
     document.getElementById("visitModal").classList.remove("show");
     visitPhotoData = null;
     toast("Visit save ho gaya! ✓", "success");
   }).catch(function(err) {
     btn.classList.remove("loading"); btn.textContent = "✓ Save Visit";
+    console.error("API Error:", err);
     toast("Error: " + err.message, "error");
   });
 }
