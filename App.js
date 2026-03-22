@@ -413,6 +413,7 @@ function saveVisit() {
     toast("Login expire hua, wapas login karo", "error"); 
     return; 
   }
+  
   var shopName          = document.getElementById("mShopName").value.trim();
   var shopkeeperName    = document.getElementById("mShopkeeperName").value.trim();
   var shopkeeperContact = document.getElementById("mShopkeeperContact").value.trim();
@@ -424,8 +425,13 @@ function saveVisit() {
   if (!area)            { toast("Area ka naam daalo", "error"); return; }
 
   var btn = document.getElementById("visitSaveBtn");
-  btn.classList.add("loading"); btn.textContent = "Saving...";
+  btn.classList.add("loading"); 
+  btn.textContent = "Saving...";
+  
   var mapLink = gpsPos ? "https://maps.google.com/?q=" + gpsPos.lat + "," + gpsPos.lng : "";
+
+  console.log("📸 Photo:", visitPhotoData ? "✓" : "✗");
+  console.log("👤 Employee:", currentEmp.name);
 
   apiPost({
     action: "checkin",
@@ -440,17 +446,23 @@ function saveVisit() {
     photo: visitPhotoData || "",
     timestamp: new Date().toLocaleTimeString("en-IN")
   }).then(function(r) {
-    console.log("API Response:", r); 
-    store.set("ci_" + ciCurrentEmp.name, { time: timeStr, ms: now.getTime() });
-    // ... rest ...
-    btn.classList.remove("loading"); btn.textContent = "✓ Save Visit";
+    console.log("✅ API Response:", r); 
+    
+    btn.classList.remove("loading"); 
+    btn.textContent = "✓ Save Visit";
     document.getElementById("visitModal").classList.remove("show");
     visitPhotoData = null;
     toast("Visit save ho gaya! ✓", "success");
     
+    // Dashboard par jao
+    setTimeout(function() {
+      showScreen("s-dash");
+    }, 1000);
+    
   }).catch(function(err) {
-    btn.classList.remove("loading"); btn.textContent = "✓ Save Visit";
-    console.error("API Error Visit save failed:", err);
+    console.error("❌ API Error:", err);
+    btn.classList.remove("loading"); 
+    btn.textContent = "✓ Save Visit";
     toast("Error: " + err.message, "error");
   });
 }
