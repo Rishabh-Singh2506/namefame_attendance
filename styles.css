@@ -1737,13 +1737,18 @@ select:focus {
     background: #444;
   }
 
-  .cam-btn {
+  .cam-btn.cap {
     background: #ef4444 !important;
     color: white !important;
+    border: none !important;
   }
 
-  .cam-btn:hover {
+  .cam-btn.cap:hover {
     background: #dc2626 !important;
+  }
+
+  .cam-btn.cap:active {
+    background: #b91c1c !important;
   }
 
 }
