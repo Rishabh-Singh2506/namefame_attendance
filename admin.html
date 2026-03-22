@@ -213,8 +213,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
     <div class="login-title">Admin Panel</div>
     <div class="login-sub">NAMEFAME Field Attendance</div>
     <div class="fld"><label>Password</label>
-      <input type="password" id="adminPass" placeholder="Admin password daalo"
-        onkeydown="if(event.key==='Enter')doLogin()">
+      <div style="position:relative;">
+        <input type="password" id="adminPass" placeholder="Admin password daalo"
+          onkeydown="if(event.key==='Enter')doLogin()"
+          style="padding-right:42px;">
+        <button onclick="var i=document.getElementById('adminPass');i.type=i.type==='password'?'text':'password';"
+          type="button"
+          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--muted);padding:0;">👁</button>
+      </div>
     </div>
     <button class="btn-primary" onclick="doLogin()">🔓 Login</button>
   </div>
@@ -471,49 +477,36 @@ function renderAttendance() {
 
   var html = "";
   filteredRows.forEach(function(row, idx) {
-    var init = (row.empName||"?").split(" ").map(function(w){return w[0]||"";}).join("").toUpperCase().slice(0,2);
+    var init  = (row.empName||"?").split(" ").map(function(w){return w[0]||"";}).join("").toUpperCase().slice(0,2);
     var isIn  = row.checkinTime && !row.checkoutTime;
     var isOut = row.checkinTime && row.checkoutTime;
     var badgeCls = isIn ? "in" : (isOut ? "out" : "absent");
     var badgeTxt = isIn ? "🟢 In" : (isOut ? "🔴 Out" : "⚪ —");
 
-    // Distance calc
-    var odoS = parseInt(row.odometerStart) || 0;
-    var odoE = parseInt(row.checkoutTime ? (row.odometerEnd||0) : 0) || 0;
-    var dist = row.distance ? row.distance+" km" : (odoS && odoE ? (odoE-odoS)+" km" : "—");
+    // ── Time difference (duration)
+    var ciT   = fmt12hr(row.checkinTime);
+    var coT   = fmt12hr(row.checkoutTime);
+    var durVal = row.duration || "—";
 
-    // Photos
-    var photos = [];
-    if (row.photo1)       photos.push({src:row.photo1, lbl:"Selfie"});
-    if (row.photo2)       photos.push({src:row.photo2, lbl:"Odo (In)"});
-    if (row.checkoutPhoto)photos.push({src:row.checkoutPhoto, lbl:"Odo (Out)"});
+    // ── Odometer difference
+    var odoS   = parseInt(row.odometerStart) || 0;
+    var odoE   = parseInt(row.odometerEnd)   || 0;
+    var odoDiff = (odoS && odoE)
+      ? odoE + " - " + odoS + " = " + (odoE - odoS) + " km"
+      : (row.distance ? row.distance + " km" : "—");
 
-    var photosHtml = "";
-    if (photos.length) {
-      photosHtml = photos.map(function(p){
-        return '<div class="ph-wrap">'
-          +'<img class="ph-img" src="'+escHtml(p.src)+'" onclick="openLb(\''+escHtml(p.src)+'\',\''+p.lbl+'\')" alt="'+p.lbl+'">'
-          +'<div class="ph-lbl">'+p.lbl+'</div></div>';
-      }).join("");
+    // ── Route: Column H (area)
+    var routeHtml = "";
+    if (row.mapLink && row.area && row.area !== "—") {
+      routeHtml = '<a href="'+row.mapLink+'" target="_blank" class="route-btn">'
+        +'<span>🗺️</span>'
+        +'<span class="route-btn-lbl">'+escHtml(row.area)+'</span>'
+        +'<span style="margin-left:auto;font-size:11px;color:var(--muted2)">→</span></a>';
+    } else if (row.mapLink) {
+      routeHtml = '<a href="'+row.mapLink+'" target="_blank" class="route-btn">'
+        +'<span>🗺️</span><span class="route-btn-lbl">Location Dekho</span>'
+        +'<span style="margin-left:auto;font-size:11px;color:var(--muted2)">→</span></a>';
     }
-
-    // Visit row
-    var visitHtml = "";
-    if (row.shopName && row.shopName !== "—" && row.shopName !== "") {
-      visitHtml = '<div class="sec-lbl">📍 Visit</div>'
-        +'<div class="visit-item">'
-        +'<div class="visit-dot"></div>'
-        +'<div><div class="visit-shop">'+escHtml(row.shopName||"")+'</div>'
-        +'<div class="visit-meta">'+(row.area||"")+(row.shopkeeperName && row.shopkeeperName!=="—"?" · "+row.shopkeeperName:"")+'</div>'
-        +(row.mapLink ? '<a class="visit-map" href="'+row.mapLink+'" target="_blank">📍 Map Dekho →</a>' : "")
-        +'</div></div>';
-    }
-
-    // Route button (only if mapLink exists)
-    var routeHtml = row.mapLink
-      ? '<a href="'+row.mapLink+'" target="_blank" class="route-btn">'
-        +'<span>🗺️</span><span class="route-btn-lbl">Route / Location Dekho</span><span style="margin-left:auto;font-size:11px;color:var(--muted2)">→</span></a>'
-      : "";
 
     html += '<div class="att-card">'
       // Header
@@ -523,21 +516,15 @@ function renderAttendance() {
         +'<div class="emp-dg">'+fmtDate(row.date)+'</div></div>'
         +'<span class="badge '+badgeCls+'">'+badgeTxt+'</span>'
       +'</div>'
-      // Info grid
+      // 4 key info items only
       +'<div class="info-grid">'
-        +infoItem("🕐 Check-In",   row.checkinTime  || "—", row.checkinTime  ? "g" : "")
-        +infoItem("🕔 Check-Out",  row.checkoutTime || "—", row.checkoutTime ? ""  : "o")
-        +infoItem("⏱ Duration",   row.duration     || "—", "")
-        +infoItem("📏 Distance",   dist,                    dist !== "—" ? "g" : "")
-        +infoItem("🔧 Odo Start",  odoS ? odoS+" km" : "—","")
-        +infoItem("🔧 Odo End",    odoE ? odoE+" km" : "—","")
+        +infoItem("🕐 Check-In",  ciT,    ciT  !== "—" ? "g" : "")
+        +infoItem("🕔 Check-Out", coT,    coT  !== "—" ? ""  : "o")
+        +infoItem("⏱ Time",      durVal, "")
+        +infoItem("📏 Odometer",  odoDiff, odoDiff !== "—" ? "g" : "")
       +'</div>'
-      // Route
+      // Route with area name
       + routeHtml
-      // Visits
-      + visitHtml
-      // Photos
-      +(photos.length ? '<div class="sec-lbl">📸 Photos</div><div class="photos-row">'+photosHtml+'</div>' : "")
       +'</div>';
   });
 
@@ -549,6 +536,24 @@ function infoItem(lbl, val, cls) {
     +'<div class="info-lbl">'+lbl+'</div>'
     +'<div class="info-val '+(cls||"")+'">'+val+'</div>'
     +'</div>';
+}
+
+function fmt12hr(val) {
+  if (!val) return "—";
+  var s = String(val).trim();
+  // Already has AM/PM
+  if (/AM|PM/i.test(s)) {
+    var m = s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)/i);
+    if (m) return m[1].padStart(2,"0")+":"+m[2].padStart(2,"0")+" "+m[3].toUpperCase();
+    return s;
+  }
+  // HH:MM:SS or HH:MM (24hr)
+  var m2 = s.match(/(\d+):(\d+)/);
+  if (!m2) return s;
+  var h = parseInt(m2[1]), mn = m2[2];
+  var ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return h.toString().padStart(2,"0") + ":" + mn + " " + ampm;
 }
 
 // ════════════════════════════════
