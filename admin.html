@@ -483,17 +483,13 @@ function renderAttendance() {
     var badgeCls = isIn ? "in" : (isOut ? "out" : "absent");
     var badgeTxt = isIn ? "🟢 In" : (isOut ? "🔴 Out" : "⚪ —");
 
-    // ── Time difference (duration)
-    var ciT   = fmt12hr(row.checkinTime);
-    var coT   = fmt12hr(row.checkoutTime);
-    var durVal = row.duration || "—";
+    // ── Time — sheet se as-is aata hai already 12hr format mein
+    var ciT    = row.checkinTime  || "—";
+    var coT    = row.checkoutTime || "—";
+    var durVal = row.duration     || "—";
 
-    // ── Odometer difference
-    var odoS   = parseInt(row.odometerStart) || 0;
-    var odoE   = parseInt(row.odometerEnd)   || 0;
-    var odoDiff = (odoS && odoE)
-      ? odoE + " - " + odoS + " = " + (odoE - odoS) + " km"
-      : (row.distance ? row.distance + " km" : "—");
+    // ── Odometer diff — Code.gs ne already calculate karke bheja
+    var odoDiff = row.odoDisplay || "—";
 
     // ── Route: Column H (area)
     var routeHtml = "";
