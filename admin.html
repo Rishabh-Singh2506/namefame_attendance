@@ -3,1034 +3,675 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Admin Dashboard — NAMEFAME</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<title>Admin Panel — NAMEFAME</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-400: #9ca3af;
-  --gray-500: #6b7280;
-  --gray-600: #4b5563;
-  --gray-700: #374151;
-  --gray-900: #111827;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: 'Poppins', sans-serif; background: var(--gray-50); color: var(--gray-900); }
-
-/* LOGIN SCREEN */
-#loginScreen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.login-container {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.login-logo {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  margin: 0 auto 16px;
-}
-
-.login-title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-
-.login-subtitle {
-  font-size: 14px;
-  color: var(--gray-500);
-  font-weight: 500;
-}
-
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--gray-600);
-  margin-bottom: 6px;
-}
-
-.form-input {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: inherit;
-  transition: all 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.form-error {
-  color: var(--danger);
-  font-size: 13px;
-  margin-top: 4px;
-  display: none;
-  font-weight: 600;
-}
-
-.form-error.show { display: block; }
-
-.btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-primary:hover { background: var(--primary-dark); }
-.btn-primary:active { transform: scale(0.98); }
-.btn-primary.loading { opacity: 0.6; pointer-events: none; }
-
-/* APP LAYOUT */
-#appScreen {
-  display: none;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.app-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.app-title {
-  font-size: 18px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-avatar {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.btn-logout {
-  background: rgba(255,255,255,0.2);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: inherit;
-}
-
-.btn-logout:hover { background: rgba(255,255,255,0.3); }
-
-.app-nav {
-  background: white;
-  border-bottom: 1px solid var(--gray-200);
-  display: flex;
-  overflow-x: auto;
-  padding: 0 20px;
-}
-
-.nav-item {
-  padding: 12px 16px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--gray-500);
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-  font-family: inherit;
-}
-
-.nav-item:hover { color: var(--gray-700); }
-.nav-item.active { color: var(--primary); border-bottom-color: var(--primary); }
-
-.app-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 20px;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.section { display: none; }
-.section.active { display: block; }
-
-/* DASHBOARD */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border-left: 4px solid var(--primary);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--gray-900);
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 12px;
-  color: var(--gray-500);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-card.success { border-left-color: var(--success); }
-.stat-card.warning { border-left-color: var(--warning); }
-.stat-card.danger { border-left-color: var(--danger); }
-
-/* TABLE */
-.table-wrapper {
-  background: white;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  margin-bottom: 24px;
-}
-
-.table-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--gray-200);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.table-title {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.table-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.form-input.small {
-  padding: 8px 12px;
-  font-size: 13px;
-  max-width: 150px;
-}
-
-.btn-small {
-  padding: 8px 14px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-thead th {
-  background: var(--gray-50);
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 700;
-  color: var(--gray-600);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--gray-200);
-}
-
-tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--gray-100);
-}
-
-tbody tr:hover { background: var(--gray-50); }
-tbody tr:last-child td { border-bottom: none; }
-
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.badge-success { background: #dcfce7; color: var(--success); }
-.badge-danger { background: #fee2e2; color: var(--danger); }
-.badge-warning { background: #fef3c7; color: var(--warning); }
-.badge-info { background: #dbeafe; color: var(--primary); }
-
-/* EMPLOYEE GRID */
-.emp-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-}
-
-.emp-card {
-  background: white;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border-top: 3px solid var(--primary);
-}
-
-.emp-card-header {
-  margin-bottom: 12px;
-}
-
-.emp-name {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.emp-meta {
-  font-size: 12px;
-  color: var(--gray-500);
-  line-height: 1.4;
-}
-
-.emp-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.emp-btn {
-  flex: 1;
-  padding: 6px 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.2s;
-}
-
-.emp-btn-edit {
-  background: #dbeafe;
-  color: var(--primary);
-}
-
-.emp-btn-edit:hover { background: #bfdbfe; }
-
-.emp-btn-del {
-  background: #fee2e2;
-  color: var(--danger);
-}
-
-.emp-btn-del:hover { background: #fecaca; }
-
-/* MODAL */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal.show { display: flex; }
-
-.modal-box {
-  background: white;
-  border-radius: 16px;
-  padding: 28px;
-  width: 100%;
-  max-width: 420px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-
-.modal-title {
-  font-size: 18px;
-  font-weight: 800;
-  margin-bottom: 4px;
-}
-
-.modal-subtitle {
-  font-size: 13px;
-  color: var(--gray-500);
-  margin-bottom: 20px;
-  font-weight: 500;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.modal-actions .btn { flex: 1; }
-
-.btn-secondary {
-  background: var(--gray-200);
-  color: var(--gray-900);
-}
-
-.btn-secondary:hover { background: var(--gray-300); }
-
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(120px);
-  background: var(--gray-900);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  z-index: 2000;
-  transition: all 0.3s;
-  pointer-events: none;
-}
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.toast.success { background: var(--success); }
-.toast.error { background: var(--danger); }
-.toast.info { background: var(--primary); }
-
-/* RESPONSIVE */
-@media (max-width: 640px) {
-  .app-content { padding: 16px; }
-  .stats-grid { grid-template-columns: 1fr; }
-  .table-filters { width: 100%; }
-  .form-input.small { max-width: 100%; }
-  .emp-grid { grid-template-columns: 1fr; }
-}
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card2: #22263a;
+    --border: #2e3250;
+    --accent: #6c63ff;
+    --accent2: #4ecca3;
+    --danger: #ff5c5c;
+    --warn: #ffb347;
+    --text: #eaeaea;
+    --muted: #7a7f9a;
+    --green: #4ecca3;
+    --red: #ff5c5c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #23263a; color: #fff; padding: 10px 22px; border-radius: 24px;
+    font-size: 14px; font-weight: 700; z-index: 9999; opacity: 0; transition: all .3s; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--danger); }
+  .toast.success { background: var(--green); color: #000; }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 24px;
+  }
+  .login-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 36px 28px; width: 100%; max-width: 360px;
+  }
+  .login-logo { font-size: 40px; text-align: center; margin-bottom: 8px; }
+  .login-title { text-align: center; font-size: 22px; font-weight: 900; color: var(--accent); margin-bottom: 4px; }
+  .login-sub { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .fgroup { margin-bottom: 16px; }
+  .fgroup label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+  .fgroup input {
+    width: 100%; background: var(--card2); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--text); font-size: 15px; font-family: 'Nunito', sans-serif;
+    outline: none; transition: border .2s;
+  }
+  .fgroup input:focus { border-color: var(--accent); }
+  .btn-login {
+    width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px;
+    padding: 14px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 4px;
+    transition: opacity .2s;
+  }
+  .btn-login:hover { opacity: .88; }
+
+  /* ── ADMIN MAIN ── */
+  #adminMain { display: none; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
+  .topbar-icon { font-size: 22px; }
+  .topbar-title { font-size: 18px; font-weight: 900; color: var(--accent); }
+  .topbar-sub { font-size: 11px; color: var(--muted); }
+  .btn-logout {
+    background: transparent; border: 1.5px solid var(--border); color: var(--muted);
+    border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── FILTERS ── */
+  .filters-wrap {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .filter-group label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .filter-group select, .filter-group input[type="date"], .filter-group input[type="text"] {
+    background: var(--card2); border: 1.5px solid var(--border); border-radius: 8px;
+    color: var(--text); font-size: 13px; font-family: 'Nunito', sans-serif;
+    padding: 8px 12px; outline: none; min-width: 140px;
+  }
+  .filter-group select:focus, .filter-group input:focus { border-color: var(--accent); }
+  .btn-filter {
+    background: var(--accent); color: #fff; border: none; border-radius: 8px;
+    padding: 9px 18px; font-size: 13px; font-weight: 800; cursor: pointer;
+    align-self: flex-end; transition: opacity .2s;
+  }
+  .btn-filter:hover { opacity: .85; }
+  .btn-export {
+    background: transparent; border: 1.5px solid var(--accent2); color: var(--accent2);
+    border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 800;
+    cursor: pointer; align-self: flex-end; transition: all .2s;
+  }
+  .btn-export:hover { background: var(--accent2); color: #000; }
+  .btn-today {
+    background: transparent; border: 1.5px solid var(--warn); color: var(--warn);
+    border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 800;
+    cursor: pointer; align-self: flex-end; transition: all .2s;
+  }
+  .btn-today:hover { background: var(--warn); color: #000; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    padding: 16px 20px;
+  }
+  @media (max-width: 600px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .stat-val { font-size: 26px; font-weight: 900; color: var(--accent); }
+  .stat-lbl { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+
+  /* ── EMP TABS ── */
+  .emp-tabs-wrap { padding: 0 20px 12px; overflow-x: auto; }
+  .emp-tabs { display: flex; gap: 8px; padding-bottom: 4px; }
+  .emp-tab {
+    background: var(--card2); border: 1.5px solid var(--border); border-radius: 20px;
+    padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
+    white-space: nowrap; color: var(--muted); transition: all .2s; flex-shrink: 0;
+  }
+  .emp-tab.active, .emp-tab:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ── CONTENT ── */
+  .content { padding: 0 20px 40px; }
+
+  /* ── EMPLOYEE CARD ── */
+  .emp-section {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    margin-bottom: 20px; overflow: hidden;
+  }
+  .emp-header {
+    background: var(--card2); padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .emp-header-left { display: flex; align-items: center; gap: 12px; }
+  .emp-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: #fff;
+  }
+  .emp-name-big { font-size: 16px; font-weight: 900; }
+  .emp-desig { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .emp-status-badge {
+    padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800;
+  }
+  .emp-status-badge.in { background: rgba(78,204,163,.15); color: var(--green); border: 1px solid rgba(78,204,163,.3); }
+  .emp-status-badge.out { background: rgba(255,92,92,.1); color: var(--red); border: 1px solid rgba(255,92,92,.2); }
+
+  /* ── DATA SECTIONS ── */
+  .data-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  }
+  @media (max-width: 500px) { .data-grid { grid-template-columns: 1fr; } }
+  .data-item {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  .data-item:nth-child(even) { border-right: none; }
+  .data-lbl { font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .data-val { font-size: 14px; font-weight: 800; color: var(--text); }
+  .data-val.green { color: var(--green); }
+  .data-val.warn { color: var(--warn); }
+  .data-val a { color: var(--accent2); text-decoration: none; font-size: 13px; }
+  .data-val a:hover { text-decoration: underline; }
+
+  /* ── SECTION TITLES ── */
+  .sec-title {
+    padding: 12px 20px 8px; font-size: 11px; font-weight: 800;
+    color: var(--muted); text-transform: uppercase; letter-spacing: .8px;
+    border-bottom: 1px solid var(--border); background: rgba(108,99,255,.05);
+  }
+
+  /* ── VISITS TABLE ── */
+  .visits-wrap { overflow-x: auto; }
+  .visits-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .visits-table th {
+    text-align: left; padding: 10px 14px; font-size: 10px;
+    color: var(--muted); font-weight: 800; text-transform: uppercase;
+    letter-spacing: .5px; border-bottom: 1px solid var(--border);
+    background: var(--card2);
+  }
+  .visits-table td {
+    padding: 10px 14px; border-bottom: 1px solid rgba(46,50,80,.5);
+    vertical-align: middle;
+  }
+  .visits-table tr:last-child td { border-bottom: none; }
+  .visits-table tr:hover td { background: rgba(108,99,255,.04); }
+  .visit-shop { font-weight: 800; }
+  .visit-area { color: var(--muted); font-size: 12px; }
+
+  /* ── PHOTO THUMBS ── */
+  .photos-row { display: flex; gap: 10px; padding: 14px 20px; flex-wrap: wrap; }
+  .photo-thumb-wrap { position: relative; }
+  .photo-thumb {
+    width: 80px; height: 80px; border-radius: 10px; object-fit: cover;
+    border: 2px solid var(--border); cursor: pointer; transition: transform .2s;
+  }
+  .photo-thumb:hover { transform: scale(1.05); border-color: var(--accent); }
+  .photo-thumb-lbl {
+    font-size: 10px; color: var(--muted); text-align: center;
+    margin-top: 4px; font-weight: 700;
+  }
+  .no-photos { padding: 14px 20px; color: var(--muted); font-size: 13px; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92);
+    z-index: 9000; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 12px; object-fit: contain; }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,.1);
+    border: none; color: #fff; font-size: 22px; width: 40px; height: 40px;
+    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-lbl { color: var(--muted); font-size: 13px; margin-top: 12px; font-weight: 700; }
+
+  /* ── LOADING / EMPTY ── */
+  .loading-wrap { padding: 40px; text-align: center; color: var(--muted); }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin .8s linear infinite; margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* ── NO DATA ── */
+  .no-data { color: var(--muted); font-size: 13px; font-style: italic; }
 </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div id="loginScreen">
-  <div class="login-container">
-    <div class="login-header">
-      <div class="login-logo">📋</div>
-      <h1 class="login-title">Admin Panel</h1>
-      <p class="login-subtitle">NAMEFAME Field Attendance</p>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <input type="text" id="loginUser" class="form-input" placeholder="admin" autofocus>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input type="password" id="loginPass" class="form-input" placeholder="Password">
-      <div class="form-error" id="loginError"></div>
-    </div>
-    <button class="btn btn-primary" onclick="doLogin()" id="loginBtn">Login →</button>
-  </div>
-</div>
-
-<!-- APP SCREEN -->
-<div id="appScreen">
-  <div class="app-header">
-    <div class="app-title">📊 NAMEFAME Admin</div>
-    <div class="header-user">
-      <div class="header-avatar" id="userAvatar">A</div>
-      <span id="userName">Admin</span>
-      <button class="btn-logout" onclick="doLogout()">Logout</button>
-    </div>
-  </div>
-
-  <div class="app-nav">
-    <button class="nav-item active" onclick="switchSection('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-item" onclick="switchSection('attendance',this)">📋 Attendance</button>
-    <button class="nav-item" onclick="switchSection('employees',this)">👥 Employees</button>
-    <button class="nav-item" onclick="switchSection('settings',this)">⚙️ Settings</button>
-  </div>
-
-  <div class="app-content">
-
-    <!-- DASHBOARD SECTION -->
-    <div id="section-dashboard" class="section active">
-      <div class="stats-grid" id="statsGrid"></div>
-      <div class="table-wrapper">
-        <div class="table-header">
-          <div class="table-title">📍 Today's Activity</div>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Employee</th><th>Check-In</th><th>Area</th><th>Status</th></tr>
-          </thead>
-          <tbody id="dashboardTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ATTENDANCE SECTION -->
-    <div id="section-attendance" class="section">
-      <div class="table-wrapper">
-        <div class="table-header">
-          <div class="table-title">📋 Attendance Records</div>
-          <div class="table-filters">
-            <input type="date" id="attFrom" class="form-input small">
-            <input type="date" id="attTo" class="form-input small">
-            <select id="attEmp" class="form-input small">
-              <option value="">All Employees</option>
-            </select>
-            <button class="btn btn-primary btn-small" onclick="loadAttendance()">Load</button>
-          </div>
-        </div>
-        <table>
-          <thead>
-            <tr><th>#</th><th>Date</th><th>Employee</th><th>Check-In</th><th>Check-Out</th><th>Duration</th><th>Area</th><th>Status</th></tr>
-          </thead>
-          <tbody id="attendanceTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- EMPLOYEES SECTION -->
-    <div id="section-employees" class="section">
-      <div style="margin-bottom: 20px;">
-        <button class="btn btn-primary" style="max-width: 180px;" onclick="openEmpModal()">+ Add Employee</button>
-      </div>
-      <div class="emp-grid" id="empGrid"></div>
-    </div>
-
-    <!-- SETTINGS SECTION -->
-    <div id="section-settings" class="section">
-      <div class="table-wrapper">
-        <div class="table-header">
-          <div class="table-title">🔒 Change Credentials</div>
-        </div>
-        <div style="padding: 20px;">
-          <div class="form-group">
-            <label class="form-label">Current Username</label>
-            <input type="text" id="setOldUser" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Current Password</label>
-            <input type="password" id="setOldPass" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">New Username</label>
-            <input type="text" id="setNewUser" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">New Password</label>
-            <input type="password" id="setNewPass" class="form-input">
-          </div>
-          <button class="btn btn-primary" onclick="changePassword()">Update Credentials</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper" style="margin-top: 20px;">
-        <div class="table-header">
-          <div class="table-title">🔌 API Connection Test</div>
-        </div>
-        <div style="padding: 20px;">
-          <button class="btn btn-primary" onclick="testAPI()">Test Connection</button>
-          <div id="testResult" style="margin-top: 12px;"></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- EMPLOYEE MODAL -->
-<div id="empModal" class="modal">
-  <div class="modal-box">
-    <h2 class="modal-title" id="empModalTitle">Add Employee</h2>
-    <p class="modal-subtitle">Fill in the employee details</p>
-    <input type="hidden" id="empOldName">
-    <div class="form-group">
-      <label class="form-label">Name *</label>
-      <input type="text" id="empName" class="form-input" placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label class="form-label">PIN *</label>
-      <input type="password" id="empPin" class="form-input" placeholder="PIN">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Contact *</label>
-      <input type="tel" id="empContact" class="form-input" placeholder="10 digit number" maxlength="10">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Designation</label>
-      <input type="text" id="empDesig" class="form-input" placeholder="e.g., Salesman">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" onclick="saveEmployee()">Save</button>
-      <button class="btn btn-secondary" onclick="closeEmpModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
+<!-- ══ LIGHTBOX ══ -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="photo">
+  <div class="lightbox-lbl" id="lightboxLbl"></div>
+</div>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">⚙️</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">NAMEFAME Field Attendance</div>
+    <div class="fgroup">
+      <label>Admin Password</label>
+      <input type="password" id="adminPassInput" placeholder="Password daalo"
+        onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <button class="btn-login" onclick="doAdminLogin()">🔓 Login</button>
+  </div>
+</div>
+
+<!-- ══ ADMIN MAIN ══ -->
+<div id="adminMain">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-icon">⚙️</div>
+      <div>
+        <div class="topbar-title">NAMEFAME Admin</div>
+        <div class="topbar-sub" id="adminDateLbl">—</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="adminLogout()">Logout</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-wrap">
+    <div class="filter-group">
+      <label>Employee</label>
+      <select id="fEmp">
+        <option value="all">— Sab Employees —</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Date Se</label>
+      <input type="date" id="fDateFrom">
+    </div>
+    <div class="filter-group">
+      <label>Date Tak</label>
+      <input type="date" id="fDateTo">
+    </div>
+    <button class="btn-today" onclick="setToday()">📅 Aaj</button>
+    <button class="btn-filter" onclick="loadData()">🔍 Search</button>
+    <button class="btn-export" onclick="exportCSV()">⬇️ CSV Export</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="statTotal">—</div>
+      <div class="stat-lbl">Total Records</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statCheckedIn">—</div>
+      <div class="stat-lbl">Checked In Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statVisits">—</div>
+      <div class="stat-lbl">Total Visits</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statDist">—</div>
+      <div class="stat-lbl">Avg Distance</div>
+    </div>
+  </div>
+
+  <!-- EMP QUICK TABS -->
+  <div class="emp-tabs-wrap">
+    <div class="emp-tabs" id="empTabs"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content" id="mainContent">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div>Data load ho raha hai...</div>
+    </div>
+  </div>
+
+</div>
+
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBAIGox6yRF4VNbN80zFDkjqL4DQy8F0YlJzVoW41jHAwWJyosm9s-u_sbBsEN4/exec";
+// ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBAIGox6yRF4VNbN80zFDkjqL4DQy8F0YlJzVoW41jHAwWJyosm9s-u_sbBsEN4/exec";
+var ADMIN_PASS = "admin123"; // ← Yahan apna password badlo
 
-const store = {
-  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
-  get: (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
-  del: (k) => { try { localStorage.removeItem(k); } catch(e) {} }
-};
+var allData      = [];
+var allEmployees = [];
+var filteredData = [];
 
-let adminUser = null;
-let allEmployees = [];
-
-// API POST
-async function apiPost(payload) {
-  try {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    return await res.json();
-  } catch(e) {
-    console.error("API Error:", e);
-    return { status: "error", message: e.message };
+// ══════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════
+function doAdminLogin() {
+  var pass = document.getElementById("adminPassInput").value;
+  if (pass === ADMIN_PASS) {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminMain").style.display   = "block";
+    sessionStorage.setItem("adminAuth", "1");
+    initAdmin();
+  } else {
+    toast("Galat password!", "error");
+    document.getElementById("adminPassInput").value = "";
   }
 }
 
-// TOAST
-function toast(msg, type = "info") {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.className = "toast show " + type;
-  setTimeout(() => el.classList.remove("show"), 3000);
-}
-
-// LOGIN
-function doLogin() {
-  const user = document.getElementById("loginUser").value.trim();
-  const pass = document.getElementById("loginPass").value;
-  const err = document.getElementById("loginError");
-  const btn = document.getElementById("loginBtn");
-
-  if (!user || !pass) {
-    err.textContent = "Username and password required";
-    err.classList.add("show");
-    return;
-  }
-
-  err.classList.remove("show");
-  btn.classList.add("loading");
-  btn.textContent = "Logging in...";
-
-  apiPost({ action: "admin_login", user, pass }).then(r => {
-    btn.classList.remove("loading");
-    btn.textContent = "Login →";
-    if (r.status === "success") {
-      adminUser = { user, token: r.token };
-      store.set("adminSess", adminUser);
-      startApp();
-    } else {
-      err.textContent = r.message || "Invalid credentials";
-      err.classList.add("show");
-    }
-  });
-}
-
-// LOGOUT
-function doLogout() {
-  store.del("adminSess");
-  adminUser = null;
-  document.getElementById("appScreen").style.display = "none";
+function adminLogout() {
+  sessionStorage.removeItem("adminAuth");
   document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("loginUser").value = "";
-  document.getElementById("loginPass").value = "";
+  document.getElementById("adminMain").style.display   = "none";
+  document.getElementById("adminPassInput").value = "";
 }
 
-// START APP
-function startApp() {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("appScreen").style.display = "flex";
-  document.getElementById("userName").textContent = adminUser.user;
-  document.getElementById("userAvatar").textContent = adminUser.user[0].toUpperCase();
-  loadEmployees();
-  setDefaultDates();
-  loadDashboard();
-}
-
-// SWITCH SECTION
-function switchSection(name, el) {
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
-  document.getElementById("section-" + name).classList.add("active");
-  if (el) el.classList.add("active");
-}
-
-// SET DEFAULT DATES
-function setDefaultDates() {
-  const today = new Date().toISOString().split("T")[0];
-  document.getElementById("attFrom").value = today;
-  document.getElementById("attTo").value = today;
-}
-
-// LOAD DASHBOARD
-function loadDashboard() {
-  apiPost({ action: "get_today_attendance" }).then(r => {
-    if (!r.rows) return;
-
-    // Stats
-    const checked = r.rows.filter(row => !row.checkoutTime).length;
-    const statsHtml = `
-      <div class="stat-card success">
-        <div class="stat-value">${checked}</div>
-        <div class="stat-label">Checked In Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${allEmployees.length}</div>
-        <div class="stat-label">Total Employees</div>
-      </div>
-      <div class="stat-card warning">
-        <div class="stat-value">${r.rows.length}</div>
-        <div class="stat-label">Shop Visits</div>
-      </div>
-    `;
-    document.getElementById("statsGrid").innerHTML = statsHtml;
-
-    // Table
-    const tbody = document.getElementById("dashboardTable");
-    tbody.innerHTML = "";
-    if (!r.rows.length) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--gray-500);">No data today</td></tr>';
-      return;
-    }
-
-    r.rows.forEach(row => {
-      const badge = row.checkoutTime ? '<span class="badge badge-danger">Out</span>' : '<span class="badge badge-success">In</span>';
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><strong>${row.empName}</strong></td>
-        <td>${fmtTime(row.checkinTime)}</td>
-        <td>${row.shopName || row.area || "-"}</td>
-        <td>${badge}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  });
-}
-
-// LOAD ATTENDANCE
-function loadAttendance() {
-  const from = document.getElementById("attFrom").value;
-  const to = document.getElementById("attTo").value;
-  const emp = document.getElementById("attEmp").value;
-
-  apiPost({ action: "get_sheet_range", dateFrom: from, dateTo: to, empName: emp }).then(r => {
-    const tbody = document.getElementById("attendanceTable");
-    tbody.innerHTML = "";
-
-    if (!r.rows || !r.rows.length) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--gray-500);">No records found</td></tr>';
-      return;
-    }
-
-    r.rows.reverse().forEach((row, i) => {
-      const badge = row.checkoutTime ? '<span class="badge badge-danger">Out</span>' : '<span class="badge badge-success">In</span>';
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${i+1}</td>
-        <td>${fmtDate(row.date)}</td>
-        <td><strong>${row.empName}</strong></td>
-        <td>${fmtTime(row.checkinTime)}</td>
-        <td>${row.checkoutTime ? fmtTime(row.checkoutTime) : "-"}</td>
-        <td>${row.duration || "-"}</td>
-        <td>${row.shopName || row.area || "-"}</td>
-        <td>${badge}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  });
-}
-
-// LOAD EMPLOYEES
-function loadEmployees() {
-  apiPost({ action: "get_employees" }).then(r => {
-    if (r.employees) {
-      allEmployees = r.employees;
-      renderEmployees();
-      populateEmpSelect();
-    }
-  });
-}
-
-// RENDER EMPLOYEES
-function renderEmployees() {
-  const grid = document.getElementById("empGrid");
-  grid.innerHTML = "";
-  allEmployees.forEach(e => {
-    const card = document.createElement("div");
-    card.className = "emp-card";
-    card.innerHTML = `
-      <div class="emp-card-header">
-        <div class="emp-name">${e.name}</div>
-        <div class="emp-meta">
-          ${e.designation || "N/A"}<br>
-          📱 ${e.contact || "-"}
-        </div>
-      </div>
-      <div class="emp-actions">
-        <button class="emp-btn emp-btn-edit" onclick='openEmpModal(${JSON.stringify(e)})'>Edit</button>
-        <button class="emp-btn emp-btn-del" onclick="deleteEmp('${e.name}')">Delete</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-// POPULATE EMPLOYEE SELECT
-function populateEmpSelect() {
-  const sel = document.getElementById("attEmp");
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">All Employees</option>';
-  allEmployees.forEach(e => {
-    const opt = document.createElement("option");
-    opt.value = e.name;
-    opt.textContent = e.name;
-    sel.appendChild(opt);
-  });
-  sel.value = cur;
-}
-
-// OPEN EMPLOYEE MODAL
-function openEmpModal(emp) {
-  document.getElementById("empModalTitle").textContent = emp ? "Edit Employee" : "Add Employee";
-  document.getElementById("empOldName").value = emp ? emp.name : "";
-  document.getElementById("empName").value = emp ? emp.name : "";
-  document.getElementById("empPin").value = emp ? emp.pin : "";
-  document.getElementById("empContact").value = emp ? emp.contact : "";
-  document.getElementById("empDesig").value = emp ? (emp.designation || "") : "";
-  document.getElementById("empModal").classList.add("show");
-}
-
-// CLOSE EMPLOYEE MODAL
-function closeEmpModal() {
-  document.getElementById("empModal").classList.remove("show");
-}
-
-// SAVE EMPLOYEE
-function saveEmployee() {
-  const name = document.getElementById("empName").value.trim();
-  const pin = document.getElementById("empPin").value.trim();
-  const contact = document.getElementById("empContact").value.trim();
-  const desig = document.getElementById("empDesig").value.trim();
-  const oldName = document.getElementById("empOldName").value;
-
-  if (!name || !pin || !contact) {
-    toast("Name, PIN, and contact are required", "error");
-    return;
-  }
-  if (contact.length !== 10) {
-    toast("Contact must be 10 digits", "error");
-    return;
-  }
-
-  const payload = oldName
-    ? { action: "update_employee", oldName, name, pin, contact, designation: desig }
-    : { action: "add_employee", name, pin, contact, designation: desig };
-
-  apiPost(payload).then(r => {
-    if (r.status === "success") {
-      toast("Saved successfully ✓", "success");
-      closeEmpModal();
-      loadEmployees();
-    } else {
-      toast(r.message || "Error", "error");
-    }
-  });
-}
-
-// DELETE EMPLOYEE
-function deleteEmp(name) {
-  if (!confirm("Delete " + name + "?")) return;
-  apiPost({ action: "delete_employee", name }).then(r => {
-    if (r.status === "success") {
-      toast("Deleted ✓", "success");
-      loadEmployees();
-    } else {
-      toast(r.message || "Error", "error");
-    }
-  });
-}
-
-// CHANGE PASSWORD
-function changePassword() {
-  const oldU = document.getElementById("setOldUser").value.trim();
-  const oldP = document.getElementById("setOldPass").value;
-  const newU = document.getElementById("setNewUser").value.trim();
-  const newP = document.getElementById("setNewPass").value;
-
-  if (!oldU || !oldP || !newU || !newP) {
-    toast("All fields required", "error");
-    return;
-  }
-
-  apiPost({ action: "admin_change_pass", currentUser: oldU, currentPass: oldP, newUser: newU, newPass: newP }).then(r => {
-    if (r.status === "success") {
-      toast("Password updated. Please login again.", "success");
-      setTimeout(doLogout, 2000);
-    } else {
-      toast(r.message || "Error", "error");
-    }
-  });
-}
-
-// TEST API
-function testAPI() {
-  const result = document.getElementById("testResult");
-  result.innerHTML = "Testing...";
-  apiPost({ action: "get_employees" }).then(r => {
-    if (r.status === "success") {
-      result.innerHTML = '<div class="badge badge-success" style="display:inline-block; padding:10px 14px;">✓ Connection successful! (' + (r.employees?.length || 0) + ' employees)</div>';
-    } else {
-      result.innerHTML = '<div class="badge badge-danger" style="display:inline-block; padding:10px 14px;">✗ Error: ' + (r.message || "Unknown") + '</div>';
-    }
-  });
-}
-
-// DATE FORMAT
-function fmtDate(val) {
-  if (!val) return "";
-  let d;
-  if (val instanceof Date) d = val;
-  else if (typeof val === 'string') {
-    const m1 = val.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m1) d = new Date(+m1[1], +m1[2]-1, +m1[3]);
-    const m2 = val.match(/^(\d{2})-(\d{2})-(\d{4})/);
-    if (!d && m2) d = new Date(+m2[3], +m2[2]-1, +m2[1]);
-  }
-  if (!d || isNaN(d)) return String(val);
-  return d.getDate() + "-" + (d.getMonth()+1) + "-" + d.getFullYear();
-}
-
-// TIME FORMAT
-function fmtTime(val) {
-  if (!val) return "";
-  const s = String(val);
-  const full = s.match(/\d{2}-\d{2}-\d{4}\s+(\d{2}):(\d{2})/);
-  if (full) {
-    let h = parseInt(full[1]), mn = parseInt(full[2]);
-    const ampm = h >= 12 ? "PM" : "AM";
-    const h12 = h % 12 || 12;
-    return h12 + ":" + String(mn).padStart(2, "0") + " " + ampm;
-  }
-  const m = s.match(/(\d+):(\d+)(?::\d+)?\s*(AM|PM)?/i);
-  if (!m) return s;
-  let h = +m[1], mn = +m[2];
-  if (m[3] && m[3].toUpperCase() === "PM" && h < 12) h += 12;
-  if (m[3] && m[3].toUpperCase() === "AM" && h === 12) h = 0;
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return h12 + ":" + String(mn).padStart(2, "0") + " " + ampm;
-}
-
+// ══════════════════════════════════════
 // INIT
-(function() {
-  const sess = store.get("adminSess");
-  if (sess) {
-    adminUser = sess;
-    startApp();
+// ══════════════════════════════════════
+function initAdmin() {
+  var d = new Date();
+  document.getElementById("adminDateLbl").textContent = fmtDateLong(d);
+  setToday();
+  loadEmployees();
+  loadData();
+}
+
+function setToday() {
+  var today = new Date().toISOString().split("T")[0];
+  document.getElementById("fDateFrom").value = today;
+  document.getElementById("fDateTo").value   = today;
+}
+
+function fmtDateLong(d) {
+  var days   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return days[d.getDay()] + ", " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+}
+
+// ══════════════════════════════════════
+// LOAD EMPLOYEES
+// ══════════════════════════════════════
+function loadEmployees() {
+  apiPost({ action: "get_employees" }).then(function(r) {
+    if (r.employees && r.employees.length) {
+      allEmployees = r.employees;
+      populateEmpFilter(r.employees);
+      buildEmpTabs(r.employees);
+    }
+  }).catch(function() {});
+}
+
+function populateEmpFilter(list) {
+  var sel = document.getElementById("fEmp");
+  sel.innerHTML = '<option value="all">— Sab Employees —</option>';
+  list.forEach(function(e) {
+    var o = document.createElement("option");
+    o.value = e.name; o.textContent = e.name;
+    sel.appendChild(o);
+  });
+}
+
+function buildEmpTabs(list) {
+  var wrap = document.getElementById("empTabs");
+  wrap.innerHTML = '<div class="emp-tab active" onclick="filterByEmp(\'all\',this)">👥 Sab</div>';
+  list.forEach(function(e) {
+    var d = document.createElement("div");
+    d.className = "emp-tab";
+    d.textContent = e.name;
+    d.onclick = function() { filterByEmp(e.name, d); };
+    wrap.appendChild(d);
+  });
+}
+
+function filterByEmp(name, el) {
+  document.querySelectorAll(".emp-tab").forEach(function(t) { t.classList.remove("active"); });
+  el.classList.add("active");
+  document.getElementById("fEmp").value = name;
+  loadData();
+}
+
+// ══════════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════════
+function loadData() {
+  var emp      = document.getElementById("fEmp").value;
+  var dateFrom = document.getElementById("fDateFrom").value;
+  var dateTo   = document.getElementById("fDateTo").value;
+
+  document.getElementById("mainContent").innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div><div>Data aa raha hai...</div></div>';
+
+  apiPost({
+    action: "get_admin_data",
+    emp: emp === "all" ? "" : emp,
+    dateFrom: dateFrom,
+    dateTo: dateTo
+  }).then(function(r) {
+    allData      = r.data || [];
+    filteredData = allData;
+    updateStats();
+    renderCards();
+  }).catch(function(err) {
+    // Fallback: try get_attendance
+    apiPost({
+      action: "get_attendance",
+      emp: emp === "all" ? "" : emp,
+      dateFrom: dateFrom,
+      dateTo: dateTo
+    }).then(function(r) {
+      allData      = r.data || r.rows || [];
+      filteredData = allData;
+      updateStats();
+      renderCards();
+    }).catch(function() {
+      document.getElementById("mainContent").innerHTML =
+        '<div class="empty-state"><div class="empty-icon">⚠️</div>Data load nahi hua. Sheet se check karo.</div>';
+    });
+  });
+}
+
+// ══════════════════════════════════════
+// STATS
+// ══════════════════════════════════════
+function updateStats() {
+  var today    = new Date().toISOString().split("T")[0];
+  var checkedIn = filteredData.filter(function(r) {
+    return r.checkinTime && (!r.checkoutTime || r.checkoutTime === "");
+  }).length;
+  var visits = filteredData.reduce(function(acc, r) {
+    return acc + (r.visits ? r.visits.length : 0);
+  }, 0);
+  var dists = filteredData.map(function(r) { return parseFloat(r.distance || 0); }).filter(Boolean);
+  var avgDist = dists.length ? (dists.reduce(function(a,b){return a+b;},0)/dists.length).toFixed(1) : "0";
+
+  document.getElementById("statTotal").textContent     = filteredData.length;
+  document.getElementById("statCheckedIn").textContent = checkedIn;
+  document.getElementById("statVisits").textContent    = visits;
+  document.getElementById("statDist").textContent      = avgDist + " km";
+}
+
+// ══════════════════════════════════════
+// RENDER CARDS
+// ══════════════════════════════════════
+function renderCards() {
+  var cont = document.getElementById("mainContent");
+  if (!filteredData || !filteredData.length) {
+    cont.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>Is range mein koi data nahi mila.</div>';
+    return;
   }
-})();
+
+  var html = "";
+  filteredData.forEach(function(row, idx) {
+    var initials = (row.name || "?").split(" ").map(function(w){return w[0];}).join("").toUpperCase().slice(0,2);
+    var isIn = row.checkinTime && (!row.checkoutTime || row.checkoutTime === "");
+    var statusBadge = isIn
+      ? '<span class="emp-status-badge in">🟢 Checked In</span>'
+      : (row.checkoutTime ? '<span class="emp-status-badge out">🔴 Checked Out</span>'
+                          : '<span class="emp-status-badge out">⚪ No Data</span>');
+
+    // ── ATTENDANCE DATA ──
+    var attnHtml = '<div class="data-grid">'
+      + dataItem("📅 Date",           row.date        || "—")
+      + dataItem("🕐 Check-In",       row.checkinTime || "—", row.checkinTime ? "green" : "")
+      + dataItem("🕔 Check-Out",      row.checkoutTime || "—", row.checkoutTime ? "" : "warn")
+      + dataItem("⏱ Duration",        row.duration    || "—")
+      + dataItem("🔧 Odo Start",      row.odometerStart ? row.odometerStart + " km" : "—")
+      + dataItem("🔧 Odo End",        row.odometerEnd   ? row.odometerEnd   + " km" : "—")
+      + dataItem("📏 Distance",       row.distance      ? row.distance + " km"      : "—")
+      + dataItem("📍 GPS", row.mapLink
+          ? '<a href="' + row.mapLink + '" target="_blank">📍 Map Dekho</a>'
+          : "—")
+      + '</div>';
+
+    // ── VISITS TABLE ──
+    var visitsHtml = "";
+    if (row.visits && row.visits.length) {
+      var rows = row.visits.map(function(v) {
+        return '<tr>'
+          + '<td><div class="visit-shop">' + (v.shopName || "—") + '</div>'
+          + '<div class="visit-area">' + (v.area || "") + '</div></td>'
+          + '<td>' + (v.shopkeeperName || "—") + '</td>'
+          + '<td>' + (v.shopkeeperContact || "—") + '</td>'
+          + '<td>' + (v.time || "—") + '</td>'
+          + '<td>' + (v.notes || "—") + '</td>'
+          + '<td>' + (v.mapLink ? '<a href="' + v.mapLink + '" target="_blank">📍</a>' : "—") + '</td>'
+          + '</tr>';
+      }).join("");
+      visitsHtml = '<div class="sec-title">📍 Visit Records (' + row.visits.length + ')</div>'
+        + '<div class="visits-wrap"><table class="visits-table">'
+        + '<thead><tr><th>Shop</th><th>Malik</th><th>Contact</th><th>Time</th><th>Notes</th><th>GPS</th></tr></thead>'
+        + '<tbody>' + rows + '</tbody></table></div>';
+    }
+
+    // ── PHOTOS ──
+    var photosArr = [];
+    if (row.photo1) photosArr.push({ src: row.photo1, lbl: "Selfie 1" });
+    if (row.photo2) photosArr.push({ src: row.photo2, lbl: "Odometer (In)" });
+    if (row.checkoutPhoto) photosArr.push({ src: row.checkoutPhoto, lbl: "Odometer (Out)" });
+    if (row.photo)  photosArr.push({ src: row.photo,  lbl: "Photo" });
+
+    var photosHtml = "";
+    if (photosArr.length) {
+      photosHtml = '<div class="sec-title">📸 Photos</div><div class="photos-row">'
+        + photosArr.map(function(p, pi) {
+          return '<div class="photo-thumb-wrap">'
+            + '<img class="photo-thumb" src="' + p.src + '" alt="' + p.lbl + '" '
+            + 'onclick="openLightbox(\'' + p.src.replace(/'/g,"") + '\',\'' + p.lbl + '\')">'
+            + '<div class="photo-thumb-lbl">' + p.lbl + '</div></div>';
+        }).join("")
+        + '</div>';
+    } else {
+      photosHtml = '<div class="no-photos">📷 Koi photo nahi</div>';
+    }
+
+    html += '<div class="emp-section">'
+      + '<div class="emp-header">'
+      + '<div class="emp-header-left">'
+      + '<div class="emp-avatar">' + initials + '</div>'
+      + '<div><div class="emp-name-big">' + (row.name || "Unknown") + '</div>'
+      + '<div class="emp-desig">' + (row.designation || row.role || "Field Employee") + '</div></div>'
+      + '</div>' + statusBadge + '</div>'
+      + '<div class="sec-title">📋 Attendance Details</div>'
+      + attnHtml
+      + visitsHtml
+      + photosHtml
+      + '</div>';
+  });
+
+  cont.innerHTML = html;
+}
+
+function dataItem(lbl, val, cls) {
+  return '<div class="data-item">'
+    + '<div class="data-lbl">' + lbl + '</div>'
+    + '<div class="data-val' + (cls ? " " + cls : "") + '">' + val + '</div>'
+    + '</div>';
+}
+
+// ══════════════════════════════════════
+// LIGHTBOX
+// ══════════════════════════════════════
+function openLightbox(src, lbl) {
+  document.getElementById("lightboxImg").src = src;
+  document.getElementById("lightboxLbl").textContent = lbl;
+  document.getElementById("lightbox").classList.add("show");
+}
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("show");
+}
+
+// ══════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════
+function exportCSV() {
+  if (!filteredData || !filteredData.length) { toast("Koi data nahi export ke liye", "error"); return; }
+  var headers = ["Name","Designation","Date","Check-In","Check-Out","Duration","Odo Start","Odo End","Distance","GPS Link","Total Visits"];
+  var rows = filteredData.map(function(r) {
+    return [
+      r.name || "",
+      r.designation || "",
+      r.date || "",
+      r.checkinTime || "",
+      r.checkoutTime || "",
+      r.duration || "",
+      r.odometerStart || "",
+      r.odometerEnd || "",
+      r.distance || "",
+      r.mapLink || "",
+      (r.visits ? r.visits.length : 0)
+    ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
+  });
+  var csv = [headers.join(",")].concat(rows).join("\n");
+  var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement("a");
+  a.href = url; a.download = "NAMEFAME_Export_" + new Date().toISOString().split("T")[0] + ".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast("CSV download ho raha hai ✓", "success");
+}
+
+// ══════════════════════════════════════
+// API
+// ══════════════════════════════════════
+function apiPost(data) {
+  return fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify(data)
+  }).then(function(r) { return r.json(); });
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+var toastTimer = null;
+function toast(msg, type) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show" + (type ? " " + type : "");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove("show"); }, 3000);
+}
+
+// ══════════════════════════════════════
+// AUTO LOGIN CHECK
+// ══════════════════════════════════════
+if (sessionStorage.getItem("adminAuth") === "1") {
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("adminMain").style.display   = "block";
+  initAdmin();
+}
 </script>
 </body>
 </html>
