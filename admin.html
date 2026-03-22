@@ -3,674 +3,718 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Admin Panel — NAMEFAME</title>
+<title>Admin — NAMEFAME</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f1117;
-    --card: #1a1d27;
-    --card2: #22263a;
-    --border: #2e3250;
-    --accent: #6c63ff;
-    --accent2: #4ecca3;
-    --danger: #ff5c5c;
-    --warn: #ffb347;
-    --text: #eaeaea;
-    --muted: #7a7f9a;
-    --green: #4ecca3;
-    --red: #ff5c5c;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+:root {
+  --bg: #f4f6fb;
+  --white: #ffffff;
+  --card: #ffffff;
+  --border: #e4e8f0;
+  --accent: #4f46e5;
+  --accent-light: #ede9fe;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --orange: #ea580c;
+  --orange-light: #ffedd5;
+  --text: #1e293b;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --shadow: 0 1px 4px rgba(0,0,0,.08);
+  --nav-h: 64px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:var(--nav-h);}
 
-  /* ── TOAST ── */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: #23263a; color: #fff; padding: 10px 22px; border-radius: 24px;
-    font-size: 14px; font-weight: 700; z-index: 9999; opacity: 0; transition: all .3s; white-space: nowrap; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.error { background: var(--danger); }
-  .toast.success { background: var(--green); color: #000; }
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:#1e293b;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.err{background:var(--red);}
+.toast.ok{background:var(--green);}
 
-  /* ── LOGIN SCREEN ── */
-  #loginScreen {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 24px;
-  }
-  .login-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-    padding: 36px 28px; width: 100%; max-width: 360px;
-  }
-  .login-logo { font-size: 40px; text-align: center; margin-bottom: 8px; }
-  .login-title { text-align: center; font-size: 22px; font-weight: 900; color: var(--accent); margin-bottom: 4px; }
-  .login-sub { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 28px; }
-  .fgroup { margin-bottom: 16px; }
-  .fgroup label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
-  .fgroup input {
-    width: 100%; background: var(--card2); border: 1.5px solid var(--border); border-radius: 10px;
-    padding: 12px 14px; color: var(--text); font-size: 15px; font-family: 'Nunito', sans-serif;
-    outline: none; transition: border .2s;
-  }
-  .fgroup input:focus { border-color: var(--accent); }
-  .btn-login {
-    width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px;
-    padding: 14px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 4px;
-    transition: opacity .2s;
-  }
-  .btn-login:hover { opacity: .88; }
+/* ── LOGIN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--bg);}
+.login-card{background:var(--white);border-radius:20px;padding:32px 24px;width:100%;max-width:340px;box-shadow:0 4px 24px rgba(0,0,0,.10);}
+.login-logo{font-size:44px;text-align:center;margin-bottom:6px;}
+.login-title{text-align:center;font-size:20px;font-weight:900;color:var(--accent);margin-bottom:2px;}
+.login-sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:24px;}
+.fld label{display:block;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.fld{margin-bottom:14px;}
+.fld input,.fld select,.fld textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px;font-family:'Nunito',sans-serif;outline:none;transition:border .2s;}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--accent);}
+.btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .2s;}
+.btn-primary:hover{opacity:.88;}
+.btn-primary:active{opacity:.75;}
 
-  /* ── ADMIN MAIN ── */
-  #adminMain { display: none; }
+/* ── SCREENS ── */
+.screen{display:none;}
+.screen.active{display:block;}
 
-  /* ── TOP BAR ── */
-  .topbar {
-    background: var(--card); border-bottom: 1px solid var(--border);
-    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
-  }
-  .topbar-left { display: flex; align-items: center; gap: 10px; }
-  .topbar-icon { font-size: 22px; }
-  .topbar-title { font-size: 18px; font-weight: 900; color: var(--accent); }
-  .topbar-sub { font-size: 11px; color: var(--muted); }
-  .btn-logout {
-    background: transparent; border: 1.5px solid var(--border); color: var(--muted);
-    border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 700;
-    cursor: pointer; transition: all .2s;
-  }
-  .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+/* ── TOPBAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:17px;font-weight:900;color:var(--accent);}
+.topbar-sub{font-size:11px;color:var(--muted);}
+.btn-sm{background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;}
 
-  /* ── FILTERS ── */
-  .filters-wrap {
-    background: var(--card); border-bottom: 1px solid var(--border);
-    padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
-  }
-  .filter-group { display: flex; flex-direction: column; gap: 4px; }
-  .filter-group label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .filter-group select, .filter-group input[type="date"], .filter-group input[type="text"] {
-    background: var(--card2); border: 1.5px solid var(--border); border-radius: 8px;
-    color: var(--text); font-size: 13px; font-family: 'Nunito', sans-serif;
-    padding: 8px 12px; outline: none; min-width: 140px;
-  }
-  .filter-group select:focus, .filter-group input:focus { border-color: var(--accent); }
-  .btn-filter {
-    background: var(--accent); color: #fff; border: none; border-radius: 8px;
-    padding: 9px 18px; font-size: 13px; font-weight: 800; cursor: pointer;
-    align-self: flex-end; transition: opacity .2s;
-  }
-  .btn-filter:hover { opacity: .85; }
-  .btn-export {
-    background: transparent; border: 1.5px solid var(--accent2); color: var(--accent2);
-    border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 800;
-    cursor: pointer; align-self: flex-end; transition: all .2s;
-  }
-  .btn-export:hover { background: var(--accent2); color: #000; }
-  .btn-today {
-    background: transparent; border: 1.5px solid var(--warn); color: var(--warn);
-    border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 800;
-    cursor: pointer; align-self: flex-end; transition: all .2s;
-  }
-  .btn-today:hover { background: var(--warn); color: #000; }
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 0;cursor:pointer;color:var(--muted2);transition:color .2s;}
+.nav-item.active{color:var(--accent);}
+.nav-item .ni{font-size:20px;}
+.nav-item .nl{font-size:10px;font-weight:800;}
 
-  /* ── STATS ROW ── */
-  .stats-row {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-    padding: 16px 20px;
-  }
-  @media (max-width: 600px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
-  .stat-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 14px 16px;
-  }
-  .stat-val { font-size: 26px; font-weight: 900; color: var(--accent); }
-  .stat-lbl { font-size: 11px; color: var(--muted); font-weight: 700; margin-top: 2px; }
+/* ── SCREEN: HOME ── */
+.page-pad{padding:14px 14px 8px;}
+.date-bar{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;}
+.date-bar input[type="date"]{flex:1;min-width:130px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:9px 11px;font-size:13px;font-family:'Nunito',sans-serif;color:var(--text);outline:none;}
+.date-bar input:focus{border-color:var(--accent);}
+.btn-search{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+.btn-today{background:var(--accent-light);color:var(--accent);border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
 
-  /* ── EMP TABS ── */
-  .emp-tabs-wrap { padding: 0 20px 12px; overflow-x: auto; }
-  .emp-tabs { display: flex; gap: 8px; padding-bottom: 4px; }
-  .emp-tab {
-    background: var(--card2); border: 1.5px solid var(--border); border-radius: 20px;
-    padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
-    white-space: nowrap; color: var(--muted); transition: all .2s; flex-shrink: 0;
-  }
-  .emp-tab.active, .emp-tab:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--white);border-radius:14px;padding:14px 14px;box-shadow:var(--shadow);}
+.stat-val{font-size:26px;font-weight:900;color:var(--accent);}
+.stat-lbl{font-size:11px;color:var(--muted);font-weight:700;margin-top:1px;}
 
-  /* ── CONTENT ── */
-  .content { padding: 0 20px 40px; }
+/* EMP FILTER CHIPS */
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;}
+.chip-row::-webkit-scrollbar{display:none;}
+.chip{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap;flex-shrink:0;transition:all .2s;}
+.chip.active,.chip:hover{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-  /* ── EMPLOYEE CARD ── */
-  .emp-section {
-    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-    margin-bottom: 20px; overflow: hidden;
-  }
-  .emp-header {
-    background: var(--card2); padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-  .emp-header-left { display: flex; align-items: center; gap: 12px; }
-  .emp-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 900; color: #fff;
-  }
-  .emp-name-big { font-size: 16px; font-weight: 900; }
-  .emp-desig { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .emp-status-badge {
-    padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800;
-  }
-  .emp-status-badge.in { background: rgba(78,204,163,.15); color: var(--green); border: 1px solid rgba(78,204,163,.3); }
-  .emp-status-badge.out { background: rgba(255,92,92,.1); color: var(--red); border: 1px solid rgba(255,92,92,.2); }
+/* ATTENDANCE CARDS */
+.att-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;}
+.att-head{padding:13px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--border);}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0;}
+.emp-nm{font-size:15px;font-weight:900;}
+.emp-dg{font-size:11px;color:var(--muted);}
+.badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;margin-left:auto;flex-shrink:0;}
+.badge.in{background:var(--green-light);color:var(--green);}
+.badge.out{background:var(--red-light);color:var(--red);}
+.badge.absent{background:#f1f5f9;color:var(--muted);}
 
-  /* ── DATA SECTIONS ── */
-  .data-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-  }
-  @media (max-width: 500px) { .data-grid { grid-template-columns: 1fr; } }
-  .data-item {
-    padding: 14px 20px; border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
-  .data-item:nth-child(even) { border-right: none; }
-  .data-lbl { font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
-  .data-val { font-size: 14px; font-weight: 800; color: var(--text); }
-  .data-val.green { color: var(--green); }
-  .data-val.warn { color: var(--warn); }
-  .data-val a { color: var(--accent2); text-decoration: none; font-size: 13px; }
-  .data-val a:hover { text-decoration: underline; }
+/* INFO ROWS */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);}
+.info-item{padding:10px 14px;border-right:1px solid var(--border);}
+.info-item:nth-child(even){border-right:none;}
+.info-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.info-val{font-size:13px;font-weight:800;color:var(--text);}
+.info-val.g{color:var(--green);}
+.info-val.r{color:var(--red);}
+.info-val.o{color:var(--orange);}
+.info-val a{color:var(--accent);text-decoration:none;font-size:12px;}
 
-  /* ── SECTION TITLES ── */
-  .sec-title {
-    padding: 12px 20px 8px; font-size: 11px; font-weight: 800;
-    color: var(--muted); text-transform: uppercase; letter-spacing: .8px;
-    border-bottom: 1px solid var(--border); background: rgba(108,99,255,.05);
-  }
+/* SEC LABEL */
+.sec-lbl{padding:8px 14px;font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;background:#f8fafc;border-bottom:1px solid var(--border);}
 
-  /* ── VISITS TABLE ── */
-  .visits-wrap { overflow-x: auto; }
-  .visits-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .visits-table th {
-    text-align: left; padding: 10px 14px; font-size: 10px;
-    color: var(--muted); font-weight: 800; text-transform: uppercase;
-    letter-spacing: .5px; border-bottom: 1px solid var(--border);
-    background: var(--card2);
-  }
-  .visits-table td {
-    padding: 10px 14px; border-bottom: 1px solid rgba(46,50,80,.5);
-    vertical-align: middle;
-  }
-  .visits-table tr:last-child td { border-bottom: none; }
-  .visits-table tr:hover td { background: rgba(108,99,255,.04); }
-  .visit-shop { font-weight: 800; }
-  .visit-area { color: var(--muted); font-size: 12px; }
+/* PHOTOS ROW */
+.photos-row{display:flex;gap:10px;padding:12px 14px;overflow-x:auto;}
+.photos-row::-webkit-scrollbar{display:none;}
+.ph-wrap{flex-shrink:0;text-align:center;}
+.ph-img{width:72px;height:72px;border-radius:10px;object-fit:cover;border:2px solid var(--border);cursor:pointer;display:block;}
+.ph-lbl{font-size:10px;color:var(--muted);font-weight:700;margin-top:4px;}
+.no-ph{padding:12px 14px;font-size:12px;color:var(--muted2);}
 
-  /* ── PHOTO THUMBS ── */
-  .photos-row { display: flex; gap: 10px; padding: 14px 20px; flex-wrap: wrap; }
-  .photo-thumb-wrap { position: relative; }
-  .photo-thumb {
-    width: 80px; height: 80px; border-radius: 10px; object-fit: cover;
-    border: 2px solid var(--border); cursor: pointer; transition: transform .2s;
-  }
-  .photo-thumb:hover { transform: scale(1.05); border-color: var(--accent); }
-  .photo-thumb-lbl {
-    font-size: 10px; color: var(--muted); text-align: center;
-    margin-top: 4px; font-weight: 700;
-  }
-  .no-photos { padding: 14px 20px; color: var(--muted); font-size: 13px; }
+/* VISITS */
+.visit-item{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+.visit-item:last-child{border-bottom:none;}
+.visit-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0;}
+.visit-shop{font-size:13px;font-weight:800;}
+.visit-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.visit-map{font-size:11px;color:var(--accent);font-weight:700;margin-top:2px;display:inline-block;}
 
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92);
-    z-index: 9000; align-items: center; justify-content: center; flex-direction: column;
-  }
-  .lightbox.show { display: flex; }
-  .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-  .lightbox-close {
-    position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,.1);
-    border: none; color: #fff; font-size: 22px; width: 40px; height: 40px;
-    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .lightbox-lbl { color: var(--muted); font-size: 13px; margin-top: 12px; font-weight: 700; }
+/* ROUTE MAP */
+.route-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);background:#f8fafc;}
+.route-btn-lbl{font-size:12px;font-weight:800;color:var(--accent);}
 
-  /* ── LOADING / EMPTY ── */
-  .loading-wrap { padding: 40px; text-align: center; color: var(--muted); }
-  .spinner {
-    width: 36px; height: 36px; border: 3px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin .8s linear infinite; margin: 0 auto 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+/* EXPAND TOGGLE */
+.expand-btn{width:100%;background:none;border:none;padding:10px 14px;font-size:12px;font-weight:800;color:var(--accent);cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;}
 
-  /* ── NO DATA ── */
-  .no-data { color: var(--muted); font-size: 13px; font-style: italic; }
+/* EMPTY */
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:14px;}
+.empty-ico{font-size:36px;margin-bottom:8px;}
+
+/* LOADING */
+.loading{padding:40px;text-align:center;color:var(--muted);}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* CSV BTN */
+.csv-btn{display:flex;align-items:center;gap:6px;background:var(--green-light);color:var(--green);border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;}
+
+/* ── SCREEN: EMPLOYEES ── */
+.emp-list-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;}
+.emp-row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--border);}
+.emp-row:last-child{border-bottom:none;}
+.emp-row-info{flex:1;}
+.emp-row-name{font-size:14px;font-weight:800;}
+.emp-row-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.emp-row-actions{display:flex;gap:8px;}
+.btn-edit{background:var(--accent-light);color:var(--accent);border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:800;cursor:pointer;}
+.btn-del{background:var(--red-light);color:var(--red);border:none;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:800;cursor:pointer;}
+.add-emp-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:12px;}
+
+/* ── SCREEN: SETTINGS ── */
+.set-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 16px;margin-bottom:12px;}
+.set-title{font-size:14px;font-weight:900;margin-bottom:14px;color:var(--text);}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-ov.show{display:flex;}
+.modal-box{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:20px 18px 32px;}
+.modal-drag{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;}
+.modal-title{font-size:17px;font-weight:900;margin-bottom:16px;}
+.modal-actions{display:flex;gap:10px;margin-top:14px;}
+.btn-cancel{flex:1;background:var(--bg);border:1.5px solid var(--border);color:var(--muted);border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;}
+.btn-save{flex:2;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;}
+
+/* ── LIGHTBOX ── */
+.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;align-items:center;justify-content:center;flex-direction:column;}
+.lb.show{display:flex;}
+.lb img{max-width:94vw;max-height:82vh;border-radius:10px;object-fit:contain;}
+.lb-lbl{color:#ccc;font-size:13px;margin-top:10px;font-weight:700;}
+.lb-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
 <div id="toast" class="toast"></div>
 
-<!-- ══ LIGHTBOX ══ -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="lightboxImg" src="" alt="photo">
-  <div class="lightbox-lbl" id="lightboxLbl"></div>
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" onclick="closeLb()">
+  <button class="lb-close">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-lbl" id="lbLbl"></div>
 </div>
 
-<!-- ══ LOGIN SCREEN ══ -->
+<!-- EMPLOYEE MODAL -->
+<div class="modal-ov" id="empModal">
+  <div class="modal-box">
+    <div class="modal-drag"></div>
+    <div class="modal-title" id="empModalTitle">Employee Add Karo</div>
+    <div class="fld"><label>Naam *</label><input type="text" id="mName" placeholder="Full name"></div>
+    <div class="fld"><label>PIN *</label><input type="text" id="mPin" placeholder="4-digit PIN" maxlength="10"></div>
+    <div class="fld"><label>Contact</label><input type="tel" id="mContact" placeholder="Mobile number" maxlength="10"></div>
+    <div class="fld"><label>Designation</label><input type="text" id="mDesig" placeholder="e.g. Field Agent"></div>
+    <input type="hidden" id="mOldName">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEmpModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEmployee()">✓ Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">⚙️</div>
     <div class="login-title">Admin Panel</div>
     <div class="login-sub">NAMEFAME Field Attendance</div>
-    <div class="fgroup">
-      <label>Admin Password</label>
-      <input type="password" id="adminPassInput" placeholder="Password daalo"
-        onkeydown="if(event.key==='Enter')doAdminLogin()">
+    <div class="fld"><label>Password</label>
+      <input type="password" id="adminPass" placeholder="Admin password daalo"
+        onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="btn-login" onclick="doAdminLogin()">🔓 Login</button>
+    <button class="btn-primary" onclick="doLogin()">🔓 Login</button>
   </div>
 </div>
 
-<!-- ══ ADMIN MAIN ══ -->
-<div id="adminMain">
+<!-- MAIN APP -->
+<div id="app" style="display:none;">
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="topbar-icon">⚙️</div>
+  <!-- ── SCREEN: HOME (Attendance) ── -->
+  <div class="screen active" id="s-home">
+    <div class="topbar">
       <div>
-        <div class="topbar-title">NAMEFAME Admin</div>
-        <div class="topbar-sub" id="adminDateLbl">—</div>
+        <div class="topbar-title">📋 Attendance</div>
+        <div class="topbar-sub" id="topDate">—</div>
+      </div>
+      <button class="btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+    <div class="page-pad">
+      <!-- Date filter -->
+      <div class="date-bar">
+        <input type="date" id="fFrom">
+        <input type="date" id="fTo">
+        <button class="btn-today" onclick="setToday()">Aaj</button>
+        <button class="btn-search" onclick="loadAttendance()">🔍</button>
+        <button class="csv-btn" onclick="exportCSV()">⬇️ CSV</button>
+      </div>
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="sTot">—</div><div class="stat-lbl">Records</div></div>
+        <div class="stat-card"><div class="stat-val" id="sIn">—</div><div class="stat-lbl">Checked In</div></div>
+        <div class="stat-card"><div class="stat-val" id="sVis">—</div><div class="stat-lbl">Visits</div></div>
+        <div class="stat-card"><div class="stat-val" id="sDist">—</div><div class="stat-lbl">Total Distance</div></div>
+      </div>
+      <!-- Emp chips -->
+      <div class="chip-row" id="chipRow"></div>
+      <!-- Cards -->
+      <div id="attCards"></div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: EMPLOYEES ── -->
+  <div class="screen" id="s-emp">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">👥 Employees</div>
+        <div class="topbar-sub" id="empCountLbl">—</div>
       </div>
     </div>
-    <button class="btn-logout" onclick="adminLogout()">Logout</button>
-  </div>
-
-  <!-- FILTERS -->
-  <div class="filters-wrap">
-    <div class="filter-group">
-      <label>Employee</label>
-      <select id="fEmp">
-        <option value="all">— Sab Employees —</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Date Se</label>
-      <input type="date" id="fDateFrom">
-    </div>
-    <div class="filter-group">
-      <label>Date Tak</label>
-      <input type="date" id="fDateTo">
-    </div>
-    <button class="btn-today" onclick="setToday()">📅 Aaj</button>
-    <button class="btn-filter" onclick="loadData()">🔍 Search</button>
-    <button class="btn-export" onclick="exportCSV()">⬇️ CSV Export</button>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-val" id="statTotal">—</div>
-      <div class="stat-lbl">Total Records</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statCheckedIn">—</div>
-      <div class="stat-lbl">Checked In Today</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statVisits">—</div>
-      <div class="stat-lbl">Total Visits</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="statDist">—</div>
-      <div class="stat-lbl">Avg Distance</div>
+    <div class="page-pad">
+      <button class="add-emp-btn" onclick="openAddEmp()">+ New Employee Add Karo</button>
+      <div id="empListWrap"><div class="loading"><div class="spin"></div>Loading...</div></div>
     </div>
   </div>
 
-  <!-- EMP QUICK TABS -->
-  <div class="emp-tabs-wrap">
-    <div class="emp-tabs" id="empTabs"></div>
+  <!-- ── SCREEN: SETTINGS ── -->
+  <div class="screen" id="s-set">
+    <div class="topbar">
+      <div><div class="topbar-title">⚙️ Settings</div></div>
+    </div>
+    <div class="page-pad">
+      <div class="set-card">
+        <div class="set-title">🔐 Admin Password Badlo</div>
+        <div class="fld"><label>Current Password</label><input type="password" id="curPass" placeholder="Current password"></div>
+        <div class="fld"><label>New Password</label><input type="password" id="newPass" placeholder="New password"></div>
+        <div class="fld"><label>Confirm New Password</label><input type="password" id="confPass" placeholder="Confirm password"></div>
+        <button class="btn-primary" onclick="changePass()">✓ Password Badlo</button>
+      </div>
+      <div class="set-card">
+        <div class="set-title">ℹ️ App Info</div>
+        <div class="fld"><label>Version</label><input type="text" value="NAMEFAME v1.0" readonly style="background:#f8fafc;color:var(--muted);"></div>
+        <div class="fld"><label>Sheet Connected</label><input type="text" value="✅ Google Sheet" readonly style="background:#f8fafc;color:var(--green);"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- MAIN CONTENT -->
-  <div class="content" id="mainContent">
-    <div class="loading-wrap">
-      <div class="spinner"></div>
-      <div>Data load ho raha hai...</div>
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="n-home" onclick="goScreen('home')">
+      <div class="ni">📋</div><div class="nl">Attendance</div>
+    </div>
+    <div class="nav-item" id="n-emp" onclick="goScreen('emp')">
+      <div class="ni">👥</div><div class="nl">Employees</div>
+    </div>
+    <div class="nav-item" id="n-set" onclick="goScreen('set')">
+      <div class="ni">⚙️</div><div class="nl">Settings</div>
     </div>
   </div>
 
 </div>
 
 <script>
-// ══════════════════════════════════════
+// ════════════════════════════════
 // CONFIG
-// ══════════════════════════════════════
+// ════════════════════════════════
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBAIGox6yRF4VNbN80zFDkjqL4DQy8F0YlJzVoW41jHAwWJyosm9s-u_sbBsEN4/exec";
-var ADMIN_PASS = "admin123"; // ← Yahan apna password badlo
+var ADMIN_PASS = null; // Sheet se aayega
 
-var allData      = [];
-var allEmployees = [];
-var filteredData = [];
+var allRows = [], allEmps = [], filteredRows = [], activeEmp = "all";
 
-// ══════════════════════════════════════
+// ════════════════════════════════
 // AUTH
-// ══════════════════════════════════════
-function doAdminLogin() {
-  var pass = document.getElementById("adminPassInput").value;
-  if (pass === ADMIN_PASS) {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminMain").style.display   = "block";
-    sessionStorage.setItem("adminAuth", "1");
-    initAdmin();
-  } else {
-    toast("Galat password!", "error");
-    document.getElementById("adminPassInput").value = "";
-  }
-}
+// ════════════════════════════════
+function doLogin() {
+  var p = document.getElementById("adminPass").value.trim();
+  if (!p) { toast("Password daalo", "err"); return; }
 
-function adminLogout() {
-  sessionStorage.removeItem("adminAuth");
+  var btn = document.querySelector(".btn-primary");
+  btn.textContent = "⏳ Checking..."; btn.disabled = true;
+
+  // Pehle sheet se config fetch karo, phir compare karo
+  apiPost({ action: "get_admin_config" })
+    .then(function(r) {
+      btn.textContent = "🔓 Login"; btn.disabled = false;
+      var cfg = r.config || {};
+
+      // AdminConfig sheet mein "name" key ki value se match karo
+      var correctPass = cfg["name"] || cfg["password"] || cfg["pass"] || "";
+
+      if (!correctPass) {
+        toast("AdminConfig sheet mein 'name' key nahi mili", "err");
+        return;
+      }
+
+      if (p === correctPass) {
+        sessionStorage.setItem("nfAdmin", "1");
+        sessionStorage.setItem("nfAdminPass", p); // change pass ke liye
+        ADMIN_PASS = p;
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        initApp();
+      } else {
+        toast("Galat password!", "err");
+        document.getElementById("adminPass").value = "";
+      }
+    })
+    .catch(function() {
+      btn.textContent = "🔓 Login"; btn.disabled = false;
+      toast("Network error. Dobara try karo.", "err");
+    });
+}
+function doLogout() {
+  sessionStorage.removeItem("nfAdmin");
   document.getElementById("loginScreen").style.display = "flex";
-  document.getElementById("adminMain").style.display   = "none";
-  document.getElementById("adminPassInput").value = "";
+  document.getElementById("app").style.display = "none";
+}
+function changePass() {
+  var cur = document.getElementById("curPass").value.trim();
+  var nw  = document.getElementById("newPass").value.trim();
+  var cf  = document.getElementById("confPass").value.trim();
+  var saved = sessionStorage.getItem("nfAdminPass") || ADMIN_PASS;
+  if (cur !== saved) { toast("Current password galat hai", "err"); return; }
+  if (!nw || nw.length < 4) { toast("New password kam se kam 4 characters", "err"); return; }
+  if (nw !== cf) { toast("Passwords match nahi kar rahe", "err"); return; }
+  // Sheet update karo — AdminConfig mein "name" key ki value badlo
+  toast("⏳ Sheet update ho raha hai...", "");
+  apiPost({ action: "update_admin_config", key: "name", value: nw })
+    .then(function() {
+      ADMIN_PASS = nw;
+      sessionStorage.setItem("nfAdminPass", nw);
+      document.getElementById("curPass").value = "";
+      document.getElementById("newPass").value = "";
+      document.getElementById("confPass").value = "";
+      toast("Password sheet mein badal gaya ✓", "ok");
+    }).catch(function() {
+      toast("Sheet update nahi hua. Manually change karo.", "err");
+    });
 }
 
-// ══════════════════════════════════════
+// ════════════════════════════════
+// NAV
+// ════════════════════════════════
+function goScreen(name) {
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+  document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
+  document.getElementById("s-"+name).classList.add("active");
+  document.getElementById("n-"+name).classList.add("active");
+  if (name === "emp") loadEmpScreen();
+}
+
+// ════════════════════════════════
 // INIT
-// ══════════════════════════════════════
-function initAdmin() {
+// ════════════════════════════════
+function initApp() {
   var d = new Date();
-  document.getElementById("adminDateLbl").textContent = fmtDateLong(d);
+  document.getElementById("topDate").textContent = fmtDateLong(d);
   setToday();
-  loadEmployees();
-  loadData();
+  loadAttendance();
 }
 
 function setToday() {
-  var today = new Date().toISOString().split("T")[0];
-  document.getElementById("fDateFrom").value = today;
-  document.getElementById("fDateTo").value   = today;
+  var t = new Date().toISOString().split("T")[0];
+  document.getElementById("fFrom").value = t;
+  document.getElementById("fTo").value   = t;
 }
 
-function fmtDateLong(d) {
-  var days   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  return days[d.getDay()] + ", " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
-}
+// ════════════════════════════════
+// LOAD ATTENDANCE
+// ════════════════════════════════
+function loadAttendance() {
+  var from = document.getElementById("fFrom").value;
+  var to   = document.getElementById("fTo").value;
+  document.getElementById("attCards").innerHTML = '<div class="loading"><div class="spin"></div>Data aa raha hai...</div>';
 
-// ══════════════════════════════════════
-// LOAD EMPLOYEES
-// ══════════════════════════════════════
-function loadEmployees() {
-  apiPost({ action: "get_employees" }).then(function(r) {
-    if (r.employees && r.employees.length) {
-      allEmployees = r.employees;
-      populateEmpFilter(r.employees);
-      buildEmpTabs(r.employees);
-    }
-  }).catch(function() {});
-}
-
-function populateEmpFilter(list) {
-  var sel = document.getElementById("fEmp");
-  sel.innerHTML = '<option value="all">— Sab Employees —</option>';
-  list.forEach(function(e) {
-    var o = document.createElement("option");
-    o.value = e.name; o.textContent = e.name;
-    sel.appendChild(o);
-  });
-}
-
-function buildEmpTabs(list) {
-  var wrap = document.getElementById("empTabs");
-  wrap.innerHTML = '<div class="emp-tab active" onclick="filterByEmp(\'all\',this)">👥 Sab</div>';
-  list.forEach(function(e) {
-    var d = document.createElement("div");
-    d.className = "emp-tab";
-    d.textContent = e.name;
-    d.onclick = function() { filterByEmp(e.name, d); };
-    wrap.appendChild(d);
-  });
-}
-
-function filterByEmp(name, el) {
-  document.querySelectorAll(".emp-tab").forEach(function(t) { t.classList.remove("active"); });
-  el.classList.add("active");
-  document.getElementById("fEmp").value = name;
-  loadData();
-}
-
-// ══════════════════════════════════════
-// LOAD DATA
-// ══════════════════════════════════════
-function loadData() {
-  var emp      = document.getElementById("fEmp").value;
-  var dateFrom = document.getElementById("fDateFrom").value;
-  var dateTo   = document.getElementById("fDateTo").value;
-
-  document.getElementById("mainContent").innerHTML =
-    '<div class="loading-wrap"><div class="spinner"></div><div>Data aa raha hai...</div></div>';
-
-  apiPost({
-    action: "get_admin_data",
-    emp: emp === "all" ? "" : emp,
-    dateFrom: dateFrom,
-    dateTo: dateTo
-  }).then(function(r) {
-    allData      = r.data || [];
-    filteredData = allData;
-    updateStats();
-    renderCards();
-  }).catch(function(err) {
-    // Fallback: try get_attendance
-    apiPost({
-      action: "get_attendance",
-      emp: emp === "all" ? "" : emp,
-      dateFrom: dateFrom,
-      dateTo: dateTo
-    }).then(function(r) {
-      allData      = r.data || r.rows || [];
-      filteredData = allData;
-      updateStats();
-      renderCards();
+  apiPost({ action: "get_sheet_range", dateFrom: from, dateTo: to, empName: "" })
+    .then(function(r) {
+      allRows = r.rows || [];
+      buildChips();
+      activeEmp = "all";
+      renderAttendance();
     }).catch(function() {
-      document.getElementById("mainContent").innerHTML =
-        '<div class="empty-state"><div class="empty-icon">⚠️</div>Data load nahi hua. Sheet se check karo.</div>';
+      document.getElementById("attCards").innerHTML = '<div class="empty"><div class="empty-ico">⚠️</div>Data load nahi hua. Network check karo.</div>';
     });
+}
+
+// ════════════════════════════════
+// CHIPS
+// ════════════════════════════════
+function buildChips() {
+  var names = [];
+  allRows.forEach(function(r){ if(r.empName && names.indexOf(r.empName)<0) names.push(r.empName); });
+  var html = '<div class="chip active" onclick="filterEmp(\'all\',this)">👥 Sab</div>';
+  names.forEach(function(n){
+    html += '<div class="chip" onclick="filterEmp(\''+escHtml(n)+'\',this)">'+escHtml(n)+'</div>';
   });
+  document.getElementById("chipRow").innerHTML = html;
 }
 
-// ══════════════════════════════════════
-// STATS
-// ══════════════════════════════════════
-function updateStats() {
-  var today    = new Date().toISOString().split("T")[0];
-  var checkedIn = filteredData.filter(function(r) {
-    return r.checkinTime && (!r.checkoutTime || r.checkoutTime === "");
-  }).length;
-  var visits = filteredData.reduce(function(acc, r) {
-    return acc + (r.visits ? r.visits.length : 0);
-  }, 0);
-  var dists = filteredData.map(function(r) { return parseFloat(r.distance || 0); }).filter(Boolean);
-  var avgDist = dists.length ? (dists.reduce(function(a,b){return a+b;},0)/dists.length).toFixed(1) : "0";
-
-  document.getElementById("statTotal").textContent     = filteredData.length;
-  document.getElementById("statCheckedIn").textContent = checkedIn;
-  document.getElementById("statVisits").textContent    = visits;
-  document.getElementById("statDist").textContent      = avgDist + " km";
+function filterEmp(name, el) {
+  document.querySelectorAll(".chip").forEach(function(c){c.classList.remove("active");});
+  el.classList.add("active");
+  activeEmp = name;
+  renderAttendance();
 }
 
-// ══════════════════════════════════════
-// RENDER CARDS
-// ══════════════════════════════════════
-function renderCards() {
-  var cont = document.getElementById("mainContent");
-  if (!filteredData || !filteredData.length) {
-    cont.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div>Is range mein koi data nahi mila.</div>';
+// ════════════════════════════════
+// RENDER ATTENDANCE CARDS
+// ════════════════════════════════
+function renderAttendance() {
+  filteredRows = activeEmp === "all" ? allRows : allRows.filter(function(r){ return r.empName === activeEmp; });
+
+  // Stats
+  var checkedIn = filteredRows.filter(function(r){ return r.checkinTime && !r.checkoutTime; }).length;
+  var totalDist = filteredRows.reduce(function(a,r){ return a + (parseFloat(r.distance)||0); }, 0);
+  var visits = filteredRows.filter(function(r){ return r.shopName && r.shopName !== "—"; }).length;
+  document.getElementById("sTot").textContent   = filteredRows.length;
+  document.getElementById("sIn").textContent    = checkedIn;
+  document.getElementById("sVis").textContent   = visits;
+  document.getElementById("sDist").textContent  = totalDist > 0 ? totalDist.toFixed(0)+" km" : "—";
+
+  if (!filteredRows.length) {
+    document.getElementById("attCards").innerHTML = '<div class="empty"><div class="empty-ico">📭</div>Is range mein koi data nahi.</div>';
     return;
   }
 
   var html = "";
-  filteredData.forEach(function(row, idx) {
-    var initials = (row.name || "?").split(" ").map(function(w){return w[0];}).join("").toUpperCase().slice(0,2);
-    var isIn = row.checkinTime && (!row.checkoutTime || row.checkoutTime === "");
-    var statusBadge = isIn
-      ? '<span class="emp-status-badge in">🟢 Checked In</span>'
-      : (row.checkoutTime ? '<span class="emp-status-badge out">🔴 Checked Out</span>'
-                          : '<span class="emp-status-badge out">⚪ No Data</span>');
+  filteredRows.forEach(function(row, idx) {
+    var init = (row.empName||"?").split(" ").map(function(w){return w[0]||"";}).join("").toUpperCase().slice(0,2);
+    var isIn  = row.checkinTime && !row.checkoutTime;
+    var isOut = row.checkinTime && row.checkoutTime;
+    var badgeCls = isIn ? "in" : (isOut ? "out" : "absent");
+    var badgeTxt = isIn ? "🟢 In" : (isOut ? "🔴 Out" : "⚪ —");
 
-    // ── ATTENDANCE DATA ──
-    var attnHtml = '<div class="data-grid">'
-      + dataItem("📅 Date",           row.date        || "—")
-      + dataItem("🕐 Check-In",       row.checkinTime || "—", row.checkinTime ? "green" : "")
-      + dataItem("🕔 Check-Out",      row.checkoutTime || "—", row.checkoutTime ? "" : "warn")
-      + dataItem("⏱ Duration",        row.duration    || "—")
-      + dataItem("🔧 Odo Start",      row.odometerStart ? row.odometerStart + " km" : "—")
-      + dataItem("🔧 Odo End",        row.odometerEnd   ? row.odometerEnd   + " km" : "—")
-      + dataItem("📏 Distance",       row.distance      ? row.distance + " km"      : "—")
-      + dataItem("📍 GPS", row.mapLink
-          ? '<a href="' + row.mapLink + '" target="_blank">📍 Map Dekho</a>'
-          : "—")
-      + '</div>';
+    // Distance calc
+    var odoS = parseInt(row.odometerStart) || 0;
+    var odoE = parseInt(row.checkoutTime ? (row.odometerEnd||0) : 0) || 0;
+    var dist = row.distance ? row.distance+" km" : (odoS && odoE ? (odoE-odoS)+" km" : "—");
 
-    // ── VISITS TABLE ──
-    var visitsHtml = "";
-    if (row.visits && row.visits.length) {
-      var rows = row.visits.map(function(v) {
-        return '<tr>'
-          + '<td><div class="visit-shop">' + (v.shopName || "—") + '</div>'
-          + '<div class="visit-area">' + (v.area || "") + '</div></td>'
-          + '<td>' + (v.shopkeeperName || "—") + '</td>'
-          + '<td>' + (v.shopkeeperContact || "—") + '</td>'
-          + '<td>' + (v.time || "—") + '</td>'
-          + '<td>' + (v.notes || "—") + '</td>'
-          + '<td>' + (v.mapLink ? '<a href="' + v.mapLink + '" target="_blank">📍</a>' : "—") + '</td>'
-          + '</tr>';
-      }).join("");
-      visitsHtml = '<div class="sec-title">📍 Visit Records (' + row.visits.length + ')</div>'
-        + '<div class="visits-wrap"><table class="visits-table">'
-        + '<thead><tr><th>Shop</th><th>Malik</th><th>Contact</th><th>Time</th><th>Notes</th><th>GPS</th></tr></thead>'
-        + '<tbody>' + rows + '</tbody></table></div>';
-    }
-
-    // ── PHOTOS ──
-    var photosArr = [];
-    if (row.photo1) photosArr.push({ src: row.photo1, lbl: "Selfie 1" });
-    if (row.photo2) photosArr.push({ src: row.photo2, lbl: "Odometer (In)" });
-    if (row.checkoutPhoto) photosArr.push({ src: row.checkoutPhoto, lbl: "Odometer (Out)" });
-    if (row.photo)  photosArr.push({ src: row.photo,  lbl: "Photo" });
+    // Photos
+    var photos = [];
+    if (row.photo1)       photos.push({src:row.photo1, lbl:"Selfie"});
+    if (row.photo2)       photos.push({src:row.photo2, lbl:"Odo (In)"});
+    if (row.checkoutPhoto)photos.push({src:row.checkoutPhoto, lbl:"Odo (Out)"});
 
     var photosHtml = "";
-    if (photosArr.length) {
-      photosHtml = '<div class="sec-title">📸 Photos</div><div class="photos-row">'
-        + photosArr.map(function(p, pi) {
-          return '<div class="photo-thumb-wrap">'
-            + '<img class="photo-thumb" src="' + p.src + '" alt="' + p.lbl + '" '
-            + 'onclick="openLightbox(\'' + p.src.replace(/'/g,"") + '\',\'' + p.lbl + '\')">'
-            + '<div class="photo-thumb-lbl">' + p.lbl + '</div></div>';
-        }).join("")
-        + '</div>';
-    } else {
-      photosHtml = '<div class="no-photos">📷 Koi photo nahi</div>';
+    if (photos.length) {
+      photosHtml = photos.map(function(p){
+        return '<div class="ph-wrap">'
+          +'<img class="ph-img" src="'+escHtml(p.src)+'" onclick="openLb(\''+escHtml(p.src)+'\',\''+p.lbl+'\')" alt="'+p.lbl+'">'
+          +'<div class="ph-lbl">'+p.lbl+'</div></div>';
+      }).join("");
     }
 
-    html += '<div class="emp-section">'
-      + '<div class="emp-header">'
-      + '<div class="emp-header-left">'
-      + '<div class="emp-avatar">' + initials + '</div>'
-      + '<div><div class="emp-name-big">' + (row.name || "Unknown") + '</div>'
-      + '<div class="emp-desig">' + (row.designation || row.role || "Field Employee") + '</div></div>'
-      + '</div>' + statusBadge + '</div>'
-      + '<div class="sec-title">📋 Attendance Details</div>'
-      + attnHtml
-      + visitsHtml
-      + photosHtml
-      + '</div>';
+    // Visit row
+    var visitHtml = "";
+    if (row.shopName && row.shopName !== "—" && row.shopName !== "") {
+      visitHtml = '<div class="sec-lbl">📍 Visit</div>'
+        +'<div class="visit-item">'
+        +'<div class="visit-dot"></div>'
+        +'<div><div class="visit-shop">'+escHtml(row.shopName||"")+'</div>'
+        +'<div class="visit-meta">'+(row.area||"")+(row.shopkeeperName && row.shopkeeperName!=="—"?" · "+row.shopkeeperName:"")+'</div>'
+        +(row.mapLink ? '<a class="visit-map" href="'+row.mapLink+'" target="_blank">📍 Map Dekho →</a>' : "")
+        +'</div></div>';
+    }
+
+    // Route button (only if mapLink exists)
+    var routeHtml = row.mapLink
+      ? '<a href="'+row.mapLink+'" target="_blank" class="route-btn">'
+        +'<span>🗺️</span><span class="route-btn-lbl">Route / Location Dekho</span><span style="margin-left:auto;font-size:11px;color:var(--muted2)">→</span></a>'
+      : "";
+
+    html += '<div class="att-card">'
+      // Header
+      +'<div class="att-head">'
+        +'<div class="avatar">'+init+'</div>'
+        +'<div><div class="emp-nm">'+escHtml(row.empName||"—")+'</div>'
+        +'<div class="emp-dg">'+fmtDate(row.date)+'</div></div>'
+        +'<span class="badge '+badgeCls+'">'+badgeTxt+'</span>'
+      +'</div>'
+      // Info grid
+      +'<div class="info-grid">'
+        +infoItem("🕐 Check-In",   row.checkinTime  || "—", row.checkinTime  ? "g" : "")
+        +infoItem("🕔 Check-Out",  row.checkoutTime || "—", row.checkoutTime ? ""  : "o")
+        +infoItem("⏱ Duration",   row.duration     || "—", "")
+        +infoItem("📏 Distance",   dist,                    dist !== "—" ? "g" : "")
+        +infoItem("🔧 Odo Start",  odoS ? odoS+" km" : "—","")
+        +infoItem("🔧 Odo End",    odoE ? odoE+" km" : "—","")
+      +'</div>'
+      // Route
+      + routeHtml
+      // Visits
+      + visitHtml
+      // Photos
+      +(photos.length ? '<div class="sec-lbl">📸 Photos</div><div class="photos-row">'+photosHtml+'</div>' : "")
+      +'</div>';
   });
 
-  cont.innerHTML = html;
+  document.getElementById("attCards").innerHTML = html;
 }
 
-function dataItem(lbl, val, cls) {
-  return '<div class="data-item">'
-    + '<div class="data-lbl">' + lbl + '</div>'
-    + '<div class="data-val' + (cls ? " " + cls : "") + '">' + val + '</div>'
-    + '</div>';
+function infoItem(lbl, val, cls) {
+  return '<div class="info-item">'
+    +'<div class="info-lbl">'+lbl+'</div>'
+    +'<div class="info-val '+(cls||"")+'">'+val+'</div>'
+    +'</div>';
 }
 
-// ══════════════════════════════════════
-// LIGHTBOX
-// ══════════════════════════════════════
-function openLightbox(src, lbl) {
-  document.getElementById("lightboxImg").src = src;
-  document.getElementById("lightboxLbl").textContent = lbl;
-  document.getElementById("lightbox").classList.add("show");
-}
-function closeLightbox() {
-  document.getElementById("lightbox").classList.remove("show");
+// ════════════════════════════════
+// EMPLOYEES SCREEN
+// ════════════════════════════════
+function loadEmpScreen() {
+  document.getElementById("empListWrap").innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
+  apiPost({ action: "get_employees" }).then(function(r) {
+    allEmps = r.employees || [];
+    document.getElementById("empCountLbl").textContent = allEmps.length + " employees";
+    renderEmpList();
+  }).catch(function() {
+    document.getElementById("empListWrap").innerHTML = '<div class="empty">⚠️ Load nahi hua.</div>';
+  });
 }
 
-// ══════════════════════════════════════
+function renderEmpList() {
+  if (!allEmps.length) {
+    document.getElementById("empListWrap").innerHTML = '<div class="empty"><div class="empty-ico">👥</div>Koi employee nahi.</div>';
+    return;
+  }
+  var html = '<div class="emp-list-card">';
+  allEmps.forEach(function(e) {
+    html += '<div class="emp-row">'
+      +'<div class="avatar" style="width:36px;height:36px;font-size:13px;">'+((e.name||"?")[0].toUpperCase())+'</div>'
+      +'<div class="emp-row-info">'
+        +'<div class="emp-row-name">'+escHtml(e.name)+'</div>'
+        +'<div class="emp-row-meta">'+(e.designation||"Field Employee")+' · PIN: '+(e.pin||"—")+(e.contact?' · '+e.contact:'')+'</div>'
+      +'</div>'
+      +'<div class="emp-row-actions">'
+        +'<button class="btn-edit" onclick="openEditEmp(\''+escHtml(e.name)+'\')">✏️</button>'
+        +'<button class="btn-del" onclick="deleteEmp(\''+escHtml(e.name)+'\')">🗑</button>'
+      +'</div>'
+      +'</div>';
+  });
+  html += '</div>';
+  document.getElementById("empListWrap").innerHTML = html;
+}
+
+function openAddEmp() {
+  document.getElementById("empModalTitle").textContent = "➕ Employee Add Karo";
+  document.getElementById("mName").value   = "";
+  document.getElementById("mPin").value    = "";
+  document.getElementById("mContact").value= "";
+  document.getElementById("mDesig").value  = "";
+  document.getElementById("mOldName").value= "";
+  document.getElementById("empModal").classList.add("show");
+}
+
+function openEditEmp(name) {
+  var e = allEmps.find(function(x){return x.name===name;});
+  if (!e) return;
+  document.getElementById("empModalTitle").textContent = "✏️ Employee Edit Karo";
+  document.getElementById("mName").value    = e.name;
+  document.getElementById("mPin").value     = e.pin;
+  document.getElementById("mContact").value = e.contact||"";
+  document.getElementById("mDesig").value   = e.designation||"";
+  document.getElementById("mOldName").value = e.name;
+  document.getElementById("empModal").classList.add("show");
+}
+
+function closeEmpModal() {
+  document.getElementById("empModal").classList.remove("show");
+}
+
+function saveEmployee() {
+  var name  = document.getElementById("mName").value.trim();
+  var pin   = document.getElementById("mPin").value.trim();
+  var cont  = document.getElementById("mContact").value.trim();
+  var desig = document.getElementById("mDesig").value.trim();
+  var old   = document.getElementById("mOldName").value.trim();
+  if (!name) { toast("Naam daalo", "err"); return; }
+  if (!pin)  { toast("PIN daalo", "err"); return; }
+  var isEdit = !!old;
+  var payload = isEdit
+    ? { action:"update_employee", oldName:old, name:name, pin:pin, contact:cont, designation:desig }
+    : { action:"add_employee", name:name, pin:pin, contact:cont, designation:desig };
+  apiPost(payload).then(function() {
+    closeEmpModal();
+    toast(isEdit ? "Employee update ho gaya ✓" : "Employee add ho gaya ✓", "ok");
+    loadEmpScreen();
+  }).catch(function(){ toast("Error. Dobara try karo.", "err"); });
+}
+
+function deleteEmp(name) {
+  if (!confirm(name + " ko delete karna hai?")) return;
+  apiPost({ action:"delete_employee", name:name }).then(function() {
+    toast(name + " delete ho gaya ✓", "ok");
+    loadEmpScreen();
+  }).catch(function(){ toast("Delete nahi hua.", "err"); });
+}
+
+// ════════════════════════════════
 // CSV EXPORT
-// ══════════════════════════════════════
+// ════════════════════════════════
 function exportCSV() {
-  if (!filteredData || !filteredData.length) { toast("Koi data nahi export ke liye", "error"); return; }
-  var headers = ["Name","Designation","Date","Check-In","Check-Out","Duration","Odo Start","Odo End","Distance","GPS Link","Total Visits"];
-  var rows = filteredData.map(function(r) {
-    return [
-      r.name || "",
-      r.designation || "",
-      r.date || "",
-      r.checkinTime || "",
-      r.checkoutTime || "",
-      r.duration || "",
-      r.odometerStart || "",
-      r.odometerEnd || "",
-      r.distance || "",
-      r.mapLink || "",
-      (r.visits ? r.visits.length : 0)
-    ].map(function(v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
+  if (!filteredRows.length) { toast("Koi data nahi export ke liye", "err"); return; }
+  var headers = ["Name","Date","Check-In","Check-Out","Duration","Odo Start","Odo End","Distance","Shop","Area","Map Link"];
+  var rows = filteredRows.map(function(r) {
+    return [r.empName,fmtDate(r.date),r.checkinTime,r.checkoutTime,r.duration,
+      r.odometerStart,r.odometerEnd||"",r.distance||"",r.shopName,r.area,r.mapLink||""]
+      .map(function(v){return '"'+String(v||"").replace(/"/g,'""')+'"';}).join(",");
   });
   var csv = [headers.join(",")].concat(rows).join("\n");
-  var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement("a");
-  a.href = url; a.download = "NAMEFAME_Export_" + new Date().toISOString().split("T")[0] + ".csv";
+  var blob = new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "NAMEFAME_"+new Date().toISOString().split("T")[0]+".csv";
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast("CSV download ho raha hai ✓", "success");
+  toast("CSV download ho raha hai ✓", "ok");
 }
 
-// ══════════════════════════════════════
-// API
-// ══════════════════════════════════════
+// ════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════
+function openLb(src, lbl) {
+  document.getElementById("lbImg").src = src;
+  document.getElementById("lbLbl").textContent = lbl;
+  document.getElementById("lb").classList.add("show");
+  event.stopPropagation();
+}
+function closeLb() { document.getElementById("lb").classList.remove("show"); }
+
+// ════════════════════════════════
+// HELPERS
+// ════════════════════════════════
 function apiPost(data) {
   return fetch(SCRIPT_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain" },
+    method:"POST", headers:{"Content-Type":"text/plain"},
     body: JSON.stringify(data)
-  }).then(function(r) { return r.json(); });
+  }).then(function(r){ return r.json(); });
 }
 
-// ══════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════
-var toastTimer = null;
+var _tt = null;
 function toast(msg, type) {
   var el = document.getElementById("toast");
   el.textContent = msg;
-  el.className = "toast show" + (type ? " " + type : "");
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { el.classList.remove("show"); }, 3000);
+  el.className = "toast show" + (type ? " "+type : "");
+  if (_tt) clearTimeout(_tt);
+  _tt = setTimeout(function(){ el.classList.remove("show"); }, 3000);
 }
 
-// ══════════════════════════════════════
-// AUTO LOGIN CHECK
-// ══════════════════════════════════════
-if (sessionStorage.getItem("adminAuth") === "1") {
+function fmtDate(v) {
+  if (!v) return "—";
+  var d = v instanceof Date ? v : new Date(v);
+  if (isNaN(d)) return String(v);
+  return d.getDate().toString().padStart(2,"0")+"-"+(d.getMonth()+1).toString().padStart(2,"0")+"-"+d.getFullYear();
+}
+
+function fmtDateLong(d) {
+  var days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return days[d.getDay()]+", "+d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+}
+
+function escHtml(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+// ════════════════════════════════
+// AUTO-LOGIN CHECK
+// ════════════════════════════════
+if (sessionStorage.getItem("nfAdmin") === "1") {
   document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("adminMain").style.display   = "block";
-  initAdmin();
+  document.getElementById("app").style.display = "block";
+  initApp();
 }
 </script>
 </body>
