@@ -816,6 +816,7 @@ function ciAcceptPhoto() {
     ciStopCamera();
     setTimeout(function() {
       setCiState("odometer");
+      document.getElementById("ciEmpRole").textContent = "Odometer Reading";
       document.getElementById("ciOdometerInput").focus();
     }, 500);
   } else {
@@ -828,6 +829,7 @@ function ciAcceptPhoto() {
 // NEW: Take another photo after first one accepted
 function ciTakeAnotherPhoto() {
   ciPhotoData = null;
+  ciCamFacing = "environment";//for rear camera start on second photo
   if (!ciCamStream) ciStartCamera();
   document.getElementById("ci-preview").style.display = "none";
   document.getElementById("ciVideo").style.display = "block";
@@ -848,6 +850,7 @@ function ciSubmitOdometer() {
   
   ciOdometerStart = parseInt(odoVal);
   odoInput.value = "";
+
   
   // Move to submit check-in
   ciSubmitCheckin();
