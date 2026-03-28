@@ -21,6 +21,9 @@ var checkoutCamStream = null;
 var GPS_INTERVAL = 5 * 60 * 1000;
 var MIN_CHECKOUT = 30 * 1000;
 
+var MIN_SHOP_CHECKOUT = 3 * 60 * 1000; // 3 minutes
+var shopCdInt = null;
+
 // Page detect
 var IS_INDEX   = !!document.getElementById("s-land");
 var IS_CHECKIN = !!document.getElementById("ciPage");
@@ -46,6 +49,36 @@ var ciCamStream  = null;
 var ciCamFacing  = "user";
 var ciGpsPos     = null;
 var ciPhotoData  = null;
+
+
+function startShopCD() {
+  if (shopCdInt) clearInterval(shopCdInt);
+
+  var startMs = Date.now();
+
+  shopCdInt = setInterval(function () {
+    var rem = MIN_SHOP_CHECKOUT - (Date.now() - startMs);
+
+    var bReIn = document.getElementById("bReIn");
+
+    if (rem <= 0) {
+      clearInterval(shopCdInt);
+
+      if (bReIn) {
+        bReIn.classList.remove("dis");
+      }
+
+    } else {
+
+      if (bReIn) {
+        bReIn.classList.add("dis");
+      }
+
+    }
+
+  }, 500);
+} 
+
 
 // ── LocalStorage Helper ──
 var store = {
@@ -79,6 +112,7 @@ function toast(msg, type) {
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(function() { el.classList.remove("show"); }, 3000);
 }
+
 
 // ── Date/Time Formatters ──
 function fmtDate(v) {
@@ -267,7 +301,7 @@ function refreshDash() {
     loadDist();
     document.getElementById("bCI").classList.add("dis");
     document.getElementById("bCO").classList.remove("dis");
-    document.getElementById("bRe").classList.remove("dis");
+    document.getElementById("bReIn").classList.remove("dis");
     document.getElementById("bOrd").classList.remove("dis");
     document.getElementById("bPay").classList.remove("dis");
     document.getElementById("bRet").classList.remove("dis");
@@ -276,7 +310,7 @@ function refreshDash() {
     stopTimer(); stopGps();
     document.getElementById("bCI").classList.remove("dis");
     document.getElementById("bCO").classList.add("dis");
-    document.getElementById("bRe").classList.add("dis");
+    document.getElementById("bReIn").classList.add("dis");
     document.getElementById("bOrd").classList.add("dis");
     document.getElementById("bPay").classList.add("dis");
     document.getElementById("bRet").classList.add("dis");
@@ -400,6 +434,13 @@ function doNewVisit() {
   document.getElementById("visitPhotoBtn").style.display = "flex";
   document.getElementById("visitModal").classList.add("show");
   getGps();
+  startShopCD();   // ADD THIS LINE
+}
+//shop checkout
+function doShopCheckout() {
+
+  alert("Shop checkout ho gaya");
+
 }
 
 function cancelVisit() {
