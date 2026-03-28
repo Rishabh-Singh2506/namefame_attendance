@@ -31,9 +31,37 @@
     <div class="verify-hero">
       <button class="verify-back" onclick="showScreen('s-land')">←</button>
       <h2>👤 Verify Identity</h2>
-      <p>Apna naam aur PIN daalo</p>
+      <p>Apna state, naam aur PIN daalo</p>
     </div>
     <div class="verify-body">
+      <!-- STATE SELECT -->
+      <div class="fgroup">
+        <label class="lbl">Apna State Chunein</label>
+        <div id="stateLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
+        <div id="stateList-wrap" style="display:none;">
+          <select id="stateSelect" onchange="loadDistricts()">
+            <option value="">-- State chunein --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DISTRICT SELECT -->
+      <div class="fgroup">
+        <label class="lbl">Apna District Chunein</label>
+        <select id="districtSelect" onchange="loadRoutes()" style="display:none;">
+          <option value="">-- District chunein --</option>
+        </select>
+      </div>
+
+      <!-- ROUTE SELECT -->
+      <div class="fgroup">
+        <label class="lbl">Apna Route Chunein</label>
+        <select id="routeSelect" onchange="loadAreas()" style="display:none;">
+          <option value="">-- Route chunein --</option>
+        </select>
+      </div>
+
+      <!-- EMPLOYEE SELECT -->
       <div class="fgroup">
         <label class="lbl">Apna Naam Chunein</label>
         <div id="empLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
@@ -43,6 +71,8 @@
           </select>
         </div>
       </div>
+
+      <!-- PIN INPUT -->
       <div class="fgroup">
         <label class="lbl">PIN / Password</label>
         <div class="inp-wrap">
@@ -51,6 +81,7 @@
           <button class="eye-btn" onclick="togglePin()">👁</button>
         </div>
       </div>
+
       <button class="btn-primary" id="loginBtn" onclick="doLogin()">Login →</button>
     </div>
   </div>
@@ -121,39 +152,37 @@
         <span class="al">Shop Visit In</span>
         <span class="as">Visit record karo</span>
       </div>
-  <div class="abtn re dis" id="bReOut" onclick="doShopCheckout()">      <span class="ai">📍</span>
+      <div class="abtn re dis" id="bReOut" onclick="doShopCheckout()">
+        <span class="ai">📍</span>
         <span class="al">Shop Visit Out</span>
         <span class="as">Visit record karo</span>
+        <span class="cdown" id="visitCdBadge"></span>
       </div>
-      
+
       <div class="abtn or dis" id="bOrd" onclick="location.href='order.html'">
         <span class="ai">📦</span>
         <span class="al">Order</span>
         <span class="as">Naya order</span>
       </div>
-      
+
       <div class="abtn rt dis" id="bRet" onclick="location.href='return.html'">
         <span class="ai">↩️</span>
         <span class="al">Product Return</span>
         <span class="as">Maal wapas karo</span>
       </div>
-      
 
-
-      
       <div class="abtn ph dis" id="bPh" onclick="doQuickPhoto()">
         <span class="ai">📸</span>
         <span class="al">Quick Photo</span>
         <span class="as">Photo bhejo</span>
       </div>
 
-      
       <div class="abtn py dis" id="bPay" onclick="location.href='payment.html'">
         <span class="ai">💰</span>
         <span class="al">Payment</span>
         <span class="as">Payment lo</span>
       </div>
-      
+
     </div>
   </div>
 
@@ -186,6 +215,7 @@
         <div class="modal-x" onclick="cancelVisit()">✕</div>
       </div>
       <div class="modal-sub">Shop/Dukan ki jankari bharein</div>
+
       <div class="fgroup">
         <label class="lbl">Visit Photo <span class="req-star">*</span></label>
         <button class="photo-btn" id="visitPhotoBtn" onclick="openVisitCamera()">📷 Photo Lo</button>
@@ -195,30 +225,80 @@
           <div class="photo-retake-lnk" onclick="openVisitCamera()">↩ Dobara lo</div>
         </div>
       </div>
+
+      <!-- AREA SELECT -->
+      <div class="fgroup">
+        <label class="lbl">Area / Ilaka <span class="req-star">*</span></label>
+        <select id="visitAreaSelect" onchange="loadShops()">
+          <option value="">-- Area chunein --</option>
+        </select>
+      </div>
+
+      <!-- SHOP SELECT OR ADD NEW -->
       <div class="fgroup">
         <label class="lbl">Shop Name <span class="req-star">*</span></label>
-        <input type="text" id="mShopName" placeholder="Dukan ka naam">
+        <div style="display:flex;gap:8px;">
+          <select id="mShopName" style="flex:1;">
+            <option value="">-- Shop chunein --</option>
+          </select>
+          <button class="btn-add-shop" onclick="toggleAddNewShop()">+ Add New</button>
+        </div>
+        <input type="text" id="newShopName" placeholder="Naya shop ka naam" style="display:none;margin-top:8px;">
       </div>
+
       <div class="fgroup">
         <label class="lbl">Shopkeeper Name <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
         <input type="text" id="mShopkeeperName" placeholder="Malik ka naam">
       </div>
+
       <div class="fgroup">
         <label class="lbl">Shopkeeper Contact <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
         <input type="tel" id="mShopkeeperContact" placeholder="Mobile number" maxlength="10"
           oninput="this.value=this.value.replace(/\D/g,'')">
       </div>
-      <div class="fgroup">
-        <label class="lbl">Area / Ilaka <span class="req-star">*</span></label>
-        <input type="text" id="mArea" placeholder="Area ka naam">
-      </div>
+
       <div class="fgroup">
         <label class="lbl">Notes <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
         <textarea id="mNotes" rows="2" placeholder="Koi khaas baat..."></textarea>
       </div>
+
       <div class="modal-actions">
         <button class="btn-cancel" onclick="cancelVisit()">Cancel</button>
         <button class="btn-save" id="visitSaveBtn" onclick="saveVisit()">✓ Save Visit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VISIT OUT MODAL ══ -->
+  <div class="modal-overlay" id="visitOutModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">📍 Visit Out</div>
+        <div class="modal-x" onclick="closeVisitOutModal()">✕</div>
+      </div>
+      <div class="modal-sub">Visit khatam karte waqt notes aur rating de</div>
+
+      <div class="fgroup">
+        <label class="lbl">Notes <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
+        <textarea id="visitOutNotes" rows="2" placeholder="Visit mein kya hua..."></textarea>
+      </div>
+
+      <!-- RATING 5 STARS -->
+      <div class="fgroup">
+        <label class="lbl">Rating ⭐ <span class="req-star">*</span></label>
+        <div class="star-rating" id="starRating">
+          <span class="star" onclick="setRating(1)" data-rating="1">⭐</span>
+          <span class="star" onclick="setRating(2)" data-rating="2">⭐</span>
+          <span class="star" onclick="setRating(3)" data-rating="3">⭐</span>
+          <span class="star" onclick="setRating(4)" data-rating="4">⭐</span>
+          <span class="star" onclick="setRating(5)" data-rating="5">⭐</span>
+        </div>
+        <div id="ratingDisplay" style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px;">Select rating</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeVisitOutModal()">Cancel</button>
+        <button class="btn-save" id="visitOutBtn" onclick="submitVisitOut()">✓ Visit Out</button>
       </div>
     </div>
   </div>
@@ -291,6 +371,7 @@
     <button class="pwa-dismiss" onclick="dismissPWA()">✕</button>
   </div>
 
-<script type="module" src="App.js"></script></body>
+  <script type="module" src="App.js"></script>
+</body>
 
 </html>
