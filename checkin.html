@@ -1,137 +1,142 @@
-<!-- UPDATED CHECK-IN HTML SECTION - Copy this to replace your checkin.html -->
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Check-In — NAMEFAME</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Check-In — NAMEFAME</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-<div id="toast" class="toast"></div>
-<!-- NO LOGIN STATE -->
-<div class="ci-no-login" id="noLoginScreen" style="display:none;">
-  <h2>⚠️ Login Nahi Hai</h2>
-  <p>Pehle index page se login karo</p>
-  <button class="btn-go-back-ci" onclick="location.href='index.html'">← Wapas Jao</button>
-</div>
-<!-- MAIN CHECK-IN PAGE -->
-<div class="ci-page" id="ciPage">
-  <!-- TOP BAR -->
-  <div class="ci-topbar">
-    <button class="ci-back-btn" onclick="location.href='index.html'">←</button>
-    <div class="ci-topbar-info">
-      <div class="ci-topbar-title">🟢 Check-In</div>
-      <div class="ci-topbar-sub" id="ciTopDate">—</div>
-    </div>
-    <button class="ci-flip-btn" id="ciFlipBtn" onclick="ciFlipCamera()">🔄</button>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- NO LOGIN STATE -->
+  <div class="ci-no-login" id="noLoginScreen" style="display:none;">
+    <h2>⚠️ Login Nahi Hai</h2>
+    <p>Pehle index page se login karo</p>
+    <button class="btn-go-back-ci" onclick="location.href='index.html'">← Wapas Jao</button>
   </div>
 
-  <!-- VIDEO AREA -->
-  <div class="ci-video-wrap">
-    <video id="ciVideo" autoplay playsinline muted></video>
-    <canvas id="ciCanvas"></canvas>
-    <img id="ci-preview" alt="selfie preview">
-    <!-- Corner guides -->
-    <div class="ci-corner tl"></div>
-    <div class="ci-corner tr"></div>
-    <div class="ci-corner bl"></div>
-    <div class="ci-corner br"></div>
-    <!-- Employee name overlay (auto from login) -->
-    <div class="ci-cam-overlay">
-      <div class="emp-badge">
-        <span>👤</span>
-        <div>
-          <div class="emp-name" id="ciEmpName">—</div>
-          <div class="emp-role" id="ciEmpRole">—</div>
+  <!-- MAIN CHECK-IN PAGE -->
+  <div class="ci-page" id="ciPage">
+    <!-- TOP BAR -->
+    <div class="ci-topbar">
+      <button class="ci-back-btn" onclick="location.href='index.html'">←</button>
+      <div class="ci-topbar-info">
+        <div class="ci-topbar-title">🟢 Check-In</div>
+        <div class="ci-topbar-sub" id="ciTopDate">—</div>
+      </div>
+      <button class="ci-flip-btn" id="ciFlipBtn" onclick="ciFlipCamera()">🔄</button>
+    </div>
+
+    <!-- VIDEO AREA -->
+    <div class="ci-video-wrap">
+      <video id="ciVideo" autoplay playsinline muted></video>
+      <canvas id="ciCanvas"></canvas>
+      <img id="ci-preview" alt="selfie preview">
+      <!-- Corner guides -->
+      <div class="ci-corner tl"></div>
+      <div class="ci-corner tr"></div>
+      <div class="ci-corner bl"></div>
+      <div class="ci-corner br"></div>
+      <!-- Employee name overlay -->
+      <div class="ci-cam-overlay">
+        <div class="emp-badge">
+          <span>👤</span>
+          <div>
+            <div class="emp-name" id="ciEmpName">—</div>
+            <div class="emp-role" id="ciEmpRole">—</div>
+          </div>
+        </div>
+      </div>
+      <!-- GPS overlay -->
+      <div class="ci-gps-badge" id="ciGpsBadge">📍 GPS fetch ho raha hai...</div>
+    </div>
+
+    <!-- PHOTO COUNTER BADGE -->
+    <div class="ci-photo-counter" id="ciPhotoCounter">
+      <span id="ciPhotoCount">0</span>/2 📸
+    </div>
+
+    <!-- BOTTOM ACTION BAR -->
+    <div class="ci-action-bar">
+      <!-- STATE 1: Capture -->
+      <div class="ci-state active" id="ci-state-capture">
+        <div class="ci-hint">Apna selfie lo — face clearly dikhna chahiye</div>
+        <button class="btn-capture" onclick="ciCapturePhoto()">📷 Selfie Lo</button>
+      </div>
+
+      <!-- STATE 2: Preview -->
+      <div class="ci-state" id="ci-state-preview">
+        <div class="ci-hint">Photo acchi lagi?</div>
+        <div class="ci-preview-actions">
+          <button class="btn-retake-ci" onclick="ciRetakePhoto()">↩ Retake</button>
+          <button class="btn-accept-photo" id="ciAcceptBtn" onclick="ciAcceptPhoto()">✓ Accept Photo</button>
+        </div>
+      </div>
+
+      <!-- STATE 3: Photo Collection -->
+      <div class="ci-state" id="ci-state-photo-collection">
+        <div class="ci-photo-grid">
+          <div class="ci-photo-item" id="ciPhoto1Slot">
+            <div class="ci-photo-placeholder">📷 Photo 1</div>
+            <img id="ciPhoto1Img" style="display:none;" alt="photo 1">
+          </div>
+          <div class="ci-photo-item" id="ciPhoto2Slot">
+            <div class="ci-photo-placeholder">Odometer Photo</div>
+            <img id="ciPhoto2Img" style="display:none;" alt="odometer photo">
+          </div>
+        </div>
+        <div class="ci-photo-actions">
+          <button class="btn-take-another" onclick="ciTakeAnotherPhoto()">📷 Next Photo</button>
+        </div>
+      </div>
+
+      <!-- STATE 4: Odometer Input -->
+      <div class="ci-state" id="ci-state-odometer">
+        <div class="ci-hint">Starting odometer reading daalo</div>
+        <div class="ci-odometer-section">
+          <label for="ciOdometerInput" class="ci-odo-label">🔧 Odometer Reading</label>
+          <div class="ci-odo-input-wrap">
+            <input 
+              type="number" 
+              id="ciOdometerInput" 
+              class="ci-odo-input" 
+              placeholder="जैसे: 45000"
+              min="0"
+              step="1"
+            >
+            <span class="ci-odo-unit">km</span>
+          </div>
+          <div class="ci-odo-hint">Starting reading — puri accuracy se bharo</div>
+        </div>
+        <button class="btn-continue-odo" id="ciOdoSubmitBtn" onclick="ciSubmitOdometer()">✓ Continue</button>
+      </div>
+
+      <!-- STATE 5: Loading -->
+      <div class="ci-state" id="ci-state-loading">
+        <div class="ci-spinner">
+          <div class="spin"></div>
+          <div class="spin-txt">Check-in ho raha hai...</div>
+        </div>
+      </div>
+
+      <!-- STATE 6: Done -->
+      <div class="ci-state" id="ci-state-done">
+        <div class="ci-done">
+          <div class="done-icon">✅</div>
+          <div class="done-title">Check-In Ho Gaya!</div>
+          <div class="done-sub" id="ciDoneMsg">—</div>
+          <button class="btn-go-dash" onclick="location.href='index.html'">← Dashboard pe Jao</button>
         </div>
       </div>
     </div>
-    <!-- GPS overlay -->
-    <div class="ci-gps-badge" id="ciGpsBadge">📍 GPS fetch ho raha hai...</div>
   </div>
 
-  <!-- PHOTO COUNTER BADGE -->
-  <div class="ci-photo-counter" id="ciPhotoCounter">
-    <span id="ciPhotoCount">0</span>/2 📸
-  </div>
-
-  <!-- BOTTOM ACTION BAR -->
-  <div class="ci-action-bar">
-    <!-- STATE 1: Capture -->
-    <div class="ci-state active" id="ci-state-capture">
-      <div class="ci-hint">Apna selfie lo — face clearly dikhna chahiye</div>
-      <button class="btn-capture" onclick="ciCapturePhoto()">📷 Selfie Lo</button>
-    </div>
-
-    <!-- STATE 2: Preview -->
-    <div class="ci-state" id="ci-state-preview">
-      <div class="ci-hint">Photo acchi lagi?</div>
-      <div class="ci-preview-actions">
-        <button class="btn-retake-ci" onclick="ciRetakePhoto()">↩ Retake</button>
-        <button class="btn-accept-photo" id="ciAcceptBtn" onclick="ciAcceptPhoto()">✓ Accept Photo</button>
-      </div>
-    </div>
-
-    <!-- STATE 3: Photo Collection (if 2 photos needed) -->
-    <div class="ci-state" id="ci-state-photo-collection">
-      <div class="ci-photo-grid">
-        <div class="ci-photo-item" id="ciPhoto1Slot">
-          <div class="ci-photo-placeholder">📷 Photo 1</div>
-          <img id="ciPhoto1Img" style="display:none;" alt="photo 1">
-        </div>
-        <div class="ci-photo-item" id="ciPhoto2Slot">
-          <div class="ci-photo-placeholder">Odometer Photo</div>
-          <img id="ciPhoto2Img" style="display:none;" alt="odometer photo">
-        </div>
-      </div>
-      <div class="ci-photo-actions">
-        <button class="btn-take-another" onclick="ciTakeAnotherPhoto()">📷 Next Photo</button>
-      </div>
-    </div>
-
-    <!-- STATE 4: Odometer Input -->
-    <div class="ci-state" id="ci-state-odometer">
-      <div class="ci-hint">Starting odometer reading daalo</div>
-      <div class="ci-odometer-section">
-        <label for="ciOdometerInput" class="ci-odo-label">🔧 Odometer Reading</label>
-        <div class="ci-odo-input-wrap">
-          <input 
-            type="number" 
-            id="ciOdometerInput" 
-            class="ci-odo-input" 
-            placeholder="जैसे: 45000"
-            min="0"
-            step="1"
-          >
-          <span class="ci-odo-unit">km</span>
-        </div>
-        <div class="ci-odo-hint">Starting reading — puri accuracy se bharo</div>
-      </div>
-      <button class="btn-continue-odo" id="ciOdoSubmitBtn" onclick="ciSubmitOdometer()">✓ Continue</button>
-    </div>
-
-    <!-- STATE 5: Loading -->
-    <div class="ci-state" id="ci-state-loading">
-      <div class="ci-spinner">
-        <div class="spin"></div>
-        <div class="spin-txt">Check-in ho raha hai...</div>
-      </div>
-    </div>
-
-    <!-- STATE 6: Done -->
-    <div class="ci-state" id="ci-state-done">
-      <div class="ci-done">
-        <div class="done-icon">✅</div>
-        <div class="done-title">Check-In Ho Gaya!</div>
-        <div class="done-sub" id="ciDoneMsg">—</div>
-        <button class="btn-go-dash" onclick="location.href='index.html'">← Dashboard pe Jao</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script src="App.js"></script>
+  <script type="module" src="checkin.js"></script>
 </body>
+
 </html>
