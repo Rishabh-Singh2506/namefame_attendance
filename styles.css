@@ -1750,5 +1750,40 @@ select:focus {
   .cam-btn.cap:active {
     background: #b91c1c !important;
   }
+   /* Reduce height 50% for specific buttons only */
+#bCI,
+#bCO,
+#bRe {
+  padding: 7px 10px !important;   /* pehle 14px tha — ab 50% */
+  border-radius: 10px;             /* rectangle look */
+}
 
+/* Icon size bhi thoda chhota */
+#bCI .ai,
+#bCO .ai,
+#bRe .ai {
+  font-size: 18px;   /* pehle 26px */
+  margin-bottom: 2px;
+}
+
+/* Text spacing compact */
+#bCI .al,
+#bCO .al,
+#bRe .al {
+  font-size: 11px;
+}
+
+#bCI .as,
+#bCO .as,
+#bRe .as {
+  font-size: 9px;
+}
+#bCI,
+#bCO,
+#bReIn,
+#bReOut {
+  padding: 7px 10px !important;
+  border-radius: 10px;
+}
+   
 }
