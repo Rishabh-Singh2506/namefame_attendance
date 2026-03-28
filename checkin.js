@@ -6,8 +6,8 @@
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const SUPABASE_URL = "https://qhikq.........ta.supabase.co"; // Replace with your URL
-const SUPABASE_ANON_KEY = "PASTE_YOUR_ANON_KEY_HERE"; // Replace with your key
+const SUPABASE_URL = "https://qhikqbrfojdlmdwsdota.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
