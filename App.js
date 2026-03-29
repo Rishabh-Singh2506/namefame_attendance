@@ -141,28 +141,42 @@ window.loadDistricts = async function () {
   }
 
   try {
-    const { data, error } = await supabase
+    // Get all routes first (no filter on state)
+    const { data: allData, error: allError } = await supabase
       .from("routes")
-      .select("district")
-      .eq("state", state.toLowerCase());
+      .select("state, district");
 
-    if (error) {
-      console.error("District load error:", error);
+    if (allError) {
+      console.error("District load error:", allError);
       toast("District load nahi ho sake", "error");
       districtGroup.style.display = "none";
       return;
     }
 
-    if (!data || data.length === 0) {
-      toast("Koi district nahi mila", "error");
+    // Filter on client side with case-insensitive comparison
+    const filtered = allData.filter(r => 
+      r.state && r.district && r.state.toUpperCase() === state.toUpperCase()
+    );
+
+    if (!filtered || filtered.length === 0) {
+      toast("Koi district nahi mila is state ke liye", "error");
       districtGroup.style.display = "none";
       return;
     }
 
-    console.log("Raw district data from DB:", data);
-    console.log("Total entries:", data.length);
+    console.log("Raw district data from DB:", filtered);
+    console.log("Total entries:", filtered.length);
     
-    const districts = [...new Set(data.map(d => d.district).filter(d => d))];
+    // Get unique districts (case-insensitive deduplication)
+    const districtMap = {};
+    filtered.forEach(r => {
+      const key = r.district.toUpperCase();
+      if (!districtMap[key]) {
+        districtMap[key] = r.district; // Store original case
+      }
+    });
+    
+    const districts = Object.values(districtMap).sort();
     
     console.log("Unique districts after filter:", districts);
 
@@ -202,28 +216,43 @@ window.loadRoutes = async function () {
   }
 
   try {
-    const { data, error } = await supabase
+    // Get all routes
+    const { data: allData, error: allError } = await supabase
       .from("routes")
-      .select("working_route")
-      .eq("state", state.toLowerCase())
-      .eq("district", district.toLowerCase());
+      .select("state, district, working_route");
 
-    if (error) {
-      console.error("Route load error:", error);
+    if (allError) {
+      console.error("Route load error:", allError);
       toast("Route load nahi ho sake", "error");
       return;
     }
 
-    if (!data || data.length === 0) {
-      toast("Koi route nahi mila", "error");
+    // Filter on client side with case-insensitive comparison
+    const filtered = allData.filter(r => 
+      r.state && r.district && r.working_route &&
+      r.state.toUpperCase() === state.toUpperCase() &&
+      r.district.toUpperCase() === district.toUpperCase()
+    );
+
+    if (!filtered || filtered.length === 0) {
+      toast("Koi route nahi mila is district ke liye", "error");
       routeGroup.style.display = "none";
       return;
     }
 
-    console.log("Raw route data from DB:", data);
-    console.log("Total entries:", data.length);
+    console.log("Raw route data from DB:", filtered);
+    console.log("Total entries:", filtered.length);
     
-    const routes = [...new Set(data.map(r => r.working_route).filter(r => r))];
+    // Get unique routes (case-insensitive deduplication)
+    const routeMap = {};
+    filtered.forEach(r => {
+      const key = r.working_route.toUpperCase();
+      if (!routeMap[key]) {
+        routeMap[key] = r.working_route; // Store original case
+      }
+    });
+    
+    const routes = Object.values(routeMap).sort();
     
     console.log("Unique routes after filter:", routes);
 
@@ -258,19 +287,38 @@ window.loadAreas = async function () {
   }
 
   try {
-    const { data, error } = await supabase
+    // Get all routes
+    const { data: allData, error: allError } = await supabase
       .from("routes")
-      .select("area")
-      .eq("state", state.toLowerCase())
-      .eq("district", district.toLowerCase())
-      .eq("working_route", route.toLowerCase());
+      .select("state, district, working_route, area");
 
-    if (error) {
-      console.error("Area load error:", error);
+    if (allError) {
+      console.error("Area load error:", allError);
       return;
     }
 
-    allRoutes = data || [];
+    // Filter on client side with case-insensitive comparison
+    const filtered = allData.filter(r => 
+      r.state && r.district && r.working_route && r.area &&
+      r.state.toUpperCase() === state.toUpperCase() &&
+      r.district.toUpperCase() === district.toUpperCase() &&
+      r.working_route.toUpperCase() === route.toUpperCase()
+    );
+
+    console.log("Raw area data from DB:", filtered);
+    
+    // Get unique areas (case-insensitive deduplication)
+    const areaMap = {};
+    filtered.forEach(r => {
+      const key = r.area.toUpperCase();
+      if (!areaMap[key]) {
+        areaMap[key] = r.area; // Store original case
+      }
+    });
+    
+    allRoutes = filtered || [];
+    
+    console.log("Unique areas:", Object.values(areaMap));
   } catch (err) {
     console.error("Exception in loadAreas:", err);
   }
@@ -690,25 +738,37 @@ async function loadVisitAreas() {
   }
 
   try {
-    const { data, error } = await supabase
+    // Get all routes
+    const { data: allData, error: allError } = await supabase
       .from("routes")
-      .select("area")
-      .eq("state", state.toLowerCase())
-      .eq("district", district.toLowerCase())
-      .eq("working_route", route.toLowerCase());
+      .select("state, district, working_route, area");
 
-    if (error) {
-      console.error("Visit areas error:", error);
+    if (allError) {
+      console.error("Visit areas error:", allError);
       toast("Areas load nahi ho sake", "error");
       return;
     }
 
-    console.log("Raw area data from DB:", data);
-    console.log("Total entries:", data.length);
+    // Filter on client side with case-insensitive comparison
+    const filtered = allData.filter(r => 
+      r.state && r.district && r.working_route && r.area &&
+      r.state.toUpperCase() === state.toUpperCase() &&
+      r.district.toUpperCase() === district.toUpperCase() &&
+      r.working_route.toUpperCase() === route.toUpperCase()
+    );
+
+    console.log("Raw visit area data from DB:", filtered);
+
+    // Get unique areas (case-insensitive deduplication)
+    const areaMap = {};
+    filtered.forEach(r => {
+      const key = r.area.toUpperCase();
+      if (!areaMap[key]) {
+        areaMap[key] = r.area; // Store original case
+      }
+    });
     
-    const areas = [...new Set(data.map(r => r.area).filter(a => a))];
-    
-    console.log("Unique areas after filter:", areas);
+    const areas = Object.values(areaMap).sort();
 
     const sel = document.getElementById("visitAreaSelect");
     sel.innerHTML = '<option value="">-- Area chunein --</option>';
@@ -719,6 +779,8 @@ async function loadVisitAreas() {
       opt.textContent = area;
       sel.appendChild(opt);
     });
+    
+    console.log("Unique areas loaded:", areas);
   } catch (err) {
     console.error("Exception in loadVisitAreas:", err);
     toast("Error: " + err.message, "error");
@@ -734,24 +796,39 @@ window.loadShops = async function () {
   if (!state || !district || !route || !area) return;
 
   try {
-    const { data, error } = await supabase
+    // Get all routes
+    const { data: allData, error: allError } = await supabase
       .from("routes")
-      .select("shop")
-      .eq("state", state.toLowerCase())
-      .eq("district", district.toLowerCase())
-      .eq("working_route", route.toLowerCase())
-      .eq("area", area.toLowerCase());
+      .select("state, district, working_route, area, shop");
 
-    if (error) {
-      console.error("Shop load error:", error);
+    if (allError) {
+      console.error("Shop load error:", allError);
       return;
     }
 
-    console.log("Raw shop data from DB:", data);
-    console.log("Total entries:", data.length);
+    // Filter on client side with case-insensitive comparison
+    const filtered = allData.filter(r => 
+      r.state && r.district && r.working_route && r.area && r.shop &&
+      r.state.toUpperCase() === state.toUpperCase() &&
+      r.district.toUpperCase() === district.toUpperCase() &&
+      r.working_route.toUpperCase() === route.toUpperCase() &&
+      r.area.toUpperCase() === area.toUpperCase()
+    );
+
+    console.log("Raw shop data from DB:", filtered);
+    console.log("Total entries:", filtered.length);
     
-    const shops = [...new Set(data.map(r => r.shop).filter(s => s))];
+    // Get unique shops (case-insensitive deduplication)
+    const shopMap = {};
+    filtered.forEach(r => {
+      const key = r.shop.toUpperCase();
+      if (!shopMap[key]) {
+        shopMap[key] = r.shop; // Store original case
+      }
+    });
     
+    const shops = Object.values(shopMap).sort();
+
     console.log("Unique shops after filter:", shops);
 
     const sel = document.getElementById("mShopName");
