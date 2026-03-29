@@ -586,57 +586,8 @@ window.doCheckin = function () {
     return;
   }
 
-  // Get route data from localStorage
-  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
-  
-  if (!routeData.route) {
-    toast("Route data missing. Login dubara karo", "error");
-    return;
-  }
-
-  // Create attendance record with working_route
-  const checkinTime = new Date();
-  const checkinData = {
-    ms: checkinTime.getTime(),
-    attendanceId: "temp_" + Date.now(),
-    odoStart: 0,
-    working_route: routeData.route // Store the route
-  };
-
-  localStorage.setItem("checkin", JSON.stringify(checkinData));
-
-  // Insert attendance record to DB
-  const attendancePayload = {
-    employee_name: currentEmp.name,
-    employee_contact: currentEmp.contact || "",
-    attendance_date: checkinTime.toISOString().split("T")[0],
-    attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
-    working_route: routeData.route
-  };
-
-  supabase
-    .from("attendance")
-    .insert([attendancePayload])
-    .select()
-    .then(({ data, error }) => {
-      if (error) {
-        console.error("Attendance creation error:", error);
-        toast("Attendance save error: " + error.message, "error");
-        return;
-      }
-
-      if (data && data[0]) {
-        // Update checkin data with actual attendance ID
-        checkinData.attendanceId = data[0].id;
-        localStorage.setItem("checkin", JSON.stringify(checkinData));
-      }
-
-      toast("Check-in successful ✓", "success");
-      refreshDash();
-      
-      // Start automatic checkout timer (10 PM IST)
-      startAutomaticCheckoutTimer();
-    });
+  // Redirect to check-in page
+  location.href = "checkin.html";
 };
 
 function startAutomaticCheckoutTimer() {
