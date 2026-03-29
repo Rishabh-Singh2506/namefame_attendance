@@ -566,8 +566,118 @@ window.doCheckin = function () {
     return;
   }
 
-  location.href = "checkin.html";
+  // Get route data from localStorage
+  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+  
+  if (!routeData.route) {
+    toast("Route data missing. Login dubara karo", "error");
+    return;
+  }
+
+  // Create attendance record with working_route
+  const checkinTime = new Date();
+  const checkinData = {
+    ms: checkinTime.getTime(),
+    attendanceId: "temp_" + Date.now(),
+    odoStart: 0,
+    working_route: routeData.route // Store the route
+  };
+
+  localStorage.setItem("checkin", JSON.stringify(checkinData));
+
+  // Insert attendance record to DB
+  supabase
+    .from("attendance")
+    .insert([
+      {
+        employee_name: currentEmp.name,
+        employee_contact: currentEmp.contact || "",
+        attendance_date: checkinTime.toISOString().split("T")[0],
+        attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
+        working_route: routeData.route,
+        state: routeData.state,
+        district: routeData.district
+      }
+    ])
+    .select()
+    .then(({ data, error }) => {
+      if (error) {
+        console.error("Attendance creation error:", error);
+        toast("Attendance save error", "error");
+        return;
+      }
+
+      if (data && data[0]) {
+        // Update checkin data with actual attendance ID
+        checkinData.attendanceId = data[0].id;
+        localStorage.setItem("checkin", JSON.stringify(checkinData));
+      }
+
+      toast("Check-in successful ✓", "success");
+      refreshDash();
+      
+      // Start automatic checkout timer (10 PM IST)
+      startAutomaticCheckoutTimer();
+    });
 };
+
+function startAutomaticCheckoutTimer() {
+  // Calculate time until 10 PM IST today
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0, 0, 0); // 10 PM
+  
+  // If already past 10 PM, schedule for tomorrow
+  if (now > today) {
+    today.setDate(today.getDate() + 1);
+  }
+
+  const timeUntilCheckout = today.getTime() - now.getTime();
+  
+  console.log("Automatic checkout scheduled at 10 PM IST. Time remaining:", Math.round(timeUntilCheckout / 1000 / 60), "minutes");
+
+  // Schedule automatic checkout
+  setTimeout(() => {
+    performAutomaticCheckout();
+  }, timeUntilCheckout);
+}
+
+async function performAutomaticCheckout() {
+  const checkinData = localStorage.getItem("checkin");
+  
+  if (!checkinData) {
+    console.log("No active checkin, skipping automatic checkout");
+    return;
+  }
+
+  try {
+    const data = JSON.parse(checkinData);
+    const checkoutTime = new Date();
+
+    const { error } = await supabase
+      .from("attendance")
+      .update({
+        attendance_closed_time: checkoutTime.toLocaleTimeString("en-IN"),
+        auto_checkout: true,
+        notes: "Automatic checkout at 10 PM IST"
+      })
+      .eq("id", data.attendanceId);
+
+    if (error) {
+      console.error("Automatic checkout error:", error);
+      return;
+    }
+
+    localStorage.removeItem("checkin");
+    console.log("Automatic checkout completed at 10 PM IST");
+    
+    // Refresh dashboard if user is still on app
+    if (currentEmp) {
+      refreshDash();
+    }
+  } catch (err) {
+    console.error("Exception in performAutomaticCheckout:", err);
+  }
+}
 
 /* ════════════════════════════════════════════════════════════════
    CHECK-OUT
@@ -731,7 +841,17 @@ window.doNewVisit = function () {
 
   getGps();
 
-  visitStartMs = Date.now();
+  // Check if there's an active visit in localStorage
+  const visitStorage = localStorage.getItem("visitActive");
+  if (visitStorage) {
+    const visitInfo = JSON.parse(visitStorage);
+    visitStartMs = visitInfo.startTime;
+    console.log("Resuming visit after page refresh. Start time:", new Date(visitStartMs));
+  } else {
+    visitStartMs = Date.now();
+    localStorage.setItem("visitActive", JSON.stringify({ startTime: visitStartMs }));
+  }
+  
   startVisitCD();
 };
 
@@ -871,6 +991,7 @@ window.cancelVisit = function () {
   visitPhotoData = null;
   stopVCam();
   if (visitCdInt) clearInterval(visitCdInt);
+  localStorage.removeItem("visitActive");
 };
 
 window.saveVisit = async function () {
@@ -963,6 +1084,7 @@ window.saveVisit = async function () {
     btn.textContent = "✓ Save Visit";
     document.getElementById("visitModal").classList.remove("show");
     visitPhotoData = null;
+    localStorage.removeItem("visitActive");
 
     toast("Visit save ho gaya! ✓", "success");
 
@@ -979,20 +1101,32 @@ window.saveVisit = async function () {
 function startVisitCD() {
   if (visitCdInt) clearInterval(visitCdInt);
 
+  const bReIn = document.getElementById("bReIn");
+  const bReOut = document.getElementById("bReOut");
+  const visitCdBadge = document.getElementById("visitCdBadge");
+  const checkoutBadge = document.getElementById("visitCdBadge"); // Same badge for checkout
+
   visitCdInt = setInterval(() => {
     const rem = MIN_SHOP_CHECKOUT - (Date.now() - visitStartMs);
-    const b = document.getElementById("bReIn");
-    const badge = document.getElementById("visitCdBadge");
 
     if (rem <= 0) {
       clearInterval(visitCdInt);
-      if (b) b.classList.remove("dis");
-      if (badge) badge.classList.remove("show");
+      
+      // Enable both buttons after 3 minutes
+      if (bReIn) bReIn.classList.remove("dis");
+      if (bReOut) bReOut.classList.remove("dis");
+      if (visitCdBadge) visitCdBadge.classList.remove("show");
+      
+      console.log("Visit minimum time completed. Buttons enabled.");
     } else {
-      if (b) b.classList.add("dis");
-      if (badge) {
-        badge.textContent = Math.ceil(rem / 1000) + "s";
-        badge.classList.add("show");
+      // Keep buttons disabled
+      if (bReIn) bReIn.classList.add("dis");
+      if (bReOut) bReOut.classList.add("dis");
+      
+      if (visitCdBadge) {
+        const seconds = Math.ceil(rem / 1000);
+        visitCdBadge.textContent = seconds + "s";
+        visitCdBadge.classList.add("show");
       }
     }
   }, 500);
@@ -1046,12 +1180,44 @@ window.submitVisitOut = async function () {
   btn.textContent = "Submitting...";
 
   try {
+    // Fetch visit record to get visit_in_time
+    const { data: visitData, error: fetchError } = await supabase
+      .from("visits")
+      .select("visit_in_time")
+      .eq("id", currentVisitId)
+      .single();
+
+    if (fetchError || !visitData) {
+      toast("Visit data fetch error", "error");
+      btn.classList.remove("loading");
+      btn.textContent = "✓ Visit Out";
+      return;
+    }
+
+    // Calculate hold time
+    const visitOutTime = new Date();
+    const visitInTime = new Date(visitData.visit_in_time);
+    
+    // Parse time strings if needed
+    if (typeof visitInTime === 'string') {
+      const [hours, minutes, seconds] = visitData.visit_in_time.split(':').map(Number);
+      visitInTime.setHours(hours, minutes, seconds || 0);
+    }
+
+    const diffMs = visitOutTime.getTime() - visitInTime.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+
+    const holdTime = String(hours).padStart(2, "0") + ":" + String(mins).padStart(2, "0");
+
     const { error } = await supabase
       .from("visits")
       .update({
-        visit_out_time: new Date().toLocaleTimeString("en-IN"),
+        visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
         visit_out_notes: notes,
-        rating: selectedRating
+        rating: selectedRating,
+        hold_time: holdTime
       })
       .eq("id", currentVisitId);
 
