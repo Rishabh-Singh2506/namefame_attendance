@@ -115,13 +115,10 @@ async function loadStates() {
    LOAD DISTRICTS
    ════════════════════════════════════════════════════════════════ */
 
-async function loadDistricts() {
+window.loadDistricts = async function () {
   const state = document.getElementById("stateSelect").value;
 
-  if (!state) {
-    document.getElementById("districtSelect").style.display = "none";
-    return;
-  }
+  if (!state) return;
 
   const { data, error } = await supabase
     .from("routes")
@@ -130,26 +127,21 @@ async function loadDistricts() {
 
   if (error) return;
 
-  const districts = [...new Set(data.map(r => r.district))];
+  const districts = [...new Set(data.map(d => d.district))];
 
   const sel = document.getElementById("districtSelect");
   sel.innerHTML = '<option value="">-- District chunein --</option>';
-  sel.style.display = "block";
 
-  districts.forEach(district => {
-    const opt = document.createElement("option");
-    opt.value = district;
-    opt.textContent = district;
-    sel.appendChild(opt);
+  districts.forEach(d => {
+    sel.innerHTML += `<option value="${d}">${d}</option>`;
   });
-}
-
+};
 /* ════════════════════════════════════════════════════════════════
    LOAD ROUTES
    ════════════════════════════════════════════════════════════════ */
 
-async function loadRoutes() {
-  const state = document.getElementById("stateSelect").value;
+window.loadRoutes = async function () {
+const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
 
   if (!state || !district) {
@@ -183,7 +175,7 @@ async function loadRoutes() {
    LOAD AREAS (For Visit Modal)
    ════════════════════════════════════════════════════════════════ */
 
-async function loadAreas() {
+window.loadAreas = async function () {
   const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
   const route = document.getElementById("routeSelect").value;
