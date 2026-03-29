@@ -129,10 +129,13 @@ async function loadStates() {
 
 window.loadDistricts = async function () {
   const state = document.getElementById("stateSelect").value;
+  const districtGroup = document.getElementById("districtGroup");
   const districtSelect = document.getElementById("districtSelect");
+  const routeGroup = document.getElementById("routeGroup");
 
   if (!state) {
-    districtSelect.style.display = "none";
+    districtGroup.style.display = "none";
+    routeGroup.style.display = "none";
     districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
     return;
   }
@@ -146,16 +149,22 @@ window.loadDistricts = async function () {
     if (error) {
       console.error("District load error:", error);
       toast("District load nahi ho sake", "error");
+      districtGroup.style.display = "none";
       return;
     }
 
     if (!data || data.length === 0) {
       toast("Koi district nahi mila", "error");
-      districtSelect.style.display = "none";
+      districtGroup.style.display = "none";
       return;
     }
 
-    const districts = [...new Set(data.map(d => d.district))];
+    console.log("Raw district data from DB:", data);
+    console.log("Total entries:", data.length);
+    
+    const districts = [...new Set(data.map(d => d.district).filter(d => d))];
+    
+    console.log("Unique districts after filter:", districts);
 
     districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
 
@@ -166,11 +175,13 @@ window.loadDistricts = async function () {
       districtSelect.appendChild(opt);
     });
 
-    districtSelect.style.display = "block";
-    toast("Districts load ho gaye ✓", "success");
+    districtGroup.style.display = "block";
+    routeGroup.style.display = "none";
+    toast("Districts load ho gaye ✓ (" + districts.length + " unique)", "success");
   } catch (err) {
     console.error("Exception in loadDistricts:", err);
     toast("Kuch galat hua: " + err.message, "error");
+    districtGroup.style.display = "none";
   }
 };
 
@@ -182,9 +193,10 @@ window.loadRoutes = async function () {
   const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
   const routeSelect = document.getElementById("routeSelect");
+  const routeGroup = document.getElementById("routeGroup");
 
   if (!state || !district) {
-    routeSelect.style.display = "none";
+    routeGroup.style.display = "none";
     routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
     return;
   }
@@ -204,11 +216,16 @@ window.loadRoutes = async function () {
 
     if (!data || data.length === 0) {
       toast("Koi route nahi mila", "error");
-      routeSelect.style.display = "none";
+      routeGroup.style.display = "none";
       return;
     }
 
-    const routes = [...new Set(data.map(r => r.working_route))];
+    console.log("Raw route data from DB:", data);
+    console.log("Total entries:", data.length);
+    
+    const routes = [...new Set(data.map(r => r.working_route).filter(r => r))];
+    
+    console.log("Unique routes after filter:", routes);
 
     routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
 
@@ -219,8 +236,8 @@ window.loadRoutes = async function () {
       routeSelect.appendChild(opt);
     });
 
-    routeSelect.style.display = "block";
-    toast("Routes load ho gaye ✓", "success");
+    routeGroup.style.display = "block";
+    toast("Routes load ho gaye ✓ (" + routes.length + " unique)", "success");
   } catch (err) {
     console.error("Exception in loadRoutes:", err);
     toast("Kuch galat hua: " + err.message, "error");
@@ -686,7 +703,12 @@ async function loadVisitAreas() {
       return;
     }
 
-    const areas = [...new Set(data.map(r => r.area))];
+    console.log("Raw area data from DB:", data);
+    console.log("Total entries:", data.length);
+    
+    const areas = [...new Set(data.map(r => r.area).filter(a => a))];
+    
+    console.log("Unique areas after filter:", areas);
 
     const sel = document.getElementById("visitAreaSelect");
     sel.innerHTML = '<option value="">-- Area chunein --</option>';
@@ -725,7 +747,12 @@ window.loadShops = async function () {
       return;
     }
 
-    const shops = [...new Set(data.map(r => r.shop))];
+    console.log("Raw shop data from DB:", data);
+    console.log("Total entries:", data.length);
+    
+    const shops = [...new Set(data.map(r => r.shop).filter(s => s))];
+    
+    console.log("Unique shops after filter:", shops);
 
     const sel = document.getElementById("mShopName");
     sel.innerHTML = '<option value="">-- Shop chunein --</option>';
