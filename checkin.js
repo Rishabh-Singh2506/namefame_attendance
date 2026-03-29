@@ -318,8 +318,8 @@ async function ciSubmitCheckin() {
           employee_contact: ciCurrentEmp.contact || "",
           attendance_open_time: timeStr,
           odometer_start: ciOdometerStart,
-          open_selfie_photo: photo1Url,
-          open_odometer_photo: photo2Url,
+          open_selfie_photo: photo1Url || null,
+         open_odometer_photo: photo2Url || null,
           map_link: mapLink
         }
       ])
