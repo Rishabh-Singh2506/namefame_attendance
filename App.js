@@ -661,6 +661,25 @@ window.doCheckout = async function () {
     return;
   }
 
+  // Get GPS location for checkout
+  let checkoutGPS = null;
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        checkoutGPS = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        };
+        console.log("Checkout GPS captured:", checkoutGPS);
+        localStorage.setItem("checkoutGPS", JSON.stringify(checkoutGPS));
+      },
+      (err) => {
+        console.warn("GPS error:", err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }
+
   document.getElementById("checkoutModal").classList.add("show");
   document.getElementById("checkoutOdometerInput").value = "";
   document.getElementById("checkoutPhotoPreview").style.display = "none";
@@ -737,12 +756,20 @@ window.submitCheckout = async function () {
 
   const photoUrl = await uploadPhoto(checkoutPhotoData, "CO_" + currentEmp.name);
 
+  const checkoutGPSData = localStorage.getItem("checkoutGPS");
+  let mapLink = null;
+  if (checkoutGPSData) {
+    const gps = JSON.parse(checkoutGPSData);
+    mapLink = "https://maps.google.com/?q=" + gps.lat + "," + gps.lng;
+  }
+
   const updatePayload = {
     attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
     odometer_end: parseInt(odoInput),
     distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
     closed_odometer_photo: photoUrl || null,
-    working_hours: h + "h " + m + "m"
+    working_hours: h + "h " + m + "m",
+    map_link: mapLink
   };
 
   try {
