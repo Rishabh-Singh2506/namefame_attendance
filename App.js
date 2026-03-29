@@ -280,7 +280,16 @@ window.doLogin = async function () {
     toast("Galat PIN", "error");
     return;
   }
+const state = document.getElementById("stateSelect").value;
+const district = document.getElementById("districtSelect").value;
+const route = document.getElementById("routeSelect").value;
 
+if (!state || !district || !route) {
+  toast("State, District, Route select karo", "error");
+  return;
+}
+
+localStorage.setItem("routeData", JSON.stringify({ state, district, route }));
   currentEmp = emp;
   localStorage.setItem("emp", JSON.stringify(emp));
 
@@ -587,12 +596,12 @@ window.doNewVisit = function () {
 };
 
 async function loadVisitAreas() {
-  const state = document.getElementById("stateSelect").value;
-  const district = document.getElementById("districtSelect").value;
-  const route = document.getElementById("routeSelect").value;
+  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+
+  const { state, district, route } = routeData;
 
   if (!state || !district || !route) {
-    toast("State, District, Route select karo", "error");
+    toast("Route data missing. Login dubara karo", "error");
     return;
   }
 
@@ -611,22 +620,17 @@ async function loadVisitAreas() {
   sel.innerHTML = '<option value="">-- Area chunein --</option>';
 
   areas.forEach(area => {
-    const opt = document.createElement("option");
-    opt.value = area;
-    opt.textContent = area;
-    sel.appendChild(opt);
+    sel.innerHTML += `<option value="${area}">${area}</option>`;
   });
 }
 
 window.loadShops = async function () {
-  const state = document.getElementById("stateSelect").value;
-  const district = document.getElementById("districtSelect").value;
-  const route = document.getElementById("routeSelect").value;
+  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+  const { state, district, route } = routeData;
+
   const area = document.getElementById("visitAreaSelect").value;
 
-  if (!state || !district || !route || !area) {
-    return;
-  }
+  if (!state || !district || !route || !area) return;
 
   const { data, error } = await supabase
     .from("routes")
@@ -644,10 +648,7 @@ window.loadShops = async function () {
   sel.innerHTML = '<option value="">-- Shop chunein --</option>';
 
   shops.forEach(shop => {
-    const opt = document.createElement("option");
-    opt.value = shop;
-    opt.textContent = shop;
-    sel.appendChild(opt);
+    sel.innerHTML += `<option value="${shop}">${shop}</option>`;
   });
 };
 
@@ -740,10 +741,9 @@ window.saveVisit = async function () {
 
   // If new shop, add to routes
   if (newShopInput.style.display !== "none") {
-    const state = document.getElementById("stateSelect").value;
-    const district = document.getElementById("districtSelect").value;
-    const route = document.getElementById("routeSelect").value;
-
+    const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+    const { state, district, route } = routeData;
+   
     await supabase
       .from("routes")
       .insert([
@@ -1156,11 +1156,11 @@ window.dismissPWA = function () {
   if (b) b.classList.remove("show");
 };
 
-/* ════════════════════════════════════════════════════════════════
-   INITIALIZATION
-   ════════════════════════════════════════════════════════════════ */
-
 window.addEventListener("load", () => {
+  if (!localStorage.getItem("routeData")) {
+    toast("Route select nahi hai, login karo", "error");
+  }
+
   const emp = localStorage.getItem("emp");
 
   if (emp) {
