@@ -1158,41 +1158,28 @@ window.submitVisitOut = async function () {
   btn.textContent = "Submitting...";
 
   try {
-    // Fetch visit record to get visit_in_time
-    const { data: visitData, error: fetchError } = await supabase
-      .from("visits")
-      .select("visit_in_time")
-      .eq("id", currentVisitId)
-      .single();
-
-    if (fetchError || !visitData) {
-      toast("Visit data fetch error", "error");
-      btn.classList.remove("loading");
-      btn.textContent = "✓ Visit Out";
-      return;
-    }
-
-    // Calculate hold time
+    // Get current time
     const visitOutTime = new Date();
-    const visitInTime = new Date(visitData.visit_in_time);
-    
-    // Parse time strings if needed
-    if (typeof visitInTime === 'string') {
-      const [hours, minutes, seconds] = visitData.visit_in_time.split(':').map(Number);
-      visitInTime.setHours(hours, minutes, seconds || 0);
-    }
+    const visitOutTimeStr = visitOutTime.toLocaleTimeString("en-IN");
 
-    const diffMs = visitOutTime.getTime() - visitInTime.getTime();
-    const diffMinutes = Math.floor(diffMs / 60000);
-    const hours = Math.floor(diffMinutes / 60);
-    const mins = diffMinutes % 60;
+    // Calculate hold time from visitStartMs
+    const diffMs = visitOutTime.getTime() - visitStartMs;
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-    const holdTime = String(hours).padStart(2, "0") + ":" + String(mins).padStart(2, "0");
+    const holdTime = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0");
+
+    console.log("Visit hold time calculation:");
+    console.log("Start time:", new Date(visitStartMs));
+    console.log("End time:", visitOutTime);
+    console.log("Total seconds:", totalSeconds);
+    console.log("Hold time:", holdTime);
 
     const { error } = await supabase
       .from("visits")
       .update({
-        visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
+        visit_out_time: visitOutTimeStr,
         visit_out_notes: notes,
         rating: selectedRating,
         hold_time: holdTime
