@@ -370,13 +370,14 @@ async function uploadPhoto(base64String, fileName) {
     const base64Data = base64String.split(",")[1] || base64String;
     const blob = await fetch("data:image/jpeg;base64," + base64Data).then(r => r.blob());
 
-    const path = "photos/" + fileName + "_" + Date.now() + ".jpg";
+    // ✅ FIXED PATH
+    const path = "public/" + fileName + "_" + Date.now() + ".jpg";
 
     const { error } = await supabase.storage.from("photos").upload(path, blob);
 
     if (error) {
       console.error("Photo upload error:", error);
-      return "";
+      return null; // ❗ better than ""
     }
 
     const { data } = supabase.storage.from("photos").getPublicUrl(path);
@@ -384,7 +385,7 @@ async function uploadPhoto(base64String, fileName) {
     return data.publicUrl;
   } catch (err) {
     console.error("Upload error:", err);
-    return "";
+    return null;
   }
 }
 
