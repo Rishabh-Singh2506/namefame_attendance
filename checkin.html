@@ -19,9 +19,9 @@
       <p>Apna photo lo aur odometer reading do</p>
     </div>
 
-    <!-- STEP 1: PHOTO CAPTURE -->
+    <!-- STEP 1: PHOTO CAPTURE (FRONT CAMERA) -->
     <div class="checkin-step" id="step1">
-      <div class="step-title">Step 1: Opening Selfie</div>
+      <div class="step-title">Step 1: Opening Selfie (📱 Front Camera)</div>
       
       <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
         <video id="checkinVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
@@ -37,9 +37,9 @@
       <button class="btn-primary" id="btnNextCheckin" style="display:none;margin-top:8px;width:100%;" onclick="goToOdometer()">✓ Next</button>
     </div>
 
-    <!-- STEP 2: ODOMETER -->
+    <!-- STEP 2: ODOMETER (REAR CAMERA) -->
     <div class="checkin-step" id="step2" style="display:none;">
-      <div class="step-title">Step 2: Opening Odometer</div>
+      <div class="step-title">Step 2: Opening Odometer (📷 Rear Camera)</div>
       
       <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
         <video id="odometerVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
@@ -189,18 +189,41 @@
         return;
       }
 
+      // Stop front camera
+      if (checkinCamStream) {
+        checkinCamStream.getTracks().forEach(t => t.stop());
+      }
+
       document.getElementById("step1").style.display = "none";
       document.getElementById("step2").style.display = "block";
 
-      // Start camera for odometer
+      // Start REAR camera for odometer
       navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { 
+          facingMode: { exact: "environment" },  // Rear/Back camera
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 } 
+        },
         audio: false
       }).then(stream => {
         odometerCamStream = stream;
         document.getElementById("odometerVideo").srcObject = stream;
       }).catch(err => {
-        alert("Camera error: " + err.message);
+        console.error("Rear camera error:", err);
+        // Fallback to any rear camera
+        navigator.mediaDevices.getUserMedia({
+          video: { 
+            facingMode: "environment",
+            width: { ideal: 1280 }, 
+            height: { ideal: 720 } 
+          },
+          audio: false
+        }).then(stream => {
+          odometerCamStream = stream;
+          document.getElementById("odometerVideo").srcObject = stream;
+        }).catch(err2 => {
+          alert("Camera error: " + err2.message);
+        });
       });
     };
 
@@ -334,10 +357,14 @@
       }
     }
 
-    // Start camera on page load
+    // Start FRONT camera on page load
     window.addEventListener("load", () => {
       navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { 
+          facingMode: "user",  // Front/Selfie camera
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 } 
+        },
         audio: false
       }).then(stream => {
         checkinCamStream = stream;
