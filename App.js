@@ -123,7 +123,7 @@ window.loadDistricts = async function () {
   const { data, error } = await supabase
     .from("routes")
     .select("district")
-    .eq("state", state);
+    .eq("state", state.toLowerCase());
 
   if (error) return;
 
@@ -152,8 +152,8 @@ const state = document.getElementById("stateSelect").value;
   const { data, error } = await supabase
     .from("routes")
     .select("working_route")
-    .eq("state", state)
-    .eq("district", district);
+    .eq("state", state.toLowerCase())
+    .eq("district", district.toLowerCase());
 
   if (error) return;
 
@@ -187,9 +187,9 @@ window.loadAreas = async function () {
   const { data, error } = await supabase
     .from("routes")
     .select("area")
-    .eq("state", state)
-    .eq("district", district)
-    .eq("working_route", route);
+    .eq("state", state.toLowerCase())
+    .eq("district", district.toLowerCase())
+   .eq("working_route", route.toLowerCase());
 
   if (error) return;
 
@@ -281,8 +281,13 @@ if (!state || !district || !route) {
   return;
 }
 
-localStorage.setItem("routeData", JSON.stringify({ state, district, route }));
-  currentEmp = emp;
+//localStorage.setItem("routeData", JSON.stringify({ state, district, route }));
+ localStorage.setItem("routeData", JSON.stringify({
+  state: state.toLowerCase(),
+  district: district.toLowerCase(),
+  route: route.toLowerCase()
+}));
+   currentEmp = emp;
   localStorage.setItem("emp", JSON.stringify(emp));
 
   document.getElementById("dashName").textContent = emp.name;
@@ -600,9 +605,9 @@ async function loadVisitAreas() {
   const { data, error } = await supabase
     .from("routes")
     .select("area")
-    .eq("state", state)
-    .eq("district", district)
-    .eq("working_route", route);
+    .eq("state", state.toLowerCase())
+    .eq("district", district.toLowerCase())
+    .eq("working_route", route.toLowerCase());
 
   if (error) return;
 
@@ -627,10 +632,10 @@ window.loadShops = async function () {
   const { data, error } = await supabase
     .from("routes")
     .select("shop")
-    .eq("state", state)
-    .eq("district", district)
-    .eq("working_route", route)
-    .eq("area", area);
+    .eq("state", state.toLowerCase())
+    .eq("district", district.toLowerCase())
+    .eq("working_route", route.toLowerCase())
+   .eq("area", area.toLowerCase());
 
   if (error) return;
 
