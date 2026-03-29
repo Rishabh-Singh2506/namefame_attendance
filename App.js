@@ -132,11 +132,12 @@ window.loadDistricts = async function () {
   const districtGroup = document.getElementById("districtGroup");
   const districtSelect = document.getElementById("districtSelect");
   const routeGroup = document.getElementById("routeGroup");
+  const routeSelect = document.getElementById("routeSelect");
 
   if (!state) {
-    districtGroup.style.display = "none";
-    routeGroup.style.display = "none";
-    districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
+    if (districtGroup) districtGroup.style.display = "none";
+    if (routeGroup) routeGroup.style.display = "none";
+    if (districtSelect) districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
     return;
   }
 
@@ -149,7 +150,7 @@ window.loadDistricts = async function () {
     if (allError) {
       console.error("District load error:", allError);
       toast("District load nahi ho sake", "error");
-      districtGroup.style.display = "none";
+      if (districtGroup) districtGroup.style.display = "none";
       return;
     }
 
@@ -160,7 +161,7 @@ window.loadDistricts = async function () {
 
     if (!filtered || filtered.length === 0) {
       toast("Koi district nahi mila is state ke liye", "error");
-      districtGroup.style.display = "none";
+      if (districtGroup) districtGroup.style.display = "none";
       return;
     }
 
@@ -180,22 +181,26 @@ window.loadDistricts = async function () {
     
     console.log("Unique districts after filter:", districts);
 
-    districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
+    if (districtSelect) {
+      districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
 
-    districts.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d;
-      districtSelect.appendChild(opt);
-    });
+      districts.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        districtSelect.appendChild(opt);
+      });
+    }
 
-    districtGroup.style.display = "block";
-    routeGroup.style.display = "none";
+    if (districtGroup) districtGroup.style.display = "block";
+    if (routeGroup) routeGroup.style.display = "none";
+    if (routeSelect) routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
+    
     toast("Districts load ho gaye ✓ (" + districts.length + " unique)", "success");
   } catch (err) {
     console.error("Exception in loadDistricts:", err);
     toast("Kuch galat hua: " + err.message, "error");
-    districtGroup.style.display = "none";
+    if (districtGroup) districtGroup.style.display = "none";
   }
 };
 
@@ -210,8 +215,8 @@ window.loadRoutes = async function () {
   const routeGroup = document.getElementById("routeGroup");
 
   if (!state || !district) {
-    routeGroup.style.display = "none";
-    routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
+    if (routeGroup) routeGroup.style.display = "none";
+    if (routeSelect) routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
     return;
   }
 
@@ -236,7 +241,7 @@ window.loadRoutes = async function () {
 
     if (!filtered || filtered.length === 0) {
       toast("Koi route nahi mila is district ke liye", "error");
-      routeGroup.style.display = "none";
+      if (routeGroup) routeGroup.style.display = "none";
       return;
     }
 
@@ -256,16 +261,19 @@ window.loadRoutes = async function () {
     
     console.log("Unique routes after filter:", routes);
 
-    routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
+    if (routeSelect) {
+      routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
 
-    routes.forEach(route => {
-      const opt = document.createElement("option");
-      opt.value = route;
-      opt.textContent = route;
-      routeSelect.appendChild(opt);
-    });
+      routes.forEach(route => {
+        const opt = document.createElement("option");
+        opt.value = route;
+        opt.textContent = route;
+        routeSelect.appendChild(opt);
+      });
+    }
 
-    routeGroup.style.display = "block";
+    if (routeGroup) routeGroup.style.display = "block";
+    
     toast("Routes load ho gaye ✓ (" + routes.length + " unique)", "success");
   } catch (err) {
     console.error("Exception in loadRoutes:", err);
