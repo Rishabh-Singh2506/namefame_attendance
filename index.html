@@ -39,7 +39,7 @@
         <label class="lbl">Apna State Chunein</label>
         <div id="stateLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
         <div id="stateList-wrap" style="display:none;">
-          <select id="stateSelect" onchange="loadDistricts()">
+          <select id="stateSelect">
             <option value="">-- State chunein --</option>
           </select>
         </div>
@@ -48,7 +48,7 @@
       <!-- DISTRICT SELECT -->
       <div class="fgroup">
         <label class="lbl">Apna District Chunein</label>
-        <select id="districtSelect" onchange="loadRoutes()" style="display:none;">
+        <select id="districtSelect" style="display:none;">
           <option value="">-- District chunein --</option>
         </select>
       </div>
@@ -56,7 +56,7 @@
       <!-- ROUTE SELECT -->
       <div class="fgroup">
         <label class="lbl">Apna Route Chunein</label>
-        <select id="routeSelect" onchange="loadAreas()" style="display:none;">
+        <select id="routeSelect" style="display:none;">
           <option value="">-- Route chunein --</option>
         </select>
       </div>
