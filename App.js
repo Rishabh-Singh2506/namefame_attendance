@@ -509,19 +509,20 @@ window.submitCheckout = async function () {
 
   const photoUrl = await uploadPhoto(checkoutPhotoData, "CO_" + currentEmp.name);
 
-  const { error } = await supabase
-    .from("attendance")
-    .update({
-      attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
-      odometer_end: parseInt(odoInput),
-      distance_km: parseInt(odoInput) - (checkinData.odoStart || 0),
-      closed_odometer_photo: photoUrl,
-      working_hours: h + "h " + m + "m"
-    })
-    .eq("id", checkinData.attendanceId);
-
+const { error } = await supabase
+  .from("attendance")
+  .update({
+    attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
+    odometer_end: parseInt(odoInput),
+    distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
+    closed_odometer_photo: photoUrl || null,
+    working_hours: h + "h " + m + "m"
+  })
+  .eq("id", checkinData.attendanceId);
+   
   if (error) {
     toast("Checkout error: " + error.message, "error");
+     console.log("Checkout photo URL:", photoUrl);
     btn.classList.remove("loading");
     btn.textContent = "✓ Check-Out";
     return;
@@ -1124,8 +1125,8 @@ async function uploadPhoto(base64String, fileName) {
 
     const blob = await fetch("data:image/jpeg;base64," + base64Data).then(r => r.blob());
 
-    const path = "photos/" + fileName + "_" + Date.now() + ".jpg";
-
+    const path = "public/" + fileName + "_" + Date.now() + ".jpg";
+     
     const { error } = await supabase.storage.from("photos").upload(path, blob);
 
     if (error) {
