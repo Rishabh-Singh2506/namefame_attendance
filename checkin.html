@@ -149,6 +149,7 @@
     let odometerPhotoData = null;
     let checkinCamStream = null;
     let odometerCamStream = null;
+    let gpsLocation = null;  // Store GPS location
 
     window.goBack = function() {
       window.history.back();
@@ -309,7 +310,8 @@
               working_route: routeData.route,
               odometer_start: parseInt(reading),
               open_selfie_photo: checkinPhotoUrl,
-              open_odometer_photo: odometerPhotoUrl
+              open_odometer_photo: odometerPhotoUrl,
+              map_link: gpsLocation ? "https://maps.google.com/?q=" + gpsLocation.lat + "," + gpsLocation.lng : null
             }
           ])
           .select();
@@ -359,6 +361,23 @@
 
     // Start FRONT camera on page load
     window.addEventListener("load", () => {
+      // Get GPS location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            gpsLocation = {
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude
+            };
+            console.log("GPS captured:", gpsLocation);
+          },
+          (err) => {
+            console.warn("GPS error:", err.message);
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      }
+
       navigator.mediaDevices.getUserMedia({
         video: { 
           facingMode: "user",  // Front/Selfie camera
