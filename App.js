@@ -1,5 +1,14 @@
 "use strict";
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("stateSelect")
+    .addEventListener("change", loadDistricts);
 
+  document.getElementById("districtSelect")
+    .addEventListener("change", loadRoutes);
+
+  document.getElementById("routeSelect")
+    .addEventListener("change", loadAreas);
+});
 /* ════════════════════════════════════════════════════════════════
    SUPABASE CONFIG
    ════════════════════════════════════════════════════════════════ */
@@ -57,6 +66,9 @@ function toast(msg, type = "") {
     el.classList.remove("show");
   }, 2500);
 }
+
+document.getElementById("stateLoading").style.display = "none";
+document.getElementById("stateList-wrap").style.display = "block";
 
 /* ════════════════════════════════════════════════════════════════
    SCREEN NAVIGATION
