@@ -129,59 +129,103 @@ async function loadStates() {
 
 window.loadDistricts = async function () {
   const state = document.getElementById("stateSelect").value;
+  const districtSelect = document.getElementById("districtSelect");
 
-  if (!state) return;
+  if (!state) {
+    districtSelect.style.display = "none";
+    districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
+    return;
+  }
 
-  const { data, error } = await supabase
-    .from("routes")
-    .select("district")
-    .eq("state", state.toLowerCase());
+  try {
+    const { data, error } = await supabase
+      .from("routes")
+      .select("district")
+      .eq("state", state.toLowerCase());
 
-  if (error) return;
+    if (error) {
+      console.error("District load error:", error);
+      toast("District load nahi ho sake", "error");
+      return;
+    }
 
-  const districts = [...new Set(data.map(d => d.district))];
+    if (!data || data.length === 0) {
+      toast("Koi district nahi mila", "error");
+      districtSelect.style.display = "none";
+      return;
+    }
 
-  const sel = document.getElementById("districtSelect");
-  sel.innerHTML = '<option value="">-- District chunein --</option>';
+    const districts = [...new Set(data.map(d => d.district))];
 
-  districts.forEach(d => {
-    sel.innerHTML += `<option value="${d}">${d}</option>`;
-  });
+    districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
+
+    districts.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+
+    districtSelect.style.display = "block";
+    toast("Districts load ho gaye ✓", "success");
+  } catch (err) {
+    console.error("Exception in loadDistricts:", err);
+    toast("Kuch galat hua: " + err.message, "error");
+  }
 };
+
 /* ════════════════════════════════════════════════════════════════
    LOAD ROUTES
    ════════════════════════════════════════════════════════════════ */
 
 window.loadRoutes = async function () {
-const state = document.getElementById("stateSelect").value;
+  const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
+  const routeSelect = document.getElementById("routeSelect");
 
   if (!state || !district) {
-    document.getElementById("routeSelect").style.display = "none";
+    routeSelect.style.display = "none";
+    routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
     return;
   }
 
-  const { data, error } = await supabase
-    .from("routes")
-    .select("working_route")
-    .eq("state", state.toLowerCase())
-    .eq("district", district.toLowerCase());
+  try {
+    const { data, error } = await supabase
+      .from("routes")
+      .select("working_route")
+      .eq("state", state.toLowerCase())
+      .eq("district", district.toLowerCase());
 
-  if (error) return;
+    if (error) {
+      console.error("Route load error:", error);
+      toast("Route load nahi ho sake", "error");
+      return;
+    }
 
-  const routes = [...new Set(data.map(r => r.working_route))];
+    if (!data || data.length === 0) {
+      toast("Koi route nahi mila", "error");
+      routeSelect.style.display = "none";
+      return;
+    }
 
-  const sel = document.getElementById("routeSelect");
-  sel.innerHTML = '<option value="">-- Route chunein --</option>';
-  sel.style.display = "block";
+    const routes = [...new Set(data.map(r => r.working_route))];
 
-  routes.forEach(route => {
-    const opt = document.createElement("option");
-    opt.value = route;
-    opt.textContent = route;
-    sel.appendChild(opt);
-  });
-}
+    routeSelect.innerHTML = '<option value="">-- Route chunein --</option>';
+
+    routes.forEach(route => {
+      const opt = document.createElement("option");
+      opt.value = route;
+      opt.textContent = route;
+      routeSelect.appendChild(opt);
+    });
+
+    routeSelect.style.display = "block";
+    toast("Routes load ho gaye ✓", "success");
+  } catch (err) {
+    console.error("Exception in loadRoutes:", err);
+    toast("Kuch galat hua: " + err.message, "error");
+  }
+};
 
 /* ════════════════════════════════════════════════════════════════
    LOAD AREAS (For Visit Modal)
@@ -196,17 +240,24 @@ window.loadAreas = async function () {
     return;
   }
 
-  const { data, error } = await supabase
-    .from("routes")
-    .select("area")
-    .eq("state", state.toLowerCase())
-    .eq("district", district.toLowerCase())
-   .eq("working_route", route.toLowerCase());
+  try {
+    const { data, error } = await supabase
+      .from("routes")
+      .select("area")
+      .eq("state", state.toLowerCase())
+      .eq("district", district.toLowerCase())
+      .eq("working_route", route.toLowerCase());
 
-  if (error) return;
+    if (error) {
+      console.error("Area load error:", error);
+      return;
+    }
 
-  allRoutes = data || [];
-}
+    allRoutes = data || [];
+  } catch (err) {
+    console.error("Exception in loadAreas:", err);
+  }
+};
 
 /* ════════════════════════════════════════════════════════════════
    LOAD EMPLOYEES
@@ -222,29 +273,35 @@ async function loadEmployees() {
   load.style.display = "block";
   load.textContent = "⏳ Loading...";
 
-  const { data, error } = await supabase
-    .from("employees")
-    .select("*");
+  try {
+    const { data, error } = await supabase
+      .from("employees")
+      .select("*");
 
-  if (error) {
-    load.textContent = "⚠️ Network error. Try again.";
-    return;
+    if (error) {
+      load.textContent = "⚠️ Network error. Try again.";
+      console.error("Employee load error:", error);
+      return;
+    }
+
+    allEmployees = data || [];
+
+    const sel = document.getElementById("empSelect");
+    sel.innerHTML = '<option value="">-- Naam chunein --</option>';
+
+    allEmployees.forEach(emp => {
+      const opt = document.createElement("option");
+      opt.value = emp.id;
+      opt.textContent = emp.name + " (" + (emp.designation || "Field") + ")";
+      sel.appendChild(opt);
+    });
+
+    wrap.style.display = "block";
+    load.style.display = "none";
+  } catch (err) {
+    load.textContent = "⚠️ Error: " + err.message;
+    console.error("Exception in loadEmployees:", err);
   }
-
-  allEmployees = data || [];
-
-  const sel = document.getElementById("empSelect");
-  sel.innerHTML = '<option value="">-- Naam chunein --</option>';
-
-  allEmployees.forEach(emp => {
-    const opt = document.createElement("option");
-    opt.value = emp.id;
-    opt.textContent = emp.name + " (" + (emp.designation || "Field") + ")";
-    sel.appendChild(opt);
-  });
-
-  wrap.style.display = "block";
-  load.style.display = "none";
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -284,22 +341,23 @@ window.doLogin = async function () {
     toast("Galat PIN", "error");
     return;
   }
-const state = document.getElementById("stateSelect").value;
-const district = document.getElementById("districtSelect").value;
-const route = document.getElementById("routeSelect").value;
 
-if (!state || !district || !route) {
-  toast("State, District, Route select karo", "error");
-  return;
-}
+  const state = document.getElementById("stateSelect").value;
+  const district = document.getElementById("districtSelect").value;
+  const route = document.getElementById("routeSelect").value;
 
-//localStorage.setItem("routeData", JSON.stringify({ state, district, route }));
- localStorage.setItem("routeData", JSON.stringify({
-  state: state.toLowerCase(),
-  district: district.toLowerCase(),
-  route: route.toLowerCase()
-}));
-   currentEmp = emp;
+  if (!state || !district || !route) {
+    toast("State, District, Route select karo", "error");
+    return;
+  }
+
+  localStorage.setItem("routeData", JSON.stringify({
+    state: state.toLowerCase(),
+    district: district.toLowerCase(),
+    route: route.toLowerCase()
+  }));
+  
+  currentEmp = emp;
   localStorage.setItem("emp", JSON.stringify(emp));
 
   document.getElementById("dashName").textContent = emp.name;
@@ -527,20 +585,20 @@ window.submitCheckout = async function () {
 
   const photoUrl = await uploadPhoto(checkoutPhotoData, "CO_" + currentEmp.name);
 
-const { error } = await supabase
-  .from("attendance")
-  .update({
-    attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
-    odometer_end: parseInt(odoInput),
-    distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
-    closed_odometer_photo: photoUrl || null,
-    working_hours: h + "h " + m + "m"
-  })
-  .eq("id", checkinData.attendanceId);
-   
+  const { error } = await supabase
+    .from("attendance")
+    .update({
+      attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
+      odometer_end: parseInt(odoInput),
+      distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
+      closed_odometer_photo: photoUrl || null,
+      working_hours: h + "h " + m + "m"
+    })
+    .eq("id", checkinData.attendanceId);
+
   if (error) {
     toast("Checkout error: " + error.message, "error");
-     console.log("Checkout photo URL:", photoUrl);
+    console.log("Checkout photo URL:", photoUrl);
     btn.classList.remove("loading");
     btn.textContent = "✓ Check-Out";
     return;
@@ -614,23 +672,35 @@ async function loadVisitAreas() {
     return;
   }
 
-  const { data, error } = await supabase
-    .from("routes")
-    .select("area")
-    .eq("state", state.toLowerCase())
-    .eq("district", district.toLowerCase())
-    .eq("working_route", route.toLowerCase());
+  try {
+    const { data, error } = await supabase
+      .from("routes")
+      .select("area")
+      .eq("state", state.toLowerCase())
+      .eq("district", district.toLowerCase())
+      .eq("working_route", route.toLowerCase());
 
-  if (error) return;
+    if (error) {
+      console.error("Visit areas error:", error);
+      toast("Areas load nahi ho sake", "error");
+      return;
+    }
 
-  const areas = [...new Set(data.map(r => r.area))];
+    const areas = [...new Set(data.map(r => r.area))];
 
-  const sel = document.getElementById("visitAreaSelect");
-  sel.innerHTML = '<option value="">-- Area chunein --</option>';
+    const sel = document.getElementById("visitAreaSelect");
+    sel.innerHTML = '<option value="">-- Area chunein --</option>';
 
-  areas.forEach(area => {
-    sel.innerHTML += `<option value="${area}">${area}</option>`;
-  });
+    areas.forEach(area => {
+      const opt = document.createElement("option");
+      opt.value = area;
+      opt.textContent = area;
+      sel.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Exception in loadVisitAreas:", err);
+    toast("Error: " + err.message, "error");
+  }
 }
 
 window.loadShops = async function () {
@@ -641,24 +711,34 @@ window.loadShops = async function () {
 
   if (!state || !district || !route || !area) return;
 
-  const { data, error } = await supabase
-    .from("routes")
-    .select("shop")
-    .eq("state", state.toLowerCase())
-    .eq("district", district.toLowerCase())
-    .eq("working_route", route.toLowerCase())
-   .eq("area", area.toLowerCase());
+  try {
+    const { data, error } = await supabase
+      .from("routes")
+      .select("shop")
+      .eq("state", state.toLowerCase())
+      .eq("district", district.toLowerCase())
+      .eq("working_route", route.toLowerCase())
+      .eq("area", area.toLowerCase());
 
-  if (error) return;
+    if (error) {
+      console.error("Shop load error:", error);
+      return;
+    }
 
-  const shops = [...new Set(data.map(r => r.shop))];
+    const shops = [...new Set(data.map(r => r.shop))];
 
-  const sel = document.getElementById("mShopName");
-  sel.innerHTML = '<option value="">-- Shop chunein --</option>';
+    const sel = document.getElementById("mShopName");
+    sel.innerHTML = '<option value="">-- Shop chunein --</option>';
 
-  shops.forEach(shop => {
-    sel.innerHTML += `<option value="${shop}">${shop}</option>`;
-  });
+    shops.forEach(shop => {
+      const opt = document.createElement("option");
+      opt.value = shop;
+      opt.textContent = shop;
+      sel.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Exception in loadShops:", err);
+  }
 };
 
 window.toggleAddNewShop = function () {
@@ -722,59 +802,66 @@ window.saveVisit = async function () {
 
   const mapLink = gpsPos ? "https://maps.google.com/?q=" + gpsPos.lat + "," + gpsPos.lng : "";
 
-  const { data, error } = await supabase
-    .from("visits")
-    .insert([
-      {
-        employee_name: currentEmp.name,
-        employee_contact: currentEmp.contact || "",
-        area: area,
-        shop_name: shopName,
-        shopkeeper_name: shopkeeperName,
-        shopkeeper_contact: shopkeeperContact,
-        visit_in_time: new Date().toLocaleTimeString("en-IN"),
-        visit_date: new Date().toISOString().split("T")[0],
-        map_link: mapLink
-      }
-    ])
-    .select();
-
-  if (error) {
-    toast("Visit save error", "error");
-    btn.classList.remove("loading");
-    btn.textContent = "✓ Save Visit";
-    return;
-  }
-
-  currentVisitId = data[0].id;
-
-  // If new shop, add to routes
-  if (newShopInput.style.display !== "none") {
-    const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
-    const { state, district, route } = routeData;
-   
-    await supabase
-      .from("routes")
+  try {
+    const { data, error } = await supabase
+      .from("visits")
       .insert([
         {
-          state: state,
-          district: district,
-          working_route: route,
+          employee_name: currentEmp.name,
+          employee_contact: currentEmp.contact || "",
           area: area,
-          shop: shopName
+          shop_name: shopName,
+          shopkeeper_name: shopkeeperName,
+          shopkeeper_contact: shopkeeperContact,
+          visit_in_time: new Date().toLocaleTimeString("en-IN"),
+          visit_date: new Date().toISOString().split("T")[0],
+          map_link: mapLink
         }
-      ]);
+      ])
+      .select();
+
+    if (error) {
+      toast("Visit save error: " + error.message, "error");
+      btn.classList.remove("loading");
+      btn.textContent = "✓ Save Visit";
+      return;
+    }
+
+    currentVisitId = data[0].id;
+
+    // If new shop, add to routes
+    if (newShopInput.style.display !== "none") {
+      const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+      const { state, district, route } = routeData;
+
+      await supabase
+        .from("routes")
+        .insert([
+          {
+            state: state,
+            district: district,
+            working_route: route,
+            area: area,
+            shop: shopName
+          }
+        ]);
+    }
+
+    btn.classList.remove("loading");
+    btn.textContent = "✓ Save Visit";
+    document.getElementById("visitModal").classList.remove("show");
+    visitPhotoData = null;
+
+    toast("Visit save ho gaya! ✓", "success");
+
+    // Enable visit out after 3 minutes
+    document.getElementById("bReOut").classList.remove("dis");
+  } catch (err) {
+    console.error("Exception in saveVisit:", err);
+    toast("Error: " + err.message, "error");
+    btn.classList.remove("loading");
+    btn.textContent = "✓ Save Visit";
   }
-
-  btn.classList.remove("loading");
-  btn.textContent = "✓ Save Visit";
-  document.getElementById("visitModal").classList.remove("show");
-  visitPhotoData = null;
-
-  toast("Visit save ho gaya! ✓", "success");
-
-  // Enable visit out after 3 minutes
-  document.getElementById("bReOut").classList.remove("dis");
 };
 
 function startVisitCD() {
@@ -846,32 +933,39 @@ window.submitVisitOut = async function () {
   btn.classList.add("loading");
   btn.textContent = "Submitting...";
 
-  const { error } = await supabase
-    .from("visits")
-    .update({
-      visit_out_time: new Date().toLocaleTimeString("en-IN"),
-      visit_out_notes: notes,
-      rating: selectedRating
-    })
-    .eq("id", currentVisitId);
+  try {
+    const { error } = await supabase
+      .from("visits")
+      .update({
+        visit_out_time: new Date().toLocaleTimeString("en-IN"),
+        visit_out_notes: notes,
+        rating: selectedRating
+      })
+      .eq("id", currentVisitId);
 
-  if (error) {
-    toast("Visit out error", "error");
+    if (error) {
+      toast("Visit out error: " + error.message, "error");
+      btn.classList.remove("loading");
+      btn.textContent = "✓ Visit Out";
+      return;
+    }
+
+    currentVisitId = null;
+    if (visitCdInt) clearInterval(visitCdInt);
+
+    document.getElementById("visitOutModal").classList.remove("show");
+    document.getElementById("bReOut").classList.add("dis");
+
     btn.classList.remove("loading");
     btn.textContent = "✓ Visit Out";
-    return;
+
+    toast("Visit out ho gaya! ✓", "success");
+  } catch (err) {
+    console.error("Exception in submitVisitOut:", err);
+    toast("Error: " + err.message, "error");
+    btn.classList.remove("loading");
+    btn.textContent = "✓ Visit Out";
   }
-
-  currentVisitId = null;
-  if (visitCdInt) clearInterval(visitCdInt);
-
-  document.getElementById("visitOutModal").classList.remove("show");
-  document.getElementById("bReOut").classList.add("dis");
-
-  btn.classList.remove("loading");
-  btn.textContent = "✓ Visit Out";
-
-  toast("Visit out ho gaya! ✓", "success");
 };
 
 window.closeVisitOutModal = function () {
@@ -1055,24 +1149,30 @@ async function sendQuickPhoto(data) {
 
   const photoUrl = await uploadPhoto(data, "QP_" + currentEmp.name);
 
-  const { error } = await supabase
-    .from("visits")
-    .insert([
-      {
-        employee_name: currentEmp.name,
-        visit_date: new Date().toISOString().split("T")[0],
-        visit_in_time: new Date().toLocaleTimeString("en-IN"),
-        shop_name: "Quick Photo",
-        visit_out_notes: photoUrl
-      }
-    ]);
+  try {
+    const { error } = await supabase
+      .from("visits")
+      .insert([
+        {
+          employee_name: currentEmp.name,
+          visit_date: new Date().toISOString().split("T")[0],
+          visit_in_time: new Date().toLocaleTimeString("en-IN"),
+          shop_name: "Quick Photo",
+          visit_out_notes: photoUrl
+        }
+      ]);
 
-  if (error) {
-    toast("Photo save error", "error");
-    return;
+    if (error) {
+      toast("Photo save error", "error");
+      console.error("Quick photo error:", error);
+      return;
+    }
+
+    toast("Photo save ho gaya ✓", "success");
+  } catch (err) {
+    console.error("Exception in sendQuickPhoto:", err);
+    toast("Error: " + err.message, "error");
   }
-
-  toast("Photo save ho gaya ✓", "success");
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -1135,7 +1235,7 @@ async function uploadPhoto(base64String, fileName) {
     const blob = await fetch("data:image/jpeg;base64," + base64Data).then(r => r.blob());
 
     const path = "public/" + fileName + "_" + Date.now() + ".jpg";
-     
+
     const { error } = await supabase.storage.from("photos").upload(path, blob);
 
     if (error) {
