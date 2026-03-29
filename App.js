@@ -384,7 +384,7 @@ async function loadEmployees() {
 window.goVerify = function () {
   showScreen("s-verify");
   loadStates();
-  loadEmployees();
+  // Employee loading nahi chahiye ab
 };
 
 window.togglePin = function () {
@@ -395,23 +395,16 @@ window.togglePin = function () {
 };
 
 window.doLogin = async function () {
-  const empId = document.getElementById("empSelect").value;
+  const empName = document.getElementById("empNameInput").value.trim();
   const pin = document.getElementById("pinInput").value;
 
-  if (!empId) {
-    toast("Naam select karo", "error");
+  if (!empName) {
+    toast("Naam likho", "error");
     return;
   }
 
   if (!pin) {
     toast("PIN daalo", "error");
-    return;
-  }
-
-  const emp = allEmployees.find(e => e.id === empId);
-
-  if (!emp || String(emp.pin) !== String(pin)) {
-    toast("Galat PIN", "error");
     return;
   }
 
@@ -424,6 +417,33 @@ window.doLogin = async function () {
     return;
   }
 
+  // Query database for employee by name and PIN
+  const { data: employees, error: empError } = await supabase
+    .from("employees")
+    .select("*")
+    .ilike("name", empName)
+    .limit(1);
+
+  if (empError) {
+    toast("Database error: " + empError.message, "error");
+    return;
+  }
+
+  if (!employees || employees.length === 0) {
+    // Employee doesn't exist, create or just login with entered name
+    toast("Employee record nahi mila, check karo naam", "error");
+    return;
+  }
+
+  const emp = employees[0];
+
+  // Check PIN
+  if (String(emp.pin) !== String(pin)) {
+    toast("Galat PIN", "error");
+    return;
+  }
+
+  // All checks passed, login successful
   localStorage.setItem("routeData", JSON.stringify({
     state: state.toLowerCase(),
     district: district.toLowerCase(),
@@ -440,7 +460,7 @@ window.doLogin = async function () {
   startClock();
   refreshDash();
 
-  toast("Login successful", "success");
+  toast("Login successful ✓", "success");
 };
 
 window.doLogout = function () {
@@ -586,24 +606,22 @@ window.doCheckin = function () {
   localStorage.setItem("checkin", JSON.stringify(checkinData));
 
   // Insert attendance record to DB
+  const attendancePayload = {
+    employee_name: currentEmp.name,
+    employee_contact: currentEmp.contact || "",
+    attendance_date: checkinTime.toISOString().split("T")[0],
+    attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
+    working_route: routeData.route
+  };
+
   supabase
     .from("attendance")
-    .insert([
-      {
-        employee_name: currentEmp.name,
-        employee_contact: currentEmp.contact || "",
-        attendance_date: checkinTime.toISOString().split("T")[0],
-        attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
-        working_route: routeData.route,
-        state: routeData.state,
-        district: routeData.district
-      }
-    ])
+    .insert([attendancePayload])
     .select()
     .then(({ data, error }) => {
       if (error) {
         console.error("Attendance creation error:", error);
-        toast("Attendance save error", "error");
+        toast("Attendance save error: " + error.message, "error");
         return;
       }
 
@@ -768,39 +786,48 @@ window.submitCheckout = async function () {
 
   const photoUrl = await uploadPhoto(checkoutPhotoData, "CO_" + currentEmp.name);
 
-  const { error } = await supabase
-    .from("attendance")
-    .update({
-      attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
-      odometer_end: parseInt(odoInput),
-      distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
-      closed_odometer_photo: photoUrl || null,
-      working_hours: h + "h " + m + "m"
-    })
-    .eq("id", checkinData.attendanceId);
+  const updatePayload = {
+    attendance_closed_time: new Date().toLocaleTimeString("en-IN"),
+    odometer_end: parseInt(odoInput),
+    distance_km: Math.abs(parseInt(odoInput) - (checkinData.odoStart || 0)),
+    closed_odometer_photo: photoUrl || null,
+    working_hours: h + "h " + m + "m"
+  };
 
-  if (error) {
-    toast("Checkout error: " + error.message, "error");
-    console.log("Checkout photo URL:", photoUrl);
+  try {
+    const { error } = await supabase
+      .from("attendance")
+      .update(updatePayload)
+      .eq("id", checkinData.attendanceId);
+
+    if (error) {
+      toast("Checkout error: " + error.message, "error");
+      console.error("Checkout error details:", error);
+      btn.classList.remove("loading");
+      btn.textContent = "✓ Check-Out";
+      return;
+    }
+
+    localStorage.removeItem("checkin");
+    currentAttendanceId = null;
+
+    document.getElementById("checkoutModal").classList.remove("show");
+
+    if (checkoutCamStream) {
+      checkoutCamStream.getTracks().forEach(t => t.stop());
+    }
+
+    toast("Check-out ho gaya ✓", "success");
+    refreshDash();
+
     btn.classList.remove("loading");
     btn.textContent = "✓ Check-Out";
-    return;
+  } catch (err) {
+    console.error("Exception in submitCheckout:", err);
+    toast("Error: " + err.message, "error");
+    btn.classList.remove("loading");
+    btn.textContent = "✓ Check-Out";
   }
-
-  localStorage.removeItem("checkin");
-  currentAttendanceId = null;
-
-  document.getElementById("checkoutModal").classList.remove("show");
-
-  if (checkoutCamStream) {
-    checkoutCamStream.getTracks().forEach(t => t.stop());
-  }
-
-  toast("Check-out ho gaya ✓", "success");
-  refreshDash();
-
-  btn.classList.remove("loading");
-  btn.textContent = "✓ Check-Out";
 };
 
 window.closeCheckoutModal = function () {
