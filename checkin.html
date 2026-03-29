@@ -1,142 +1,361 @@
 <!DOCTYPE html>
 <html lang="hi">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Check-In — NAMEFAME</title>
+  <title>Check In - NAMEFAME</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
   <div id="toast" class="toast"></div>
 
-  <!-- NO LOGIN STATE -->
-  <div class="ci-no-login" id="noLoginScreen" style="display:none;">
-    <h2>⚠️ Login Nahi Hai</h2>
-    <p>Pehle index page se login karo</p>
-    <button class="btn-go-back-ci" onclick="location.href='index.html'">← Wapas Jao</button>
-  </div>
-
-  <!-- MAIN CHECK-IN PAGE -->
-  <div class="ci-page" id="ciPage">
-    <!-- TOP BAR -->
-    <div class="ci-topbar">
-      <button class="ci-back-btn" onclick="location.href='index.html'">←</button>
-      <div class="ci-topbar-info">
-        <div class="ci-topbar-title">🟢 Check-In</div>
-        <div class="ci-topbar-sub" id="ciTopDate">—</div>
-      </div>
-      <button class="ci-flip-btn" id="ciFlipBtn" onclick="ciFlipCamera()">🔄</button>
+  <!-- ══ CHECK-IN SCREEN ══ -->
+  <div class="checkin-container">
+    <div class="checkin-header">
+      <button class="checkin-back" onclick="goBack()">←</button>
+      <h2>📸 Check-In Selfie</h2>
+      <p>Apna photo lo aur odometer reading do</p>
     </div>
 
-    <!-- VIDEO AREA -->
-    <div class="ci-video-wrap">
-      <video id="ciVideo" autoplay playsinline muted></video>
-      <canvas id="ciCanvas"></canvas>
-      <img id="ci-preview" alt="selfie preview">
-      <!-- Corner guides -->
-      <div class="ci-corner tl"></div>
-      <div class="ci-corner tr"></div>
-      <div class="ci-corner bl"></div>
-      <div class="ci-corner br"></div>
-      <!-- Employee name overlay -->
-      <div class="ci-cam-overlay">
-        <div class="emp-badge">
-          <span>👤</span>
-          <div>
-            <div class="emp-name" id="ciEmpName">—</div>
-            <div class="emp-role" id="ciEmpRole">—</div>
-          </div>
-        </div>
+    <!-- STEP 1: PHOTO CAPTURE -->
+    <div class="checkin-step" id="step1">
+      <div class="step-title">Step 1: Opening Selfie</div>
+      
+      <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
+        <video id="checkinVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        <canvas id="checkinCanvas" style="display:none;"></canvas>
+        <img id="checkinPhotoPreview" alt="preview" style="width:100%;height:100%;object-fit:cover;display:none;">
       </div>
-      <!-- GPS overlay -->
-      <div class="ci-gps-badge" id="ciGpsBadge">📍 GPS fetch ho raha hai...</div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" id="btnCapCheckin" style="flex:1;" onclick="captureCheckinPhoto()">📷 Capture Photo</button>
+        <button class="btn-primary" id="btnReCheckin" style="flex:1;display:none;background:#ff6b6b;" onclick="retakeCheckinPhoto()">↩ Retake</button>
+      </div>
+
+      <button class="btn-primary" id="btnNextCheckin" style="display:none;margin-top:8px;width:100%;" onclick="goToOdometer()">✓ Next</button>
     </div>
 
-    <!-- PHOTO COUNTER BADGE -->
-    <div class="ci-photo-counter" id="ciPhotoCounter">
-      <span id="ciPhotoCount">0</span>/2 📸
+    <!-- STEP 2: ODOMETER -->
+    <div class="checkin-step" id="step2" style="display:none;">
+      <div class="step-title">Step 2: Opening Odometer</div>
+      
+      <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
+        <video id="odometerVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+        <canvas id="odometerCanvas" style="display:none;"></canvas>
+        <img id="odometerPhotoPreview" alt="preview" style="width:100%;height:100%;object-fit:cover;display:none;">
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" id="btnCapOdo" style="flex:1;" onclick="captureOdometerPhoto()">📷 Capture Photo</button>
+        <button class="btn-primary" id="btnReOdo" style="flex:1;display:none;background:#ff6b6b;" onclick="retakeOdometerPhoto()">↩ Retake</button>
+      </div>
+
+      <button class="btn-primary" id="btnNextOdo" style="display:none;margin-top:8px;width:100%;" onclick="goToReading()">✓ Next</button>
     </div>
 
-    <!-- BOTTOM ACTION BAR -->
-    <div class="ci-action-bar">
-      <!-- STATE 1: Capture -->
-      <div class="ci-state active" id="ci-state-capture">
-        <div class="ci-hint">Apna selfie lo — face clearly dikhna chahiye</div>
-        <button class="btn-capture" onclick="ciCapturePhoto()">📷 Selfie Lo</button>
+    <!-- STEP 3: READING INPUT -->
+    <div class="checkin-step" id="step3" style="display:none;">
+      <div class="step-title">Step 3: Odometer Reading</div>
+      
+      <div style="text-align:center;margin:20px 0;">
+        <label style="display:block;margin-bottom:12px;font-size:14px;">Opening Reading (जैसे: 45000)</label>
+        <input type="number" id="odometerReading" placeholder="45000" style="font-size:24px;text-align:center;padding:12px;border:2px solid #007bff;border-radius:8px;width:100%;max-width:200px;">
       </div>
 
-      <!-- STATE 2: Preview -->
-      <div class="ci-state" id="ci-state-preview">
-        <div class="ci-hint">Photo acchi lagi?</div>
-        <div class="ci-preview-actions">
-          <button class="btn-retake-ci" onclick="ciRetakePhoto()">↩ Retake</button>
-          <button class="btn-accept-photo" id="ciAcceptBtn" onclick="ciAcceptPhoto()">✓ Accept Photo</button>
-        </div>
-      </div>
-
-      <!-- STATE 3: Photo Collection -->
-      <div class="ci-state" id="ci-state-photo-collection">
-        <div class="ci-photo-grid">
-          <div class="ci-photo-item" id="ciPhoto1Slot">
-            <div class="ci-photo-placeholder">📷 Photo 1</div>
-            <img id="ciPhoto1Img" style="display:none;" alt="photo 1">
-          </div>
-          <div class="ci-photo-item" id="ciPhoto2Slot">
-            <div class="ci-photo-placeholder">Odometer Photo</div>
-            <img id="ciPhoto2Img" style="display:none;" alt="odometer photo">
-          </div>
-        </div>
-        <div class="ci-photo-actions">
-          <button class="btn-take-another" onclick="ciTakeAnotherPhoto()">📷 Next Photo</button>
-        </div>
-      </div>
-
-      <!-- STATE 4: Odometer Input -->
-      <div class="ci-state" id="ci-state-odometer">
-        <div class="ci-hint">Starting odometer reading daalo</div>
-        <div class="ci-odometer-section">
-          <label for="ciOdometerInput" class="ci-odo-label">🔧 Odometer Reading</label>
-          <div class="ci-odo-input-wrap">
-            <input 
-              type="number" 
-              id="ciOdometerInput" 
-              class="ci-odo-input" 
-              placeholder="जैसे: 45000"
-              min="0"
-              step="1"
-            >
-            <span class="ci-odo-unit">km</span>
-          </div>
-          <div class="ci-odo-hint">Starting reading — puri accuracy se bharo</div>
-        </div>
-        <button class="btn-continue-odo" id="ciOdoSubmitBtn" onclick="ciSubmitOdometer()">✓ Continue</button>
-      </div>
-
-      <!-- STATE 5: Loading -->
-      <div class="ci-state" id="ci-state-loading">
-        <div class="ci-spinner">
-          <div class="spin"></div>
-          <div class="spin-txt">Check-in ho raha hai...</div>
-        </div>
-      </div>
-
-      <!-- STATE 6: Done -->
-      <div class="ci-state" id="ci-state-done">
-        <div class="ci-done">
-          <div class="done-icon">✅</div>
-          <div class="done-title">Check-In Ho Gaya!</div>
-          <div class="done-sub" id="ciDoneMsg">—</div>
-          <button class="btn-go-dash" onclick="location.href='index.html'">← Dashboard pe Jao</button>
-        </div>
+      <div style="display:flex;gap:8px;margin-top:24px;">
+        <button class="btn-primary" style="flex:1;background:#6c757d;" onclick="goToOdometer()">← Back</button>
+        <button class="btn-primary" id="btnSubmitCheckin" style="flex:1;" onclick="submitCheckin()">✓ Complete Check-In</button>
       </div>
     </div>
   </div>
 
-  <script type="module" src="checkin.js"></script>
+  <style>
+    .checkin-container {
+      max-width:500px;
+      margin:0 auto;
+      padding:16px;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .checkin-header {
+      text-align:center;
+      margin-bottom:32px;
+      padding-top:16px;
+    }
+
+    .checkin-header h2 {
+      margin:8px 0;
+      font-size:24px;
+    }
+
+    .checkin-header p {
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .checkin-back {
+      background:none;
+      border:none;
+      font-size:24px;
+      cursor:pointer;
+      margin-bottom:16px;
+    }
+
+    .checkin-step {
+      background:white;
+      border-radius:12px;
+      padding:20px;
+      margin-bottom:20px;
+    }
+
+    .step-title {
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:16px;
+      padding-bottom:12px;
+      border-bottom:2px solid #f0f0f0;
+    }
+
+    .btn-primary {
+      background:#007bff;
+      color:white;
+      border:none;
+      padding:12px 20px;
+      border-radius:8px;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s;
+    }
+
+    .btn-primary:active {
+      transform:scale(0.98);
+    }
+  </style>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const SUPABASE_URL = "https://qhikqbrfojdlmdwsdota.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let checkinPhotoData = null;
+    let odometerPhotoData = null;
+    let checkinCamStream = null;
+    let odometerCamStream = null;
+
+    window.goBack = function() {
+      window.history.back();
+    };
+
+    window.captureCheckinPhoto = function() {
+      const v = document.getElementById("checkinVideo");
+      const c = document.getElementById("checkinCanvas");
+      const p = document.getElementById("checkinPhotoPreview");
+
+      c.width = v.videoWidth || 640;
+      c.height = v.videoHeight || 480;
+      c.getContext("2d").drawImage(v, 0, 0);
+
+      checkinPhotoData = c.toDataURL("image/jpeg", 0.7);
+
+      p.src = checkinPhotoData;
+      p.style.display = "block";
+      v.style.display = "none";
+
+      document.getElementById("btnCapCheckin").style.display = "none";
+      document.getElementById("btnReCheckin").style.display = "block";
+      document.getElementById("btnNextCheckin").style.display = "block";
+    };
+
+    window.retakeCheckinPhoto = function() {
+      document.getElementById("checkinVideo").style.display = "block";
+      document.getElementById("checkinPhotoPreview").style.display = "none";
+      document.getElementById("btnCapCheckin").style.display = "block";
+      document.getElementById("btnReCheckin").style.display = "none";
+      document.getElementById("btnNextCheckin").style.display = "none";
+      checkinPhotoData = null;
+    };
+
+    window.goToOdometer = function() {
+      if (!checkinPhotoData) {
+        alert("Pehle photo lo");
+        return;
+      }
+
+      document.getElementById("step1").style.display = "none";
+      document.getElementById("step2").style.display = "block";
+
+      // Start camera for odometer
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      }).then(stream => {
+        odometerCamStream = stream;
+        document.getElementById("odometerVideo").srcObject = stream;
+      }).catch(err => {
+        alert("Camera error: " + err.message);
+      });
+    };
+
+    window.captureOdometerPhoto = function() {
+      const v = document.getElementById("odometerVideo");
+      const c = document.getElementById("odometerCanvas");
+      const p = document.getElementById("odometerPhotoPreview");
+
+      c.width = v.videoWidth || 640;
+      c.height = v.videoHeight || 480;
+      c.getContext("2d").drawImage(v, 0, 0);
+
+      odometerPhotoData = c.toDataURL("image/jpeg", 0.7);
+
+      p.src = odometerPhotoData;
+      p.style.display = "block";
+      v.style.display = "none";
+
+      document.getElementById("btnCapOdo").style.display = "none";
+      document.getElementById("btnReOdo").style.display = "block";
+      document.getElementById("btnNextOdo").style.display = "block";
+    };
+
+    window.retakeOdometerPhoto = function() {
+      document.getElementById("odometerVideo").style.display = "block";
+      document.getElementById("odometerPhotoPreview").style.display = "none";
+      document.getElementById("btnCapOdo").style.display = "block";
+      document.getElementById("btnReOdo").style.display = "none";
+      document.getElementById("btnNextOdo").style.display = "none";
+      odometerPhotoData = null;
+    };
+
+    window.goToReading = function() {
+      if (!odometerPhotoData) {
+        alert("Odometer photo lo");
+        return;
+      }
+
+      if (odometerCamStream) {
+        odometerCamStream.getTracks().forEach(t => t.stop());
+      }
+
+      document.getElementById("step2").style.display = "none";
+      document.getElementById("step3").style.display = "block";
+    };
+
+    window.submitCheckin = async function() {
+      const reading = document.getElementById("odometerReading").value.trim();
+
+      if (!reading || isNaN(reading)) {
+        alert("Valid odometer reading daalo");
+        return;
+      }
+
+      const btn = document.getElementById("btnSubmitCheckin");
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+
+      try {
+        const emp = JSON.parse(localStorage.getItem("emp") || "{}");
+        const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+
+        // Upload photos
+        const checkinPhotoUrl = await uploadPhoto(checkinPhotoData, "CHECKIN_" + emp.name);
+        const odometerPhotoUrl = await uploadPhoto(odometerPhotoData, "ODOMETER_" + emp.name);
+
+        const checkinTime = new Date();
+        const checkinData = {
+          ms: checkinTime.getTime(),
+          odoStart: parseInt(reading),
+          working_route: routeData.route
+        };
+
+        // Insert attendance record
+        const { data: attData, error: attError } = await supabase
+          .from("attendance")
+          .insert([
+            {
+              employee_name: emp.name,
+              employee_contact: emp.contact || "",
+              attendance_date: checkinTime.toISOString().split("T")[0],
+              attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
+              working_route: routeData.route,
+              odometer_start: parseInt(reading),
+              open_selfie_photo: checkinPhotoUrl,
+              open_odometer_photo: odometerPhotoUrl
+            }
+          ])
+          .select();
+
+        if (attError) {
+          alert("Attendance error: " + attError.message);
+          btn.disabled = false;
+          btn.textContent = "✓ Complete Check-In";
+          return;
+        }
+
+        if (attData && attData[0]) {
+          checkinData.attendanceId = attData[0].id;
+        }
+
+        localStorage.setItem("checkin", JSON.stringify(checkinData));
+
+        alert("✓ Check-in successful!");
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+        btn.textContent = "✓ Complete Check-In";
+      }
+    };
+
+    async function uploadPhoto(base64String, fileName) {
+      try {
+        const base64Data = base64String.split(",")[1] || base64String;
+        const blob = await fetch("data:image/jpeg;base64," + base64Data).then(r => r.blob());
+        const path = "public/" + fileName + "_" + Date.now() + ".jpg";
+
+        const { error } = await supabase.storage.from("photos").upload(path, blob);
+
+        if (error) {
+          console.error("Photo upload error:", error);
+          return "";
+        }
+
+        const { data } = supabase.storage.from("photos").getPublicUrl(path);
+        return data.publicUrl;
+      } catch (err) {
+        console.error("Upload error:", err);
+        return "";
+      }
+    }
+
+    // Start camera on page load
+    window.addEventListener("load", () => {
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      }).then(stream => {
+        checkinCamStream = stream;
+        document.getElementById("checkinVideo").srcObject = stream;
+      }).catch(err => {
+        alert("Camera error: " + err.message);
+      });
+    });
+
+    // Cleanup on unload
+    window.addEventListener("beforeunload", () => {
+      if (checkinCamStream) {
+        checkinCamStream.getTracks().forEach(t => t.stop());
+      }
+      if (odometerCamStream) {
+        odometerCamStream.getTracks().forEach(t => t.stop());
+      }
+    });
+  </script>
 </body>
-
 </html>
