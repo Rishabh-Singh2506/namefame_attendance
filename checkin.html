@@ -11,19 +11,18 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- ══ CHECK-IN SCREEN ══ -->
   <div class="checkin-container">
     <div class="checkin-header">
       <button class="checkin-back" onclick="goBack()">←</button>
-      <h2>📸 Check-In Selfie</h2>
-      <p>Apna photo lo aur odometer reading do</p>
+      <h2>📸 Check-In</h2>
+      <p>Selfie, odometer aur route select karo</p>
     </div>
 
-    <!-- STEP 1: PHOTO CAPTURE (FRONT CAMERA) -->
+    <!-- STEP 1: SELFIE (FRONT CAMERA) -->
     <div class="checkin-step" id="step1">
       <div class="step-title">Step 1: Opening Selfie (📱 Front Camera)</div>
-      
-      <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
+
+      <div class="video-wrap" style="margin-bottom:16px;border-radius:8px;overflow:hidden;height:300px;">
         <video id="checkinVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
         <canvas id="checkinCanvas" style="display:none;"></canvas>
         <img id="checkinPhotoPreview" alt="preview" style="width:100%;height:100%;object-fit:cover;display:none;">
@@ -33,15 +32,14 @@
         <button class="btn-primary" id="btnCapCheckin" style="flex:1;" onclick="captureCheckinPhoto()">📷 Capture Photo</button>
         <button class="btn-primary" id="btnReCheckin" style="flex:1;display:none;background:#ff6b6b;" onclick="retakeCheckinPhoto()">↩ Retake</button>
       </div>
-
-      <button class="btn-primary" id="btnNextCheckin" style="display:none;margin-top:8px;width:100%;" onclick="goToOdometer()">✓ Next</button>
+      <button class="btn-primary" id="btnNextCheckin" style="display:none;margin-top:8px;width:100%;" onclick="goToOdometer()">✓ Next →</button>
     </div>
 
-    <!-- STEP 2: ODOMETER (REAR CAMERA) -->
+    <!-- STEP 2: ODOMETER PHOTO (REAR CAMERA) -->
     <div class="checkin-step" id="step2" style="display:none;">
       <div class="step-title">Step 2: Opening Odometer (📷 Rear Camera)</div>
-      
-      <div class="video-wrap" style="margin-bottom:16px; border-radius:8px; overflow:hidden; height:300px;">
+
+      <div class="video-wrap" style="margin-bottom:16px;border-radius:8px;overflow:hidden;height:300px;">
         <video id="odometerVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
         <canvas id="odometerCanvas" style="display:none;"></canvas>
         <img id="odometerPhotoPreview" alt="preview" style="width:100%;height:100%;object-fit:cover;display:none;">
@@ -51,102 +49,103 @@
         <button class="btn-primary" id="btnCapOdo" style="flex:1;" onclick="captureOdometerPhoto()">📷 Capture Photo</button>
         <button class="btn-primary" id="btnReOdo" style="flex:1;display:none;background:#ff6b6b;" onclick="retakeOdometerPhoto()">↩ Retake</button>
       </div>
-
-      <button class="btn-primary" id="btnNextOdo" style="display:none;margin-top:8px;width:100%;" onclick="goToReading()">✓ Next</button>
+      <button class="btn-primary" id="btnNextOdo" style="display:none;margin-top:8px;width:100%;" onclick="goToReading()">✓ Next →</button>
     </div>
 
-    <!-- STEP 3: READING INPUT -->
+    <!-- STEP 3: ODOMETER READING INPUT -->
     <div class="checkin-step" id="step3" style="display:none;">
       <div class="step-title">Step 3: Odometer Reading</div>
-      
+
       <div style="text-align:center;margin:20px 0;">
-        <label style="display:block;margin-bottom:12px;font-size:14px;">Opening Reading (जैसे: 45000)</label>
-        <input type="number" id="odometerReading" placeholder="45000" style="font-size:24px;text-align:center;padding:12px;border:2px solid #007bff;border-radius:8px;width:100%;max-width:200px;">
+        <label style="display:block;margin-bottom:12px;font-size:14px;color:#555;">Opening Reading daalo (जैसे: 45000)</label>
+        <input type="number" id="odometerReading"
+          placeholder="45000"
+          style="font-size:24px;text-align:center;padding:12px;border:2px solid #007bff;border-radius:8px;width:100%;max-width:220px;">
       </div>
-     
-    </div>
-      <button class="btn-primary" id="btnNextOdo" style="display:none;margin-top:8px;width:100%;" onclick="goToReading()">✓ Next</button>
+
+      <button class="btn-primary" style="width:100%;margin-top:4px;" onclick="goToRouteSelect()">✓ Next →</button>
     </div>
 
-      <!-- ROUTE SELECT -->
-      <div class="fgroup" id="routeGroup" style="display:none;">
-        <label class="lbl">Apna Route Chunein</label>
-        <select id="routeSelect">
+    <!-- ✅ STEP 4: ROUTE SELECT — added after odometer -->
+    <div class="checkin-step" id="step4" style="display:none;">
+      <div class="step-title">Step 4: Apna Route Chunein 🗺️</div>
+
+      <p style="font-size:13px;color:#666;margin-bottom:16px;">Aaj ke liye apna working route select karo</p>
+
+      <div id="routeLoadingMsg" style="text-align:center;padding:20px;color:#007bff;font-size:14px;">
+        ⏳ Routes load ho rahe hain...
+      </div>
+
+      <div id="routeDropdownWrap" style="display:none;">
+        <select id="checkinRouteSelect"
+          style="width:100%;padding:14px;font-size:16px;font-weight:600;border:2px solid #007bff;border-radius:8px;background:white;margin-bottom:12px;">
           <option value="">-- Route chunein --</option>
         </select>
+
+        <div id="routeSelectedBadge" style="display:none;background:#e8f5e9;border-radius:8px;padding:12px;margin-bottom:16px;text-align:center;">
+          <span style="color:#28a745;font-weight:700;font-size:15px;">✓ Route: <span id="selectedRouteName"></span></span>
+        </div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-top:24px;">
-        <button class="btn-primary" style="flex:1;background:#6c757d;" onclick="goToOdometer()">← Back</button>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn-primary" style="flex:1;background:#6c757d;" onclick="goBackToReading()">← Back</button>
         <button class="btn-primary" id="btnSubmitCheckin" style="flex:1;" onclick="submitCheckin()">✓ Complete Check-In</button>
       </div>
     </div>
+
   </div>
 
   <style>
     .checkin-container {
-      max-width:500px;
-      margin:0 auto;
-      padding:16px;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-
     .checkin-header {
-      text-align:center;
-      margin-bottom:32px;
-      padding-top:16px;
+      text-align: center;
+      margin-bottom: 24px;
+      padding-top: 8px;
     }
-
-    .checkin-header h2 {
-      margin:8px 0;
-      font-size:24px;
-    }
-
-    .checkin-header p {
-      color:var(--muted);
-      font-size:14px;
-    }
-
+    .checkin-header h2 { margin: 8px 0; font-size: 22px; }
+    .checkin-header p { color: #888; font-size: 13px; margin: 0; }
     .checkin-back {
-      background:none;
-      border:none;
-      font-size:24px;
-      cursor:pointer;
-      margin-bottom:16px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      margin-bottom: 8px;
     }
-
     .checkin-step {
-      background:white;
-      border-radius:12px;
-      padding:20px;
-      margin-bottom:20px;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-
     .step-title {
-      font-size:16px;
-      font-weight:600;
-      margin-bottom:16px;
-      padding-bottom:12px;
-      border-bottom:2px solid #f0f0f0;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+      color: #333;
     }
-
     .btn-primary {
-      background:#007bff;
-      color:white;
-      border:none;
-      padding:12px 20px;
-      border-radius:8px;
-      font-size:16px;
-      font-weight:600;
-      cursor:pointer;
-      transition:all 0.3s;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 13px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-
-    .btn-primary:active {
-      transform:scale(0.98);
-    }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
   </style>
 
   <script type="module">
@@ -154,40 +153,40 @@
 
     const SUPABASE_URL = "https://qhikqbrfojdlmdwsdota.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
-
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let checkinPhotoData = null;
     let odometerPhotoData = null;
     let checkinCamStream = null;
     let odometerCamStream = null;
-    let gpsLocation = null;  // Store GPS location
+    let gpsLocation = null;
 
-    window.goBack = function() {
-      window.history.back();
+    /* ── NAVIGATION ── */
+    window.goBack = () => window.history.back();
+
+    window.goBackToReading = function () {
+      document.getElementById("step4").style.display = "none";
+      document.getElementById("step3").style.display = "block";
     };
 
-    window.captureCheckinPhoto = function() {
+    /* ── STEP 1: SELFIE ── */
+    window.captureCheckinPhoto = function () {
       const v = document.getElementById("checkinVideo");
       const c = document.getElementById("checkinCanvas");
       const p = document.getElementById("checkinPhotoPreview");
-
       c.width = v.videoWidth || 640;
       c.height = v.videoHeight || 480;
       c.getContext("2d").drawImage(v, 0, 0);
-
       checkinPhotoData = c.toDataURL("image/jpeg", 0.7);
-
       p.src = checkinPhotoData;
       p.style.display = "block";
       v.style.display = "none";
-
       document.getElementById("btnCapCheckin").style.display = "none";
       document.getElementById("btnReCheckin").style.display = "block";
       document.getElementById("btnNextCheckin").style.display = "block";
     };
 
-    window.retakeCheckinPhoto = function() {
+    window.retakeCheckinPhoto = function () {
       document.getElementById("checkinVideo").style.display = "block";
       document.getElementById("checkinPhotoPreview").style.display = "none";
       document.getElementById("btnCapCheckin").style.display = "block";
@@ -196,71 +195,47 @@
       checkinPhotoData = null;
     };
 
-    window.goToOdometer = function() {
-      if (!checkinPhotoData) {
-        alert("Pehle photo lo");
-        return;
-      }
-
-      // Stop front camera
-      if (checkinCamStream) {
-        checkinCamStream.getTracks().forEach(t => t.stop());
-      }
-
+    window.goToOdometer = function () {
+      if (!checkinPhotoData) { alert("Pehle selfie lo"); return; }
+      if (checkinCamStream) checkinCamStream.getTracks().forEach(t => t.stop());
       document.getElementById("step1").style.display = "none";
       document.getElementById("step2").style.display = "block";
 
-      // Start REAR camera for odometer
       navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: { exact: "environment" },  // Rear/Back camera
-          width: { ideal: 1280 }, 
-          height: { ideal: 720 } 
-        },
+        video: { facingMode: { exact: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       }).then(stream => {
         odometerCamStream = stream;
         document.getElementById("odometerVideo").srcObject = stream;
-      }).catch(err => {
-        console.error("Rear camera error:", err);
-        // Fallback to any rear camera
+      }).catch(() => {
         navigator.mediaDevices.getUserMedia({
-          video: { 
-            facingMode: "environment",
-            width: { ideal: 1280 }, 
-            height: { ideal: 720 } 
-          },
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         }).then(stream => {
           odometerCamStream = stream;
           document.getElementById("odometerVideo").srcObject = stream;
-        }).catch(err2 => {
-          alert("Camera error: " + err2.message);
-        });
+        }).catch(err => alert("Camera error: " + err.message));
       });
     };
 
-    window.captureOdometerPhoto = function() {
+    /* ── STEP 2: ODOMETER PHOTO ── */
+    window.captureOdometerPhoto = function () {
       const v = document.getElementById("odometerVideo");
       const c = document.getElementById("odometerCanvas");
       const p = document.getElementById("odometerPhotoPreview");
-
       c.width = v.videoWidth || 640;
       c.height = v.videoHeight || 480;
       c.getContext("2d").drawImage(v, 0, 0);
-
       odometerPhotoData = c.toDataURL("image/jpeg", 0.7);
-
       p.src = odometerPhotoData;
       p.style.display = "block";
       v.style.display = "none";
-
       document.getElementById("btnCapOdo").style.display = "none";
       document.getElementById("btnReOdo").style.display = "block";
       document.getElementById("btnNextOdo").style.display = "block";
     };
 
-    window.retakeOdometerPhoto = function() {
+    window.retakeOdometerPhoto = function () {
       document.getElementById("odometerVideo").style.display = "block";
       document.getElementById("odometerPhotoPreview").style.display = "none";
       document.getElementById("btnCapOdo").style.display = "block";
@@ -269,27 +244,96 @@
       odometerPhotoData = null;
     };
 
-    window.goToReading = function() {
-      if (!odometerPhotoData) {
-        alert("Odometer photo lo");
-        return;
-      }
-
-      if (odometerCamStream) {
-        odometerCamStream.getTracks().forEach(t => t.stop());
-      }
-
+    window.goToReading = function () {
+      if (!odometerPhotoData) { alert("Odometer photo lo"); return; }
+      if (odometerCamStream) odometerCamStream.getTracks().forEach(t => t.stop());
       document.getElementById("step2").style.display = "none";
       document.getElementById("step3").style.display = "block";
     };
 
-    window.submitCheckin = async function() {
+    /* ── STEP 3 → STEP 4 ── */
+    window.goToRouteSelect = async function () {
       const reading = document.getElementById("odometerReading").value.trim();
+      if (!reading || isNaN(reading)) { alert("Valid odometer reading daalo"); return; }
 
-      if (!reading || isNaN(reading)) {
-        alert("Valid odometer reading daalo");
-        return;
+      document.getElementById("step3").style.display = "none";
+      document.getElementById("step4").style.display = "block";
+      await loadCheckinRoutes();
+    };
+
+    async function loadCheckinRoutes() {
+      const routeLoadingMsg = document.getElementById("routeLoadingMsg");
+      const routeDropdownWrap = document.getElementById("routeDropdownWrap");
+      const routeSel = document.getElementById("checkinRouteSelect");
+
+      routeLoadingMsg.style.display = "block";
+      routeDropdownWrap.style.display = "none";
+
+      try {
+        const empData = JSON.parse(localStorage.getItem("emp") || "{}");
+        const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
+        const state = empData.state || savedRouteData.state;
+        const district = empData.district || savedRouteData.district;
+
+        if (!state || !district) {
+          routeLoadingMsg.textContent = "⚠️ State/District info nahi mili. Wapas jao aur login karo.";
+          return;
+        }
+
+        const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
+
+        if (error) {
+          routeLoadingMsg.textContent = "⚠️ Routes load nahi ho sake: " + error.message;
+          return;
+        }
+
+        const filtered = allData.filter(r =>
+          r.state && r.district && r.working_route &&
+          r.state.toUpperCase() === state.toUpperCase() &&
+          r.district.toUpperCase() === district.toUpperCase()
+        );
+
+        const routeMap = {};
+        filtered.forEach(r => { const k = r.working_route.toUpperCase(); if (!routeMap[k]) routeMap[k] = r.working_route; });
+        const routes = Object.values(routeMap).sort();
+
+        routeSel.innerHTML = '<option value="">-- Route chunein --</option>';
+        routes.forEach(route => {
+          const opt = document.createElement("option");
+          opt.value = route;
+          opt.textContent = route;
+          routeSel.appendChild(opt);
+        });
+
+        // Pre-select previously saved route
+        if (savedRouteData.route) {
+          routeSel.value = savedRouteData.route;
+          showRouteBadge(savedRouteData.route);
+        }
+
+        routeSel.addEventListener("change", function () { showRouteBadge(this.value); });
+
+        routeLoadingMsg.style.display = "none";
+        routeDropdownWrap.style.display = "block";
+
+      } catch (err) {
+        routeLoadingMsg.textContent = "⚠️ Error: " + err.message;
       }
+    }
+
+    function showRouteBadge(route) {
+      const badge = document.getElementById("routeSelectedBadge");
+      document.getElementById("selectedRouteName").textContent = route;
+      badge.style.display = route ? "block" : "none";
+    }
+
+    /* ── SUBMIT CHECK-IN ── */
+    window.submitCheckin = async function () {
+      const reading = document.getElementById("odometerReading").value.trim();
+      const selectedRoute = document.getElementById("checkinRouteSelect").value;
+
+      if (!reading || isNaN(reading)) { alert("Valid odometer reading daalo"); return; }
+      if (!selectedRoute) { alert("Route select karo"); document.getElementById("checkinRouteSelect").focus(); return; }
 
       const btn = document.getElementById("btnSubmitCheckin");
       btn.disabled = true;
@@ -297,36 +341,28 @@
 
       try {
         const emp = JSON.parse(localStorage.getItem("emp") || "{}");
-        const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
-
-        // Upload photos
         const checkinPhotoUrl = await uploadPhoto(checkinPhotoData, "CHECKIN_" + emp.name);
         const odometerPhotoUrl = await uploadPhoto(odometerPhotoData, "ODOMETER_" + emp.name);
-
         const checkinTime = new Date();
-        const checkinData = {
-          ms: checkinTime.getTime(),
-          odoStart: parseInt(reading),
-          working_route: routeData.route
-        };
 
-        // Insert attendance record
-        const { data: attData, error: attError } = await supabase
-          .from("attendance")
-          .insert([
-            {
-              employee_name: emp.name,
-              employee_contact: emp.contact || "",
-              attendance_date: checkinTime.toISOString().split("T")[0],
-              attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
-              working_route: routeData.route,
-              odometer_start: parseInt(reading),
-              open_selfie_photo: checkinPhotoUrl,
-              open_odometer_photo: odometerPhotoUrl,
-              map_link: gpsLocation ? "https://maps.google.com/?q=" + gpsLocation.lat + "," + gpsLocation.lng : null
-            }
-          ])
-          .select();
+        // ✅ Save selected route to localStorage
+        const existingRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
+        existingRouteData.route = selectedRoute;
+        localStorage.setItem("routeData", JSON.stringify(existingRouteData));
+
+        const { data: attData, error: attError } = await supabase.from("attendance").insert([{
+          employee_name: emp.name,
+          employee_contact: emp.contact || "",
+          attendance_date: checkinTime.toISOString().split("T")[0],
+          attendance_open_time: checkinTime.toLocaleTimeString("en-IN"),
+          working_route: selectedRoute,
+          odometer_start: parseInt(reading),
+          open_selfie_photo: checkinPhotoUrl,
+          open_odometer_photo: odometerPhotoUrl,
+          map_link: gpsLocation
+            ? "https://maps.google.com/?q=" + gpsLocation.lat + "," + gpsLocation.lng
+            : null
+        }]).select();
 
         if (attError) {
           alert("Attendance error: " + attError.message);
@@ -335,14 +371,16 @@
           return;
         }
 
-        if (attData && attData[0]) {
-          checkinData.attendanceId = attData[0].id;
-        }
+        localStorage.setItem("checkin", JSON.stringify({
+          ms: checkinTime.getTime(),
+          odoStart: parseInt(reading),
+          working_route: selectedRoute,
+          attendanceId: attData[0]?.id
+        }));
 
-        localStorage.setItem("checkin", JSON.stringify(checkinData));
-
-        alert("✓ Check-in successful!");
+        alert("✓ Check-in successful!\nRoute: " + selectedRoute);
         window.location.href = "index.html";
+
       } catch (err) {
         alert("Error: " + err.message);
         btn.disabled = false;
@@ -351,18 +389,13 @@
     };
 
     async function uploadPhoto(base64String, fileName) {
+      if (!base64String) return "";
       try {
         const base64Data = base64String.split(",")[1] || base64String;
         const blob = await fetch("data:image/jpeg;base64," + base64Data).then(r => r.blob());
         const path = "public/" + fileName + "_" + Date.now() + ".jpg";
-
         const { error } = await supabase.storage.from("photos").upload(path, blob);
-
-        if (error) {
-          console.error("Photo upload error:", error);
-          return "";
-        }
-
+        if (error) { console.error("Upload error:", error); return ""; }
         const { data } = supabase.storage.from("photos").getPublicUrl(path);
         return data.publicUrl;
       } catch (err) {
@@ -371,48 +404,28 @@
       }
     }
 
-    // Start FRONT camera on page load
+    /* ── INIT ── */
     window.addEventListener("load", () => {
-      // Get GPS location
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            gpsLocation = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude
-            };
-            console.log("GPS captured:", gpsLocation);
-          },
-          (err) => {
-            console.warn("GPS error:", err.message);
-          },
+          pos => { gpsLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; },
+          err => console.warn("GPS:", err.message),
           { enableHighAccuracy: true, timeout: 10000 }
         );
       }
 
       navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: "user",  // Front/Selfie camera
-          width: { ideal: 1280 }, 
-          height: { ideal: 720 } 
-        },
+        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       }).then(stream => {
         checkinCamStream = stream;
         document.getElementById("checkinVideo").srcObject = stream;
-      }).catch(err => {
-        alert("Camera error: " + err.message);
-      });
+      }).catch(err => alert("Camera error: " + err.message));
     });
 
-    // Cleanup on unload
     window.addEventListener("beforeunload", () => {
-      if (checkinCamStream) {
-        checkinCamStream.getTracks().forEach(t => t.stop());
-      }
-      if (odometerCamStream) {
-        odometerCamStream.getTracks().forEach(t => t.stop());
-      }
+      if (checkinCamStream) checkinCamStream.getTracks().forEach(t => t.stop());
+      if (odometerCamStream) odometerCamStream.getTracks().forEach(t => t.stop());
     });
   </script>
 </body>
