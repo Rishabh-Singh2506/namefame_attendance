@@ -63,6 +63,18 @@
         <label style="display:block;margin-bottom:12px;font-size:14px;">Opening Reading (जैसे: 45000)</label>
         <input type="number" id="odometerReading" placeholder="45000" style="font-size:24px;text-align:center;padding:12px;border:2px solid #007bff;border-radius:8px;width:100%;max-width:200px;">
       </div>
+     
+    </div>
+      <button class="btn-primary" id="btnNextOdo" style="display:none;margin-top:8px;width:100%;" onclick="goToReading()">✓ Next</button>
+    </div>
+
+      <!-- ROUTE SELECT -->
+      <div class="fgroup" id="routeGroup" style="display:none;">
+        <label class="lbl">Apna Route Chunein</label>
+        <select id="routeSelect">
+          <option value="">-- Route chunein --</option>
+        </select>
+      </div>
 
       <div style="display:flex;gap:8px;margin-top:24px;">
         <button class="btn-primary" style="flex:1;background:#6c757d;" onclick="goToOdometer()">← Back</button>
