@@ -417,50 +417,76 @@ window.doLogin = async function () {
     return;
   }
 
-  // Query database for employee by name and PIN
-  const { data: employees, error: empError } = await supabase
-    .from("employees")
-    .select("*")
-    .ilike("name", empName)
-    .limit(1);
+  try {
+    console.log("Searching for employee:", empName);
 
-  if (empError) {
-    toast("Database error: " + empError.message, "error");
-    return;
+    // Get all employees and filter on client side
+    const { data: allEmployees, error: empError } = await supabase
+      .from("employees")
+      .select("*");
+
+    if (empError) {
+      toast("Database error: " + empError.message, "error");
+      console.error("Employee query error:", empError);
+      return;
+    }
+
+    if (!allEmployees || allEmployees.length === 0) {
+      toast("Database mein koi employee nahi", "error");
+      return;
+    }
+
+    console.log("All employees:", allEmployees);
+
+    // Find matching employee (case-insensitive)
+    let emp = allEmployees.find(e => 
+      e.name && e.name.toLowerCase() === empName.toLowerCase()
+    );
+
+    if (!emp) {
+      // Try partial match
+      emp = allEmployees.find(e => 
+        e.name && e.name.toLowerCase().includes(empName.toLowerCase())
+      );
+    }
+
+    if (!emp) {
+      console.log("No employee found with name:", empName);
+      console.log("Available employees:", allEmployees.map(e => e.name));
+      toast("Employee nahi mila: '" + empName + "'. Sahi naam likho", "error");
+      return;
+    }
+
+    console.log("Found employee:", emp);
+
+    // Check PIN
+    if (String(emp.pin) !== String(pin)) {
+      toast("Galat PIN", "error");
+      return;
+    }
+
+    // All checks passed, login successful
+    localStorage.setItem("routeData", JSON.stringify({
+      state: state.toLowerCase(),
+      district: district.toLowerCase(),
+      route: route.toLowerCase()
+    }));
+    
+    currentEmp = emp;
+    localStorage.setItem("emp", JSON.stringify(emp));
+
+    document.getElementById("dashName").textContent = emp.name;
+    document.getElementById("dashDate").textContent = new Date().toLocaleDateString("hi-IN");
+
+    showScreen("s-dash");
+    startClock();
+    refreshDash();
+
+    toast("Login successful ✓", "success");
+  } catch (err) {
+    console.error("Exception in doLogin:", err);
+    toast("Error: " + err.message, "error");
   }
-
-  if (!employees || employees.length === 0) {
-    // Employee doesn't exist, create or just login with entered name
-    toast("Employee record nahi mila, check karo naam", "error");
-    return;
-  }
-
-  const emp = employees[0];
-
-  // Check PIN
-  if (String(emp.pin) !== String(pin)) {
-    toast("Galat PIN", "error");
-    return;
-  }
-
-  // All checks passed, login successful
-  localStorage.setItem("routeData", JSON.stringify({
-    state: state.toLowerCase(),
-    district: district.toLowerCase(),
-    route: route.toLowerCase()
-  }));
-  
-  currentEmp = emp;
-  localStorage.setItem("emp", JSON.stringify(emp));
-
-  document.getElementById("dashName").textContent = emp.name;
-  document.getElementById("dashDate").textContent = new Date().toLocaleDateString("hi-IN");
-
-  showScreen("s-dash");
-  startClock();
-  refreshDash();
-
-  toast("Login successful ✓", "success");
 };
 
 window.doLogout = function () {
