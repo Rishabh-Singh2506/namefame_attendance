@@ -31,15 +31,16 @@
     <div class="verify-hero">
       <button class="verify-back" onclick="showScreen('s-land')">←</button>
       <h2>👤 Verify Identity</h2>
-      <p>Apna state, naam aur PIN daalo</p>
+      <p>Apna state, district, naam aur PIN daalo</p>
     </div>
     <div class="verify-body">
+
       <!-- STATE SELECT -->
       <div class="fgroup">
         <label class="lbl">Apna State Chunein</label>
         <div id="stateLoading" style="font-size:13px;color:var(--muted);padding:8px 0;">⏳ Loading...</div>
         <div id="stateList-wrap" style="display:none;">
-          <select id="stateSelect">
+          <select id="stateSelect" onchange="loadDistricts()">
             <option value="">-- State chunein --</option>
           </select>
         </div>
@@ -48,20 +49,12 @@
       <!-- DISTRICT SELECT -->
       <div class="fgroup" id="districtGroup" style="display:none;">
         <label class="lbl">Apna District Chunein</label>
-        <select id="districtSelect">
+        <select id="districtSelect" onchange="loadDistricts_done()">
           <option value="">-- District chunein --</option>
         </select>
       </div>
 
-      <!-- ROUTE SELECT 
-      <div class="fgroup" id="routeGroup" style="display:none;">
-        <label class="lbl">Apna Route Chunein</label>
-        <select id="routeSelect">
-          <option value="">-- Route chunein --</option>
-        </select>
-      </div>
-
-      -->
+      <!-- ✅ ROUTE SELECT REMOVED FROM LOGIN — moved to dashboard -->
 
       <!-- EMPLOYEE NAME INPUT -->
       <div class="fgroup">
@@ -94,6 +87,16 @@
         <button class="dash-logout" onclick="doLogout()">Logout</button>
       </div>
     </div>
+
+    <!-- ✅ ROUTE SELECT ON DASHBOARD — shown after login -->
+    <div id="routeSelectCard" style="background:white;border-radius:12px;padding:16px;margin-bottom:12px;border:2px solid #007bff;display:none;">
+      <div style="font-size:13px;font-weight:700;color:#007bff;margin-bottom:10px;">🗺️ Apna Route Chunein</div>
+      <select id="dashRouteSelect" onchange="saveDashRoute()" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:14px;font-weight:600;">
+        <option value="">-- Route chunein --</option>
+      </select>
+      <div id="routeSelectedMsg" style="display:none;margin-top:8px;color:#28a745;font-size:13px;font-weight:600;">✓ Route select ho gaya!</div>
+    </div>
+
     <div class="status-card">
       <div class="status-left">
         <div class="dot" id="statusDot"></div>
@@ -110,6 +113,16 @@
         </div>
       </div>
     </div>
+
+    <!-- ✅ HOLD TIME CARD — total time spent at shops -->
+    <div class="dist-card" id="holdCard" style="display:none;">
+      <div class="dist-row">
+        <div class="dist-lbl">🏪 Shop pe Bitaya Time (Hold Time)</div>
+      </div>
+      <div class="dist-val" id="holdVal">0h 0m</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="holdVisitCount">0 visits aaj</div>
+    </div>
+
     <div class="dist-card" id="distCard">
       <div class="dist-row">
         <div class="dist-lbl">📍 Distance</div>
@@ -179,7 +192,6 @@
         <span class="al">Payment</span>
         <span class="as">Payment lo</span>
       </div>
-
     </div>
   </div>
 
@@ -198,13 +210,14 @@
       <div class="gps-badge" id="gpsBadge"></div>
     </div>
     <div class="cam-actions">
-      <button class="cam-btn cap" id="btnCap" onclick="capturePhoto()" color="red">📷 Capture Photo </button>
+      <button class="cam-btn cap" id="btnCap" onclick="capturePhoto()">📷 Capture Photo</button>
       <button class="cam-btn retake" id="btnRe" onclick="retakePhoto()" style="display:none;">↩ Retake</button>
       <button class="cam-btn use" id="btnNext" onclick="acceptPhoto()" style="display:none;">✓ Use This</button>
     </div>
   </div>
 
   <!-- ══ NEW VISIT MODAL ══ -->
+  <!-- ✅ FIXED FLOW: Area → Shop (with auto-fill) → Photo → Save -->
   <div class="modal-overlay" id="visitModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -213,6 +226,64 @@
       </div>
       <div class="modal-sub">Shop/Dukan ki jankari bharein</div>
 
+      <!-- STEP 1: AREA SELECT -->
+      <div class="fgroup">
+        <label class="lbl">Area / Ilaka <span class="req-star">*</span></label>
+        <select id="visitAreaSelect" onchange="loadShops()">
+          <option value="">-- Area chunein --</option>
+        </select>
+      </div>
+
+      <!-- STEP 2: SHOP SELECT OR ADD NEW -->
+      <div class="fgroup">
+        <label class="lbl">Shop Name <span class="req-star">*</span></label>
+        <div style="display:flex;gap:8px;">
+          <select id="mShopName" style="flex:1;" onchange="autoFillShopkeeper()">
+            <option value="">-- Shop chunein --</option>
+          </select>
+          <button class="btn-add-shop" onclick="toggleAddNewShop()">+ Add New Shop</button>
+        </div>
+        <!-- Add New Shop Form (hidden by default) -->
+        <div id="addNewShopForm" style="display:none;margin-top:10px;background:#f8f9fa;padding:12px;border-radius:8px;border:1px dashed #007bff;">
+          <div style="font-size:13px;font-weight:700;color:#007bff;margin-bottom:10px;">🆕 Naya Shop Add Karein</div>
+          <div class="fgroup" style="margin-bottom:8px;">
+            <label class="lbl" style="font-size:12px;">Area (auto-filled)</label>
+            <input type="text" id="newShopAreaDisplay" readonly style="background:#e9ecef;font-size:13px;padding:8px;">
+          </div>
+          <div class="fgroup" style="margin-bottom:8px;">
+            <label class="lbl" style="font-size:12px;">Shop Name <span class="req-star">*</span></label>
+            <input type="text" id="newShopName" placeholder="Naya shop ka naam">
+          </div>
+          <div class="fgroup" style="margin-bottom:8px;">
+            <label class="lbl" style="font-size:12px;">Shopkeeper Name</label>
+            <input type="text" id="newShopkeeperName" placeholder="Malik ka naam">
+          </div>
+          <div class="fgroup" style="margin-bottom:12px;">
+            <label class="lbl" style="font-size:12px;">Shopkeeper Contact</label>
+            <input type="tel" id="newShopkeeperContact" placeholder="Mobile number" maxlength="10"
+              oninput="this.value=this.value.replace(/\D/g,'')">
+          </div>
+          <button class="btn-primary" style="width:100%;background:#28a745;" onclick="addNewShopToDB()">✓ Add Shop to Database</button>
+          <button style="width:100%;margin-top:6px;background:none;border:1px solid #ccc;padding:8px;border-radius:6px;cursor:pointer;" onclick="cancelAddNewShop()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: SHOPKEEPER AUTO-FILL -->
+      <div id="shopkeeperSection" style="display:none;">
+        <div class="fgroup">
+          <label class="lbl">Shopkeeper Name <span style="color:#28a745;font-size:10px;">(auto)</span></label>
+          <input type="text" id="mShopkeeperName" placeholder="Malik ka naam">
+        </div>
+        <div class="fgroup">
+          <label class="lbl">Shopkeeper Contact <span style="color:#28a745;font-size:10px;">(auto)</span></label>
+          <input type="tel" id="mShopkeeperContact" placeholder="Mobile number" maxlength="10"
+            oninput="this.value=this.value.replace(/\D/g,'')">
+        </div>
+      </div>
+
+      <!-- ✅ NOTES REMOVED as requested -->
+
+      <!-- STEP 4: PHOTO -->
       <div class="fgroup">
         <label class="lbl">Visit Photo <span class="req-star">*</span></label>
         <button class="photo-btn" id="visitPhotoBtn" onclick="openVisitCamera()">📷 Photo Lo</button>
@@ -221,42 +292,6 @@
           <div class="photo-ok">✓ Photo ready</div>
           <div class="photo-retake-lnk" onclick="openVisitCamera()">↩ Dobara lo</div>
         </div>
-      </div>
-
-      <!-- AREA SELECT -->
-      <div class="fgroup">
-        <label class="lbl">Area / Ilaka <span class="req-star">*</span></label>
-        <select id="visitAreaSelect" onchange="loadShops()">
-          <option value="">-- Area chunein --</option>
-        </select>
-      </div>
-
-      <!-- SHOP SELECT OR ADD NEW -->
-      <div class="fgroup">
-        <label class="lbl">Shop Name <span class="req-star">*</span></label>
-        <div style="display:flex;gap:8px;">
-          <select id="mShopName" style="flex:1;">
-            <option value="">-- Shop chunein --</option>
-          </select>
-          <button class="btn-add-shop" onclick="toggleAddNewShop()">+ Add New</button>
-        </div>
-        <input type="text" id="newShopName" placeholder="Naya shop ka naam" style="display:none;margin-top:8px;">
-      </div>
-
-      <div class="fgroup">
-        <label class="lbl">Shopkeeper Name <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
-        <input type="text" id="mShopkeeperName" placeholder="Malik ka naam">
-      </div>
-
-      <div class="fgroup">
-        <label class="lbl">Shopkeeper Contact <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
-        <input type="tel" id="mShopkeeperContact" placeholder="Mobile number" maxlength="10"
-          oninput="this.value=this.value.replace(/\D/g,'')">
-      </div>
-
-      <div class="fgroup">
-        <label class="lbl">Notes <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
-        <textarea id="mNotes" rows="2" placeholder="Koi khaas baat..."></textarea>
       </div>
 
       <div class="modal-actions">
@@ -273,11 +308,12 @@
         <div class="modal-title">📍 Visit Out</div>
         <div class="modal-x" onclick="closeVisitOutModal()">✕</div>
       </div>
-      <div class="modal-sub">Visit khatam karte waqt notes aur rating de</div>
+      <div class="modal-sub">Visit khatam karte waqt rating de</div>
 
-      <div class="fgroup">
-        <label class="lbl">Notes <span style="color:var(--muted);font-size:10px;">(optional)</span></label>
-        <textarea id="visitOutNotes" rows="2" placeholder="Visit mein kya hua..."></textarea>
+      <!-- ✅ HOLD TIME DISPLAY in Visit Out -->
+      <div style="background:#e8f5e9;border-radius:8px;padding:12px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:12px;color:#555;">Is visit pe bitaya time</div>
+        <div style="font-size:22px;font-weight:700;color:#2e7d32;" id="visitDurationDisplay">--:--</div>
       </div>
 
       <!-- RATING 5 STARS -->
@@ -304,7 +340,7 @@
   <div class="vcam-overlay" id="visitCamModal">
     <div class="cam-topbar">
       <button class="cam-back-btn" onclick="closeVisitCamera()">←</button>
-      <div class="cam-topbar-title">📷 Visit Photo Lo </div>
+      <div class="cam-topbar-title">📷 Visit Photo Lo</div>
     </div>
     <div class="video-wrap" style="flex:1;">
       <video id="vVideo" autoplay playsinline muted
@@ -340,10 +376,8 @@
           <img id="checkoutPhotoPreview" alt="photo" style="width:100%;height:100%;object-fit:cover;display:none;">
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="cam-btn cap" id="checkoutBtnCap" style="flex:1;" onclick="captureCheckoutPhoto()">📷
-            Checkout Photo Lein </button>
-          <button class="cam-btn retake" id="checkoutBtnRe" style="flex:1;display:none;"
-            onclick="retakeCheckoutPhoto()">↩ Retake</button>
+          <button class="cam-btn cap" id="checkoutBtnCap" style="flex:1;" onclick="captureCheckoutPhoto()">📷 Checkout Photo Lein</button>
+          <button class="cam-btn retake" id="checkoutBtnRe" style="flex:1;display:none;" onclick="retakeCheckoutPhoto()">↩ Retake</button>
           <button class="cam-btn use" id="checkoutBtnNext" style="flex:1;display:none;"
             onclick="document.getElementById('checkoutOdometerInput').focus()">✓ Next</button>
         </div>
