@@ -950,6 +950,8 @@ window.setRating = function (rating) {
 
 window.submitVisitOut = async function () {
   if (selectedRating === 0) { toast("Rating select karo", "error"); return; }
+     const notes =
+    document.getElementById("visitOutNotes")?.value.trim() || "";
 
   const btn = document.getElementById("visitOutBtn");
   btn.classList.add("loading");
@@ -966,10 +968,11 @@ window.submitVisitOut = async function () {
     const holdTime = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0");
 
     const { error } = await supabase.from("visits").update({
-      visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
-      rating: selectedRating,
-      hold_time: holdTime // ✅ only this visit's duration
-    }).eq("id", currentVisitId);
+  visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
+  rating: selectedRating,
+  hold_time: holdTime,
+  visit_out_notes: notes
+}).eq("id", currentVisitId);
 
     if (error) {
       toast("Visit out error: " + error.message, "error");
@@ -1003,6 +1006,9 @@ window.submitVisitOut = async function () {
 window.closeVisitOutModal = function () {
   if (visitDurationInt) { clearInterval(visitDurationInt); visitDurationInt = null; }
   document.getElementById("visitOutModal").classList.remove("show");
+
+     document.getElementById("visitOutNotes").value = "";
+
 };
 
 /* ════════════════════════════════════════════════════════════════
