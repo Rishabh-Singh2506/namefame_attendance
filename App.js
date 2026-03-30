@@ -34,7 +34,10 @@ let selectedRating = 0;
 let currentShopsData = []; // ✅ Store full shop data for auto-fill
 
 const GPS_INTERVAL = 5 * 60 * 1000;
-const MIN_SHOP_CHECKOUT = 3 * 60 * 1000; // 3 minutes
+//const MIN_SHOP_CHECKOUT = 3 * 60 * 1000; // 3 minutes
+// 10 seconds in milliseconds
+const MIN_SHOP_CHECKOUT = 10 * 1000; 
+
 
 /* ════════════════════════════════════════════════════════════════
    TOAST NOTIFICATION
