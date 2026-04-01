@@ -282,10 +282,14 @@
         const empData = JSON.parse(localStorage.getItem("emp") || "{}");
         const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
         
-        const state = empData.state || savedRouteData.state;
-        const district = empData.district || savedRouteData.district;
-
+        const state = savedRouteData.state || empData.state;
+const district = savedRouteData.district || empData.district;
         console.log("DEBUG - State:", state, "District:", district);
+
+        if (savedRouteData.district !== district) {
+  savedRouteData.route = "";
+  localStorage.setItem("routeData", JSON.stringify(savedRouteData));
+}
 
         if (!state || !district) {
           routeLoadingMsg.textContent = "⚠️ State/District info nahi mili. Wapas jao aur login karo.";
