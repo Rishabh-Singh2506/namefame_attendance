@@ -445,22 +445,14 @@ function refreshDash() {
 /* ════════════════════════════════════════════════════════════════
    CHECK-IN
    ════════════════════════════════════════════════════════════════ */
-
 window.doCheckin = function () {
   if (!currentEmp) { toast("Login karo", "error"); return; }
-
-  const routeData = localStorage.getItem("routeData");
-  if (!routeData || !JSON.parse(routeData).route) {
-    toast("Pehle route select karo (upar)", "error");
-    document.getElementById("dashRouteSelect").focus();
-    return;
-  }
-
+ 
   if (localStorage.getItem("checkin")) {
     toast("Aap pehle se check-in hain", "info");
     return;
   }
-
+ 
   location.href = "checkin.html";
 };
 
