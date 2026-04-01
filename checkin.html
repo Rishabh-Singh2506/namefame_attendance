@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -161,6 +161,14 @@
     let odometerCamStream = null;
     let gpsLocation = null;
 
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = "block";
+      setTimeout(() => el.style.display = "none", 2000);
+    }
+
     /* ── NAVIGATION ── */
     window.goBack = () => window.history.back();
 
@@ -261,6 +269,7 @@
       await loadCheckinRoutes();
     };
 
+    /* ✅ FIXED ROUTE LOADING FUNCTION */
     async function loadCheckinRoutes() {
       const routeLoadingMsg = document.getElementById("routeLoadingMsg");
       const routeDropdownWrap = document.getElementById("routeDropdownWrap");
@@ -272,30 +281,71 @@
       try {
         const empData = JSON.parse(localStorage.getItem("emp") || "{}");
         const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
+        
         const state = empData.state || savedRouteData.state;
         const district = empData.district || savedRouteData.district;
+
+        console.log("DEBUG - State:", state, "District:", district);
 
         if (!state || !district) {
           routeLoadingMsg.textContent = "⚠️ State/District info nahi mili. Wapas jao aur login karo.";
           return;
         }
 
-        const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
+        /* ✅ FIX: Fetch ALL routes first, then log and filter */
+        const { data: allData, error } = await supabase.from("routes").select("id, state, district, working_route");
 
         if (error) {
           routeLoadingMsg.textContent = "⚠️ Routes load nahi ho sake: " + error.message;
+          console.error("Supabase error:", error);
           return;
         }
 
-        const filtered = allData.filter(r =>
-          r.state && r.district && r.working_route &&
-          r.state.toUpperCase() === state.toUpperCase() &&
-          r.district.toUpperCase() === district.toUpperCase()
-        );
+        console.log("DEBUG - All routes from DB:", allData);
 
+        if (!allData || allData.length === 0) {
+          routeLoadingMsg.textContent = "⚠️ Database mein koi routes nahi hain.";
+          return;
+        }
+
+        /* ✅ FIX: Case-insensitive comparison with trim */
+        const stateUpper = state.toUpperCase().trim();
+        const districtUpper = district.toUpperCase().trim();
+
+        const filtered = allData.filter(r => {
+          if (!r || !r.state || !r.district || !r.working_route) return false;
+          
+          const rState = r.state.toUpperCase().trim();
+          const rDistrict = r.district.toUpperCase().trim();
+
+          const matches = rState === stateUpper && rDistrict === districtUpper;
+          
+          if (matches) {
+            console.log("DEBUG - Matched route:", r.working_route);
+          }
+
+          return matches;
+        });
+
+        console.log("DEBUG - Filtered routes count:", filtered.length, "Routes:", filtered);
+
+        if (filtered.length === 0) {
+          routeLoadingMsg.textContent = "⚠️ Aapke state/district ke liye routes nahi hain. Database admin se contact karo.";
+          return;
+        }
+
+        /* ✅ Remove duplicates (by working_route) */
         const routeMap = {};
-        filtered.forEach(r => { const k = r.working_route.toUpperCase(); if (!routeMap[k]) routeMap[k] = r.working_route; });
+        filtered.forEach(r => {
+          const k = r.working_route.toUpperCase().trim();
+          if (!routeMap[k]) {
+            routeMap[k] = r.working_route;
+          }
+        });
+
         const routes = Object.values(routeMap).sort();
+
+        console.log("DEBUG - Unique routes:", routes);
 
         routeSel.innerHTML = '<option value="">-- Route chunein --</option>';
         routes.forEach(route => {
@@ -311,12 +361,15 @@
           showRouteBadge(savedRouteData.route);
         }
 
-        routeSel.addEventListener("change", function () { showRouteBadge(this.value); });
+        routeSel.addEventListener("change", function () { 
+          showRouteBadge(this.value); 
+        });
 
         routeLoadingMsg.style.display = "none";
         routeDropdownWrap.style.display = "block";
 
       } catch (err) {
+        console.error("Exception:", err);
         routeLoadingMsg.textContent = "⚠️ Error: " + err.message;
       }
     }
