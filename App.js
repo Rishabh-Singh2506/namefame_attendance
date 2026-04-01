@@ -42,6 +42,13 @@ const MIN_SHOP_CHECKOUT = 10 * 1000;
 /* ════════════════════════════════════════════════════════════════
    TOAST NOTIFICATION
    ════════════════════════════════════════════════════════════════ */
+function normalize(str) {
+  return str
+    ?.toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, "");
+}
 
 function toast(msg, type = "") {
   const el = document.getElementById("toast");
@@ -161,10 +168,10 @@ async function loadDashboardRoutes() {
     if (error) { toast("Routes load nahi ho sake", "error"); return; }
 
     const filtered = allData.filter(r =>
-      r.state && r.district && r.working_route &&
-      r.state.toUpperCase() === state.toUpperCase() &&
-      r.district.toUpperCase() === district.toUpperCase()
-    );
+  r.state && r.district && r.working_route &&
+  normalize(r.state) === normalize(state) &&
+  normalize(r.district) === normalize(district)
+);
 
     const routeMap = {};
     filtered.forEach(r => { const k = r.working_route.toUpperCase(); if (!routeMap[k]) routeMap[k] = r.working_route; });
@@ -629,11 +636,11 @@ async function loadVisitAreas() {
     if (error) { toast("Areas load nahi ho sake", "error"); return; }
 
     const filtered = allData.filter(r =>
-      r.state && r.district && r.working_route && r.area &&
-      r.state.toUpperCase() === state.toUpperCase() &&
-      r.district.toUpperCase() === district.toUpperCase() &&
-      r.working_route.toUpperCase() === route.toUpperCase()
-    );
+  r.state && r.district && r.working_route && r.area &&
+  normalize(r.state) === normalize(state) &&
+  normalize(r.district) === normalize(district) &&
+  normalize(r.working_route) === normalize(route)
+);
 
     const areaMap = {};
     filtered.forEach(r => { const k = r.area.toUpperCase(); if (!areaMap[k]) areaMap[k] = r.area; });
@@ -679,12 +686,17 @@ window.loadShops = async function () {
     if (error) { console.error("Shop load error:", error); return; }
 
     const filtered = allData.filter(r =>
-      r.state && r.district && r.working_route && r.area && r.shop &&
-      r.state.toUpperCase() === state.toUpperCase() &&
-      r.district.toUpperCase() === district.toUpperCase() &&
-      r.working_route.toUpperCase() === route.toUpperCase() &&
-      r.area.toUpperCase() === area.toUpperCase()
-    );
+  r.state && r.district && r.working_route && r.area && r.shop &&
+  normalize(r.state) === normalize(state) &&
+  normalize(r.district) === normalize(district) &&
+  normalize(r.working_route) === normalize(route) &&
+  normalize(r.area) === normalize(area)
+);
+
+     console.log("STATE:", state);
+console.log("DISTRICT:", district);
+console.log("ROUTE:", route);
+console.log("FILTERED:", filtered);
 
     // ✅ Store full shop data for auto-fill
     const shopMap = {};
