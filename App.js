@@ -209,70 +209,53 @@ window.loadDistricts_done = function () { /* Nothing needed */ };
 // }
 
 async function loadDashboardRoutes() {
-  const emp = currentEmp;
-  if (!emp) return;
+  const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
 
-  const savedRouteData = localStorage.getItem("routeData");
-
-  const state = savedRouteData
-    ? JSON.parse(savedRouteData).state
-    : emp.state;
-
-  const district = savedRouteData
-    ? JSON.parse(savedRouteData).district
-    : emp.district;
+  const state = savedRouteData.state;
+  const district = savedRouteData.district;
 
   if (!state || !district) {
     toast("State/District info nahi mili", "error");
     return;
   }
 
-  const { data: allData, error } =
-    await supabase.from("routes")
-    .select("state, district, working_route");
+  const { data, error } = await supabase
+    .from("routes")
+    .select("working_route")
+    .eq("state", state)
+    .eq("district", district);
 
   if (error) {
     toast("Routes load nahi ho sake", "error");
     return;
   }
 
-  const stateUpper = state.toUpperCase().trim();
-  const districtUpper = district.toUpperCase().trim();
-
-  const filtered = allData.filter(r =>
-    r.state &&
-    r.district &&
-    r.working_route &&
-    r.state.toUpperCase().trim() === stateUpper &&
-    r.district.toUpperCase().trim() === districtUpper
-  );
-
   const routeMap = {};
 
-  filtered.forEach(r => {
-    const k = r.working_route.toUpperCase().trim();
-    if (!routeMap[k]) {
-      routeMap[k] = r.working_route;
+  data.forEach(r => {
+    const key = r.working_route.toUpperCase().trim();
+    if (!routeMap[key]) {
+      routeMap[key] = r.working_route;
     }
   });
 
   const routes = Object.values(routeMap).sort();
 
-  console.log("Routes found:", routes); // debug
+  console.log("Routes:", routes);
+
+  const sel = document.getElementById("dashRouteSelect");
+
+  sel.innerHTML = '<option value="">-- Route chunein --</option>';
+
+  routes.forEach(route => {
+    const opt = document.createElement("option");
+    opt.value = route;
+    opt.textContent = route;
+    sel.appendChild(opt);
+  });
 }
 
-window.saveDashRoute = function () {
-  const route = document.getElementById("dashRouteSelect").value;
-  if (!route) return;
 
-  const saved = localStorage.getItem("routeData");
-  const existing = saved ? JSON.parse(saved) : {};
-  existing.route = route;
-  localStorage.setItem("routeData", JSON.stringify(existing));
-
-  document.getElementById("routeSelectedMsg").style.display = "block";
-  toast("Route save ho gaya: " + route, "success");
-};
 
 /* ════════════════════════════════════════════════════════════════
    LOGIN
