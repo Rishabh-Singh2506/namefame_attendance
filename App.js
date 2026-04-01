@@ -371,8 +371,8 @@ window.doLogout = function () {
   if (currentEmp && currentEmp.user_id) {
     fetch(SUPABASE_URL + "/rest/v1/employees?select=employee_logout&user_id=eq." + currentEmp.user_id, {
       headers: {
-        "apikey": SUPABASE_ANON,
-        "Authorization": "Bearer " + SUPABASE_ANON
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
       }
     })
     .then(function(r) { return r.json(); })
