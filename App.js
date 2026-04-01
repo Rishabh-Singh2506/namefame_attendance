@@ -150,62 +150,115 @@ window.loadDistricts_done = function () { /* Nothing needed */ };
    LOAD ROUTES (dashboard — with FIX: .trim())
    ════════════════════════════════════════════════════════════════ */
 
+// async function loadDashboardRoutes() {
+//   const emp = currentEmp;
+//   if (!emp) return;
+
+//   const savedRouteData = localStorage.getItem("routeData");
+//   const state = emp.state || (savedRouteData ? JSON.parse(savedRouteData).state : null);
+//   const district = emp.district || (savedRouteData ? JSON.parse(savedRouteData).district : null);
+
+//   if (!state || !district) {
+//     toast("State/District info nahi mili", "error");
+//     return;
+//   }
+
+//   try {
+//     const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
+//     if (error) { toast("Routes load nahi ho sake", "error"); return; }
+
+//     // ✅ FIX: Add .trim() for proper matching
+//     const stateUpper = state.toUpperCase().trim();
+//     const districtUpper = district.toUpperCase().trim();
+
+//     const filtered = allData.filter(r =>
+//       r.state && r.district && r.working_route &&
+//       r.state.toUpperCase().trim() === stateUpper &&
+//       r.district.toUpperCase().trim() === districtUpper
+//     );
+
+//     const routeMap = {};
+//     filtered.forEach(r => { 
+//       const k = r.working_route.toUpperCase().trim(); 
+//       if (!routeMap[k]) routeMap[k] = r.working_route; 
+//     });
+    
+//     const routes = Object.values(routeMap).sort();
+
+//     const sel = document.getElementById("dashRouteSelect");
+//     if (!sel) return;
+//     sel.innerHTML = '<option value="">-- Route chunein --</option>';
+//     routes.forEach(route => {
+//       const opt = document.createElement("option");
+//       opt.value = route;
+//       opt.textContent = route;
+//       sel.appendChild(opt);
+//     });
+
+//     // Pre-select if already saved
+//     const saved = savedRouteData ? JSON.parse(savedRouteData) : null;
+//     if (saved && saved.route) {
+//       sel.value = saved.route;
+//       document.getElementById("routeSelectedMsg").style.display = "block";
+//     }
+
+//     document.getElementById("routeSelectCard").style.display = "block";
+//   } catch (err) {
+//     toast("Route load error: " + err.message, "error");
+//   }
+// }
+
 async function loadDashboardRoutes() {
   const emp = currentEmp;
   if (!emp) return;
 
   const savedRouteData = localStorage.getItem("routeData");
-  const state = emp.state || (savedRouteData ? JSON.parse(savedRouteData).state : null);
-  const district = emp.district || (savedRouteData ? JSON.parse(savedRouteData).district : null);
+
+  const state = savedRouteData
+    ? JSON.parse(savedRouteData).state
+    : emp.state;
+
+  const district = savedRouteData
+    ? JSON.parse(savedRouteData).district
+    : emp.district;
 
   if (!state || !district) {
     toast("State/District info nahi mili", "error");
     return;
   }
 
-  try {
-    const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
-    if (error) { toast("Routes load nahi ho sake", "error"); return; }
+  const { data: allData, error } =
+    await supabase.from("routes")
+    .select("state, district, working_route");
 
-    // ✅ FIX: Add .trim() for proper matching
-    const stateUpper = state.toUpperCase().trim();
-    const districtUpper = district.toUpperCase().trim();
-
-    const filtered = allData.filter(r =>
-      r.state && r.district && r.working_route &&
-      r.state.toUpperCase().trim() === stateUpper &&
-      r.district.toUpperCase().trim() === districtUpper
-    );
-
-    const routeMap = {};
-    filtered.forEach(r => { 
-      const k = r.working_route.toUpperCase().trim(); 
-      if (!routeMap[k]) routeMap[k] = r.working_route; 
-    });
-    
-    const routes = Object.values(routeMap).sort();
-
-    const sel = document.getElementById("dashRouteSelect");
-    if (!sel) return;
-    sel.innerHTML = '<option value="">-- Route chunein --</option>';
-    routes.forEach(route => {
-      const opt = document.createElement("option");
-      opt.value = route;
-      opt.textContent = route;
-      sel.appendChild(opt);
-    });
-
-    // Pre-select if already saved
-    const saved = savedRouteData ? JSON.parse(savedRouteData) : null;
-    if (saved && saved.route) {
-      sel.value = saved.route;
-      document.getElementById("routeSelectedMsg").style.display = "block";
-    }
-
-    document.getElementById("routeSelectCard").style.display = "block";
-  } catch (err) {
-    toast("Route load error: " + err.message, "error");
+  if (error) {
+    toast("Routes load nahi ho sake", "error");
+    return;
   }
+
+  const stateUpper = state.toUpperCase().trim();
+  const districtUpper = district.toUpperCase().trim();
+
+  const filtered = allData.filter(r =>
+    r.state &&
+    r.district &&
+    r.working_route &&
+    r.state.toUpperCase().trim() === stateUpper &&
+    r.district.toUpperCase().trim() === districtUpper
+  );
+
+  const routeMap = {};
+
+  filtered.forEach(r => {
+    const k = r.working_route.toUpperCase().trim();
+    if (!routeMap[k]) {
+      routeMap[k] = r.working_route;
+    }
+  });
+
+  const routes = Object.values(routeMap).sort();
+
+  console.log("Routes found:", routes); // debug
 }
 
 window.saveDashRoute = function () {
