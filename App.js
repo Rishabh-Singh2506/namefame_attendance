@@ -165,68 +165,54 @@ window.loadDistricts = async function () {
 
 window.loadDistricts_done = function () { /* Nothing needed */ };
 
-/* ════════════════════════════════════════════════════════════════
-   LOAD ROUTES (dashboard — with FIX: .trim())
-   ════════════════════════════════════════════════════════════════ */
 
 // async function loadDashboardRoutes() {
-//   const emp = currentEmp;
-//   if (!emp) return;
+//   const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
 
-//   const savedRouteData = localStorage.getItem("routeData");
-//   const state = emp.state || (savedRouteData ? JSON.parse(savedRouteData).state : null);
-//   const district = emp.district || (savedRouteData ? JSON.parse(savedRouteData).district : null);
+//   const state = savedRouteData.state;
+//   const district = savedRouteData.district;
 
 //   if (!state || !district) {
 //     toast("State/District info nahi mili", "error");
 //     return;
 //   }
 
-//   try {
-//     const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
-//     if (error) { toast("Routes load nahi ho sake", "error"); return; }
+//   const { data, error } = await supabase
+//     .from("routes")
+//     .select("working_route")
+//     .eq("state", state)
+//     .eq("district", district);
 
-//     // ✅ FIX: Add .trim() for proper matching
-//     const stateUpper = state.toUpperCase().trim();
-//     const districtUpper = district.toUpperCase().trim();
-
-//     const filtered = allData.filter(r =>
-//       r.state && r.district && r.working_route &&
-//       r.state.toUpperCase().trim() === stateUpper &&
-//       r.district.toUpperCase().trim() === districtUpper
-//     );
-
-//     const routeMap = {};
-//     filtered.forEach(r => { 
-//       const k = r.working_route.toUpperCase().trim(); 
-//       if (!routeMap[k]) routeMap[k] = r.working_route; 
-//     });
-    
-//     const routes = Object.values(routeMap).sort();
-
-//     const sel = document.getElementById("dashRouteSelect");
-//     if (!sel) return;
-//     sel.innerHTML = '<option value="">-- Route chunein --</option>';
-//     routes.forEach(route => {
-//       const opt = document.createElement("option");
-//       opt.value = route;
-//       opt.textContent = route;
-//       sel.appendChild(opt);
-//     });
-
-//     // Pre-select if already saved
-//     const saved = savedRouteData ? JSON.parse(savedRouteData) : null;
-//     if (saved && saved.route) {
-//       sel.value = saved.route;
-//       document.getElementById("routeSelectedMsg").style.display = "block";
-//     }
-
-//     document.getElementById("routeSelectCard").style.display = "block";
-//   } catch (err) {
-//     toast("Route load error: " + err.message, "error");
+//   if (error) {
+//     toast("Routes load nahi ho sake", "error");
+//     return;
 //   }
-// }
 
+//   const routeMap = {};
+
+//   data.forEach(r => {
+//     const key = r.working_route.toUpperCase().trim();
+//     if (!routeMap[key]) {
+//       routeMap[key] = r.working_route;
+//     }
+//   });
+
+//   const routes = Object.values(routeMap).sort();
+
+//   console.log("Routes:", routes);
+
+//   const sel = document.getElementById("dashRouteSelect");
+
+//   sel.innerHTML = '<option value="">-- Route chunein --</option>';
+
+//   routes.forEach(route => {
+//     const opt = document.createElement("option");
+//     opt.value = route;
+//     opt.textContent = route;
+//     sel.appendChild(opt);
+//   });
+// }
+//ye sahi chal raha hai bs minow console error hai ye baad mein chala sakte hao.
 async function loadDashboardRoutes() {
   const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
 
@@ -264,6 +250,12 @@ async function loadDashboardRoutes() {
 
   const sel = document.getElementById("dashRouteSelect");
 
+  // ✅ FIX
+  if (!sel) {
+    console.log("dashRouteSelect not found");
+    return;
+  }
+
   sel.innerHTML = '<option value="">-- Route chunein --</option>';
 
   routes.forEach(route => {
@@ -273,7 +265,6 @@ async function loadDashboardRoutes() {
     sel.appendChild(opt);
   });
 }
-
 
 
 /* ════════════════════════════════════════════════════════════════
