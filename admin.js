@@ -3,10 +3,9 @@
 //  Supabase direct REST API
 // ═══════════════════════════════════════════════
 
-// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
+// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
 var SUPABASE_URL  = "https://qhikqbrfojdlmdwsdota.supabase.co";
 var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
-
 
 
 // ── STATE ──
@@ -134,7 +133,7 @@ function loadDashboard() {
   Promise.all([
     sbGet("employees",   "select=count"),
     sbGet("visits",      "select=count&visit_date=eq." + today),
-    sbGet("attendance",  "select=count&date=eq." + today),
+    sbGet("attendance",  "select=count&attendance_date=eq." + today),
     sbGet("routes",      "select=count")
   ]).then(function(results) {
     var empCount   = results[0] ? results[0].length : 0;
@@ -156,7 +155,7 @@ function loadDashboard() {
   });
 
   // Today's attendance cards
-  sbGet("attendance", "select=*&date=eq." + today + "&order=checkin_time.desc&limit=20")
+  sbGet("attendance", "select=*&attendance_date=eq." + today + "&order=attendance_open_time.desc&limit=20")
     .then(function(rows) {
       renderTodayCards(rows || []);
     }).catch(function() {
@@ -179,18 +178,18 @@ function renderTodayCards(rows) {
   }
   var html = "";
   rows.slice(0, 5).forEach(function(r) {
-    var init = initials(r.employee_name || r.name || "?");
-    var isIn = r.checkin_time && !r.checkout_time;
+    var init = initials(r.employee_name || "?");
+    var isIn = r.attendance_open_time && !r.attendance_closed_time;
     html += '<div class="card">'
       + '<div class="card-head">'
       + '<div class="avatar">' + init + '</div>'
-      + '<div><div class="card-name">' + esc(r.employee_name || r.name || "—") + '</div>'
-      + '<div class="card-sub">' + fmtDate(r.date) + '</div></div>'
+      + '<div><div class="card-name">' + esc(r.employee_name || "—") + '</div>'
+      + '<div class="card-sub">' + fmtDate(r.attendance_date) + '</div></div>'
       + '<span class="badge ' + (isIn ? "in" : "out") + '">' + (isIn ? "🟢 In" : "🔴 Out") + '</span>'
       + '</div>'
       + '<div class="info-grid">'
-      + infoItem("Check-In",  r.checkin_time  || "—", r.checkin_time  ? "g" : "")
-      + infoItem("Check-Out", r.checkout_time || "—", r.checkout_time ? "" : "o")
+      + infoItem("Check-In",  r.attendance_open_time   || "—", r.attendance_open_time   ? "g" : "")
+      + infoItem("Check-Out", r.attendance_closed_time || "—", r.attendance_closed_time ? "" : "o")
       + '</div>'
       + '</div>';
   });
@@ -207,7 +206,7 @@ function loadAttendance() {
   document.getElementById("attCards").innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
   document.getElementById("attSub").textContent = from + " → " + to;
 
-  var query = "select=*&date=gte." + from + "&date=lte." + to + "&order=date.desc,checkin_time.desc";
+  var query = "select=*&attendance_date=gte." + from + "&attendance_date=lte." + to + "&order=attendance_date.desc,attendance_open_time.desc";
   sbGet("attendance", query).then(function(rows) {
     allAttRows = rows || [];
     buildAttChips();
@@ -221,7 +220,7 @@ function loadAttendance() {
 function buildAttChips() {
   var names = [];
   allAttRows.forEach(function(r) {
-    var n = r.employee_name || r.name;
+    var n = r.employee_name;
     if (n && names.indexOf(n) < 0) names.push(n);
   });
   var html = '<div class="chip active" onclick="filterAttEmp(\'all\',this)">👥 Sab</div>';
@@ -239,15 +238,14 @@ function filterAttEmp(name, el) {
 }
 
 function renderAttendance() {
-  var rows = activeAttEmp === "all" ? allAttRows : allAttRows.filter(function(r) { return (r.employee_name || r.name) === activeAttEmp; });
+  var rows = activeAttEmp === "all" ? allAttRows : allAttRows.filter(function(r) { return r.employee_name === activeAttEmp; });
 
-  var checkedIn = rows.filter(function(r) { return r.checkin_time && !r.checkout_time; }).length;
-  var visits    = rows.filter(function(r) { return r.shop_name && r.shop_name !== "—"; }).length;
-  var totalDist = rows.reduce(function(a, r) { return a + (parseFloat(r.distance) || 0); }, 0);
+  var checkedIn = rows.filter(function(r) { return r.attendance_open_time && !r.attendance_closed_time; }).length;
+  var totalDist = rows.reduce(function(a, r) { return a + (parseFloat(r.distance_km) || 0); }, 0);
 
   document.getElementById("aTot").textContent  = rows.length;
   document.getElementById("aIn").textContent   = checkedIn;
-  document.getElementById("aVis").textContent  = visits;
+  document.getElementById("aVis").textContent  = rows.filter(function(r) { return r.working_route; }).length;
   document.getElementById("aDist").textContent = totalDist > 0 ? totalDist.toFixed(1) + " km" : "—";
 
   if (!rows.length) {
@@ -257,24 +255,24 @@ function renderAttendance() {
 
   var html = "";
   rows.forEach(function(r) {
-    var init  = initials(r.employee_name || r.name || "?");
-    var isIn  = r.checkin_time && !r.checkout_time;
-    var isOut = r.checkin_time && r.checkout_time;
+    var init  = initials(r.employee_name || "?");
+    var isIn  = r.attendance_open_time && !r.attendance_closed_time;
+    var isOut = r.attendance_open_time && r.attendance_closed_time;
     var bCls  = isIn ? "in" : (isOut ? "out" : "absent");
     var bTxt  = isIn ? "🟢 In" : (isOut ? "🔴 Out" : "⚪ —");
 
     html += '<div class="card">'
       + '<div class="card-head">'
       + '<div class="avatar">' + init + '</div>'
-      + '<div><div class="card-name">' + esc(r.employee_name || r.name || "—") + '</div>'
-      + '<div class="card-sub">' + fmtDate(r.date) + '</div></div>'
+      + '<div><div class="card-name">' + esc(r.employee_name || "—") + '</div>'
+      + '<div class="card-sub">' + fmtDate(r.attendance_date) + ' · ' + esc(r.working_route || "—") + '</div></div>'
       + '<span class="badge ' + bCls + '">' + bTxt + '</span>'
       + '</div>'
       + '<div class="info-grid">'
-      + infoItem("🕐 Check-In",  r.checkin_time  || "—", r.checkin_time  ? "g" : "")
-      + infoItem("🕔 Check-Out", r.checkout_time || "—", r.checkout_time ? "" : "o")
-      + infoItem("⏱ Duration",   r.duration      || "—", "")
-      + infoItem("📏 Distance",  r.distance ? r.distance + " km" : "—", r.distance ? "g" : "")
+      + infoItem("🕐 Check-In",  r.attendance_open_time   || "—", r.attendance_open_time   ? "g" : "")
+      + infoItem("🕔 Check-Out", r.attendance_closed_time || "—", r.attendance_closed_time ? "" : "o")
+      + infoItem("⏱ Working Hrs", r.working_hours || "—", "")
+      + infoItem("📏 Distance",  r.distance_km ? r.distance_km + " km" : "—", r.distance_km ? "g" : "")
       + '</div>'
       + (r.map_link ? '<a href="' + r.map_link + '" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:12px;font-weight:700;color:var(--accent2);border-top:1px solid var(--border);text-decoration:none;">🗺️ Location Dekho →</a>' : "")
       + '</div>';
@@ -283,11 +281,11 @@ function renderAttendance() {
 }
 
 function exportAttCSV() {
-  var rows = activeAttEmp === "all" ? allAttRows : allAttRows.filter(function(r) { return (r.employee_name || r.name) === activeAttEmp; });
+  var rows = activeAttEmp === "all" ? allAttRows : allAttRows.filter(function(r) { return r.employee_name === activeAttEmp; });
   if (!rows.length) { toast("Koi data nahi CSV ke liye", "err"); return; }
-  var hdr = ["Name","Date","Check-In","Check-Out","Duration","Distance","Shop","Area","Map Link"];
+  var hdr = ["Name","Contact","Date","Route","Check-In","Check-Out","Working Hours","Odo Start","Odo End","Distance(km)","Map Link","Notes"];
   var data = rows.map(function(r) {
-    return [r.employee_name||r.name, r.date, r.checkin_time, r.checkout_time, r.duration, r.distance, r.shop_name, r.area, r.map_link]
+    return [r.employee_name, r.employee_contact, r.attendance_date, r.working_route, r.attendance_open_time, r.attendance_closed_time, r.working_hours, r.odometer_start, r.odometer_end, r.distance_km, r.map_link, r.notes]
       .map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
   });
   downloadCSV([hdr.join(",")].concat(data).join("\n"), "NAMEFAME_Attendance_" + new Date().toISOString().split("T")[0]);
