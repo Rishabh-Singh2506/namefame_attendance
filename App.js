@@ -348,24 +348,67 @@ window.doLogin = async function () {
   }
 };
 
+// window.doLogout = function () {
+//   stopCam();
+//   stopVCam();
+//   stopGps();
+//   if (timerInterval) clearInterval(timerInterval);
+
+//   currentEmp = null;
+//   currentAttendanceId = null;
+//   currentVisitId = null;
+
+//   localStorage.removeItem("emp");
+//   localStorage.removeItem("checkin");
+//   localStorage.removeItem("visit");
+//   localStorage.removeItem("routeData");
+
+//   showScreen("s-land");
+//   toast("Logged out", "info");
+// };
 window.doLogout = function () {
+  // Pehle check karo ki admin ne logout allow kiya hai ya nahi
+  if (currentEmp && currentEmp.user_id) {
+    fetch(SUPABASE_URL + "/rest/v1/employees?select=employee_logout&user_id=eq." + currentEmp.user_id, {
+      headers: {
+        "apikey": SUPABASE_ANON,
+        "Authorization": "Bearer " + SUPABASE_ANON
+      }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      var isLocked = rows && rows[0] && rows[0].employee_logout === true;
+      if (isLocked) {
+        toast("Logout allowed nahi hai. Admin se contact karo.", "err");
+        return; // logout NAHI hoga
+      }
+      // Locked nahi hai — normal logout karo
+      performLogout();
+    })
+    .catch(function() {
+      // Network error pe bhi logout allow karo
+      performLogout();
+    });
+  } else {
+    performLogout();
+  }
+};
+
+function performLogout() {
   stopCam();
   stopVCam();
   stopGps();
   if (timerInterval) clearInterval(timerInterval);
-
   currentEmp = null;
   currentAttendanceId = null;
   currentVisitId = null;
-
   localStorage.removeItem("emp");
   localStorage.removeItem("checkin");
   localStorage.removeItem("visit");
   localStorage.removeItem("routeData");
-
   showScreen("s-land");
   toast("Logged out", "info");
-};
+}
 
 window.setLang = function (lang) {
   document.querySelectorAll(".lang-chip").forEach(chip => chip.classList.remove("active"));
