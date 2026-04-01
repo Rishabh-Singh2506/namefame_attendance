@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; 
 
 /* ════════════════════════════════════════════════════════════════
    SUPABASE CONFIG
@@ -42,13 +42,6 @@ const MIN_SHOP_CHECKOUT = 10 * 1000;
 /* ════════════════════════════════════════════════════════════════
    TOAST NOTIFICATION
    ════════════════════════════════════════════════════════════════ */
-function normalize(str) {
-  return str
-    ?.toString()
-    .trim()
-    .toLowerCase()
-    .replace(/\./g, "");
-}
 
 function toast(msg, type = "") {
   const el = document.getElementById("toast");
@@ -124,9 +117,20 @@ window.loadDistricts = async function () {
     const { data: allData, error } = await supabase.from("routes").select("state, district");
     if (error) { toast("District load nahi ho sake", "error"); return; }
 
-    const filtered = allData.filter(r => r.state && r.district && r.state.toUpperCase() === state.toUpperCase());
+    // ✅ FIX: Add .trim() for proper matching
+    const stateUpper = state.toUpperCase().trim();
+    
+    const filtered = allData.filter(r => 
+      r.state && r.district && 
+      r.state.toUpperCase().trim() === stateUpper
+    );
+    
     const districtMap = {};
-    filtered.forEach(r => { const k = r.district.toUpperCase(); if (!districtMap[k]) districtMap[k] = r.district; });
+    filtered.forEach(r => { 
+      const k = r.district.toUpperCase().trim(); 
+      if (!districtMap[k]) districtMap[k] = r.district; 
+    });
+    
     const districts = Object.values(districtMap).sort();
 
     districtSelect.innerHTML = '<option value="">-- District chunein --</option>';
@@ -167,14 +171,22 @@ async function loadDashboardRoutes() {
     const { data: allData, error } = await supabase.from("routes").select("state, district, working_route");
     if (error) { toast("Routes load nahi ho sake", "error"); return; }
 
+    // ✅ FIX: Add .trim() for proper matching
+    const stateUpper = state.toUpperCase().trim();
+    const districtUpper = district.toUpperCase().trim();
+
     const filtered = allData.filter(r =>
-  r.state && r.district && r.working_route &&
-  normalize(r.state) === normalize(state) &&
-  normalize(r.district) === normalize(district)
-);
+      r.state && r.district && r.working_route &&
+      r.state.toUpperCase().trim() === stateUpper &&
+      r.district.toUpperCase().trim() === districtUpper
+    );
 
     const routeMap = {};
-    filtered.forEach(r => { const k = r.working_route.toUpperCase(); if (!routeMap[k]) routeMap[k] = r.working_route; });
+    filtered.forEach(r => { 
+      const k = r.working_route.toUpperCase().trim(); 
+      if (!routeMap[k]) routeMap[k] = r.working_route; 
+    });
+    
     const routes = Object.values(routeMap).sort();
 
     const sel = document.getElementById("dashRouteSelect");
@@ -318,7 +330,7 @@ window.doLogout = function () {
 window.setLang = function (lang) {
   document.querySelectorAll(".lang-chip").forEach(chip => chip.classList.remove("active"));
   event.target.classList.add("active");
-  localStorage.setItem("lang", lang);
+  localStorage.setItem("lang", lang);  
   toast("Language: " + (lang === "hi" ? "हिंदी" : "English"), "info");
 };
 
@@ -635,15 +647,24 @@ async function loadVisitAreas() {
     const { data: allData, error } = await supabase.from("routes").select("state, district, working_route, area");
     if (error) { toast("Areas load nahi ho sake", "error"); return; }
 
+    // ✅ FIX: Add .trim() for proper matching
+    const stateUpper = state.toUpperCase().trim();
+    const districtUpper = district.toUpperCase().trim();
+    const routeUpper = route.toUpperCase().trim();
+
     const filtered = allData.filter(r =>
-  r.state && r.district && r.working_route && r.area &&
-  normalize(r.state) === normalize(state) &&
-  normalize(r.district) === normalize(district) &&
-  normalize(r.working_route) === normalize(route)
-);
+      r.state && r.district && r.working_route && r.area &&
+      r.state.toUpperCase().trim() === stateUpper &&
+      r.district.toUpperCase().trim() === districtUpper &&
+      r.working_route.toUpperCase().trim() === routeUpper
+    );
 
     const areaMap = {};
-    filtered.forEach(r => { const k = r.area.toUpperCase(); if (!areaMap[k]) areaMap[k] = r.area; });
+    filtered.forEach(r => { 
+      const k = r.area.toUpperCase().trim(); 
+      if (!areaMap[k]) areaMap[k] = r.area; 
+    });
+    
     const areas = Object.values(areaMap).sort();
 
     const sel = document.getElementById("visitAreaSelect");
@@ -685,23 +706,24 @@ window.loadShops = async function () {
 
     if (error) { console.error("Shop load error:", error); return; }
 
-    const filtered = allData.filter(r =>
-  r.state && r.district && r.working_route && r.area && r.shop &&
-  normalize(r.state) === normalize(state) &&
-  normalize(r.district) === normalize(district) &&
-  normalize(r.working_route) === normalize(route) &&
-  normalize(r.area) === normalize(area)
-);
+    // ✅ FIX: Add .trim() for proper matching
+    const stateUpper = state.toUpperCase().trim();
+    const districtUpper = district.toUpperCase().trim();
+    const routeUpper = route.toUpperCase().trim();
+    const areaUpper = area.toUpperCase().trim();
 
-     console.log("STATE:", state);
-console.log("DISTRICT:", district);
-console.log("ROUTE:", route);
-console.log("FILTERED:", filtered);
+    const filtered = allData.filter(r =>
+      r.state && r.district && r.working_route && r.area && r.shop &&
+      r.state.toUpperCase().trim() === stateUpper &&
+      r.district.toUpperCase().trim() === districtUpper &&
+      r.working_route.toUpperCase().trim() === routeUpper &&
+      r.area.toUpperCase().trim() === areaUpper
+    );
 
     // ✅ Store full shop data for auto-fill
     const shopMap = {};
     filtered.forEach(r => {
-      const k = r.shop.toUpperCase();
+      const k = r.shop.toUpperCase().trim();
       if (!shopMap[k]) shopMap[k] = { shop: r.shop, shopkeeper_name: r.shopkeeper_name || "", shopkeeper_contact: r.shopkeeper_contact || "" };
     });
     currentShopsData = Object.values(shopMap);
