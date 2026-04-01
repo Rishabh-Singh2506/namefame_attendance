@@ -61,6 +61,25 @@ function showScreen(id) {
 }
 window.showScreen = showScreen;
 
+window.saveSelectedRoute = function () {
+  const sel = document.getElementById("dashRouteSelect");
+  const route = sel.value;
+
+  if (!route) return;
+
+  const data = JSON.parse(localStorage.getItem("routeData") || "{}");
+
+  localStorage.setItem("routeData", JSON.stringify({
+    state: data.state,
+    district: data.district,
+    route: route
+  }));
+
+  console.log("Route saved:", route);
+
+  document.getElementById("routeSelectedMsg").style.display = "block";
+};
+
 /* ════════════════════════════════════════════════════════════════
    LOAD STATES (for login page)
    ════════════════════════════════════════════════════════════════ */
