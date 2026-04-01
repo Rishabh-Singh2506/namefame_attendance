@@ -3,7 +3,8 @@
 //  Supabase direct REST API
 // ═══════════════════════════════════════════════
 
-// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
+// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
+// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
 var SUPABASE_URL  = "https://qhikqbrfojdlmdwsdota.supabase.co";
 var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
 
@@ -389,6 +390,8 @@ function saveEmployee() {
 
   var payload = { name: name, emp_id: empId, pin: pin, contact: contact, designation: desig, district: dist, state: state, address: addr };
   if (joining) payload.joining_date = joining;
+  // employee_logout ko KABHI payload mein mat daalo edit ke waqt
+  // taki existing lock/unlock state preserve rahe
 
   var p = uid
     ? sbPatch("employees", "user_id=eq." + uid, payload)
@@ -579,22 +582,61 @@ function renderVisitsTable(visits) {
     document.getElementById("visitTableWrap").innerHTML = '<div class="empty"><span class="empty-ico">🏪</span><div class="empty-txt">Koi visit nahi</div></div>';
     return;
   }
-  var html = '<div class="visit-table-wrap"><div class="tbl-wrap"><table>'
-    + '<thead><tr><th>Date</th><th>Employee</th><th>Area</th><th>Shop</th><th>In</th><th>Out</th><th>Rating</th><th>Map</th></tr></thead><tbody>';
+
+  // Cards view for better mobile readability
+  var html = "";
   visits.forEach(function(v) {
     var ratingStars = v.rating ? "⭐".repeat(Math.min(v.rating, 5)) : "—";
-    html += '<tr>'
-      + '<td>' + fmtDate(v.visit_date) + '</td>'
-      + '<td class="tbl-name">' + esc(v.employee_name || "—") + '</td>'
-      + '<td>' + esc(v.area || "—") + '</td>'
-      + '<td>' + esc(v.shop_name || "—") + '</td>'
-      + '<td class="info-val g">' + esc(v.visit_in_time || "—") + '</td>'
-      + '<td>' + esc(v.visit_out_time || "—") + '</td>'
-      + '<td>' + ratingStars + '</td>'
-      + '<td>' + (v.map_link ? '<a href="' + v.map_link + '" target="_blank" style="color:var(--accent2);font-size:16px;">📍</a>' : "—") + '</td>'
-      + '</tr>';
+    var holdTime    = v.hold_time || "—";
+
+    html += '<div class="card" style="margin-bottom:10px;">'
+      // Header
+      + '<div class="card-head">'
+      + '<div class="avatar" style="background:var(--orange-dim);color:var(--orange);">🏪</div>'
+      + '<div style="flex:1">'
+      + '<div class="card-name">' + esc(v.shop_name || "—") + '</div>'
+      + '<div class="card-sub">' + fmtDate(v.visit_date) + ' · ' + esc(v.area || "—") + '</div>'
+      + '</div>'
+      + '<span class="badge ' + (v.visit_out_time ? "out" : "in") + '">' + (v.visit_out_time ? "✅ Done" : "🟢 Active") + '</span>'
+      + '</div>'
+
+      // Employee + Shopkeeper
+      + '<div class="info-grid">'
+      + infoItem("👤 Employee",    v.employee_name     || "—", "")
+      + infoItem("📱 Emp Contact", v.employee_contact  || "—", "")
+      + infoItem("🧑‍💼 Shopkeeper",  v.shopkeeper_name   || "—", "")
+      + infoItem("📞 Shop Contact", v.shopkeeper_contact|| "—", "")
+      + '</div>'
+
+      // Timing
+      + '<div class="info-grid">'
+      + infoItem("🕐 Visit In",   v.visit_in_time  || "—", v.visit_in_time  ? "g" : "")
+      + infoItem("🕔 Visit Out",  v.visit_out_time || "—", v.visit_out_time ? "" : "o")
+      + infoItem("⏸ Hold Time",   holdTime,               "")
+      + infoItem("⭐ Rating",      ratingStars,            "")
+      + '</div>'
+
+      // Notes
+      + (v.visit_out_notes
+        ? '<div style="padding:10px 14px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text2);">'
+          + '<span style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">📝 Visit Notes</span>'
+          + '<div style="margin-top:4px;line-height:1.5;">' + esc(v.visit_out_notes) + '</div>'
+          + '</div>'
+        : "")
+
+      // Photo + Map
+      + '<div style="display:flex;border-top:1px solid var(--border);">'
+      + (v.visit_photo
+        ? '<a href="' + v.visit_photo + '" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:12px;font-weight:700;color:var(--accent2);text-decoration:none;border-right:1px solid var(--border);">📸 Photo</a>'
+        : '<span style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px;font-size:12px;color:var(--text3);border-right:1px solid var(--border);">📸 No Photo</span>')
+      + (v.map_link
+        ? '<a href="' + v.map_link + '" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:12px;font-weight:700;color:var(--accent2);text-decoration:none;">📍 Location</a>'
+        : '<span style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px;font-size:12px;color:var(--text3);">📍 No Map</span>')
+      + '</div>'
+
+      + '</div>';
   });
-  html += '</tbody></table></div></div>';
+
   document.getElementById("visitTableWrap").innerHTML = html;
 }
 
