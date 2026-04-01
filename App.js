@@ -29,15 +29,12 @@ let gpsInterval = null;
 let gpsPos = null;
 let visitStartMs = null;
 let visitCdInt = null;
-let visitDurationInt = null; // ✅ Live timer for visit out modal
+let visitDurationInt = null;
 let selectedRating = 0;
-let currentShopsData = []; // ✅ Store full shop data for auto-fill
+let currentShopsData = [];
 
 const GPS_INTERVAL = 5 * 60 * 1000;
-//const MIN_SHOP_CHECKOUT = 3 * 60 * 1000; // 3 minutes
-// 10 seconds in milliseconds
-const MIN_SHOP_CHECKOUT = 10 * 1000; 
-
+const MIN_SHOP_CHECKOUT = 10 * 1000;
 
 /* ════════════════════════════════════════════════════════════════
    TOAST NOTIFICATION
@@ -99,7 +96,7 @@ async function loadStates() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   LOAD DISTRICTS (login page — only state+district needed for login)
+   LOAD DISTRICTS (login page — with FIX: .trim())
    ════════════════════════════════════════════════════════════════ */
 
 window.loadDistricts = async function () {
@@ -147,11 +144,10 @@ window.loadDistricts = async function () {
   }
 };
 
-// ✅ Just a stub — route select is now on dashboard
 window.loadDistricts_done = function () { /* Nothing needed */ };
 
 /* ════════════════════════════════════════════════════════════════
-   LOAD ROUTES (dashboard — after login)
+   LOAD ROUTES (dashboard — with FIX: .trim())
    ════════════════════════════════════════════════════════════════ */
 
 async function loadDashboardRoutes() {
@@ -246,7 +242,6 @@ window.doLogin = async function () {
   if (!empName) { toast("Naam likho", "error"); return; }
   if (!pin) { toast("PIN daalo", "error"); return; }
 
-  // ✅ Only state + district needed at login — route selected on dashboard
   const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
 
@@ -281,14 +276,13 @@ window.doLogin = async function () {
       return;
     }
 
-    // ✅ Save state+district in routeData. Route will be saved on dashboard.
     const existingRouteData = localStorage.getItem("routeData");
     const existingRoute = existingRouteData ? JSON.parse(existingRouteData).route : null;
 
     localStorage.setItem("routeData", JSON.stringify({
       state: state,
       district: district,
-      route: existingRoute || "" // keep previous route if any
+      route: existingRoute || ""
     }));
 
     currentEmp = emp;
@@ -300,7 +294,7 @@ window.doLogin = async function () {
     showScreen("s-dash");
     startClock();
     refreshDash();
-    loadDashboardRoutes(); // ✅ Load routes on dashboard after login
+    loadDashboardRoutes();
 
     toast("Login successful ✓", "success");
   } catch (err) {
@@ -366,7 +360,7 @@ function stopTimer() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   HOLD TIME — Total time spent at shops today
+   HOLD TIME
    ════════════════════════════════════════════════════════════════ */
 
 async function loadTodayHoldTime() {
@@ -389,11 +383,9 @@ async function loadTodayHoldTime() {
       return;
     }
 
-    // ✅ Sum all hold_times for today
     let totalMinutes = 0;
     data.forEach(row => {
       if (row.hold_time) {
-        // hold_time format: "HH:MM"
         const parts = row.hold_time.split(":");
         const h = parseInt(parts[0]) || 0;
         const m = parseInt(parts[1]) || 0;
@@ -433,7 +425,7 @@ function refreshDash() {
     const data = JSON.parse(checkinData);
     startTimer(data.ms);
     startGps();
-    loadTodayHoldTime(); // ✅ Load hold time
+    loadTodayHoldTime();
 
     document.getElementById("bCI").classList.add("dis");
     document.getElementById("bCO").classList.remove("dis");
@@ -604,8 +596,7 @@ window.closeCheckoutModal = function () {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   VISITS — FIXED FLOW
-   Area → Shop (auto-fill shopkeeper) → Photo → Save
+   VISITS — FIXED FLOW (with .trim() fix)
    ════════════════════════════════════════════════════════════════ */
 
 window.doNewVisit = function () {
@@ -615,7 +606,6 @@ window.doNewVisit = function () {
   visitPhotoData = null;
   currentShopsData = [];
 
-  // Reset form
   const selectors = ["visitAreaSelect", "mShopName", "mShopkeeperName", "mShopkeeperContact"];
   selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
 
@@ -628,7 +618,6 @@ window.doNewVisit = function () {
   loadVisitAreas();
   getGps();
 
-  // ✅ Track visit start time
   visitStartMs = Date.now();
   localStorage.setItem("visitActive", JSON.stringify({ startTime: visitStartMs }));
   startVisitCD();
@@ -680,13 +669,11 @@ async function loadVisitAreas() {
   }
 }
 
-// ✅ Load shops with full data for auto-fill
 window.loadShops = async function () {
   const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
   const { state, district, route } = routeData;
   const area = document.getElementById("visitAreaSelect").value;
 
-  // Reset shopkeeper section
   document.getElementById("shopkeeperSection").style.display = "none";
   document.getElementById("mShopkeeperName").value = "";
   document.getElementById("mShopkeeperContact").value = "";
@@ -694,12 +681,10 @@ window.loadShops = async function () {
 
   if (!area) return;
 
-  // Auto-fill area in add new shop form
   const areaDisplay = document.getElementById("newShopAreaDisplay");
   if (areaDisplay) areaDisplay.value = area;
 
   try {
-    // ✅ Fetch shop + shopkeeper data together
     const { data: allData, error } = await supabase
       .from("routes")
       .select("state, district, working_route, area, shop, shopkeeper_name, shopkeeper_contact");
@@ -720,7 +705,6 @@ window.loadShops = async function () {
       r.area.toUpperCase().trim() === areaUpper
     );
 
-    // ✅ Store full shop data for auto-fill
     const shopMap = {};
     filtered.forEach(r => {
       const k = r.shop.toUpperCase().trim();
@@ -741,7 +725,6 @@ window.loadShops = async function () {
   }
 };
 
-// ✅ Auto-fill shopkeeper name + contact when shop selected
 window.autoFillShopkeeper = function () {
   const shopName = document.getElementById("mShopName").value;
   if (!shopName) {
@@ -757,7 +740,6 @@ window.autoFillShopkeeper = function () {
   document.getElementById("shopkeeperSection").style.display = "block";
 };
 
-// ✅ Toggle Add New Shop form
 window.toggleAddNewShop = function () {
   const form = document.getElementById("addNewShopForm");
   const shopSel = document.getElementById("mShopName");
@@ -766,7 +748,6 @@ window.toggleAddNewShop = function () {
     form.style.display = "block";
     shopSel.style.display = "none";
 
-    // Auto-fill area
     const area = document.getElementById("visitAreaSelect").value;
     const areaDisplay = document.getElementById("newShopAreaDisplay");
     if (areaDisplay) areaDisplay.value = area || "-- Area pehle chunein --";
@@ -784,7 +765,6 @@ window.cancelAddNewShop = function () {
   document.getElementById("mShopName").style.display = "block";
 };
 
-// ✅ Add new shop to database and auto-select it
 window.addNewShopToDB = async function () {
   const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
   const { state, district, route } = routeData;
@@ -821,7 +801,6 @@ window.addNewShopToDB = async function () {
 
     toast("Shop add ho gaya ✓", "success");
 
-    // ✅ Add to local data and select it
     currentShopsData.push({ shop: shopName, shopkeeper_name: shopkeeperName, shopkeeper_contact: shopkeeperContact });
 
     const sel = document.getElementById("mShopName");
@@ -830,11 +809,9 @@ window.addNewShopToDB = async function () {
     opt.textContent = shopName;
     sel.appendChild(opt);
 
-    // Close form, show shop select, auto-select new shop
     cancelAddNewShop();
     sel.value = shopName;
 
-    // Auto-fill shopkeeper
     document.getElementById("mShopkeeperName").value = shopkeeperName || "";
     document.getElementById("mShopkeeperContact").value = shopkeeperContact || "";
     document.getElementById("shopkeeperSection").style.display = "block";
@@ -913,7 +890,7 @@ window.saveVisit = async function () {
 };
 
 /* ════════════════════════════════════════════════════════════════
-   VISIT COUNTDOWN (3 min minimum)
+   VISIT COUNTDOWN
    ════════════════════════════════════════════════════════════════ */
 
 function startVisitCD() {
@@ -940,7 +917,7 @@ function startVisitCD() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   VISITS — VISIT OUT
+   VISIT OUT
    ════════════════════════════════════════════════════════════════ */
 
 window.doShopCheckout = function () {
@@ -950,7 +927,6 @@ window.doShopCheckout = function () {
   document.getElementById("ratingDisplay").textContent = "Select rating";
   document.querySelectorAll(".star").forEach(star => star.classList.remove("selected"));
 
-  // ✅ Show live visit duration in Visit Out modal
   updateVisitDurationDisplay();
   if (visitDurationInt) clearInterval(visitDurationInt);
   visitDurationInt = setInterval(updateVisitDurationDisplay, 1000);
@@ -987,8 +963,7 @@ window.setRating = function (rating) {
 
 window.submitVisitOut = async function () {
   if (selectedRating === 0) { toast("Rating select karo", "error"); return; }
-     const notes =
-    document.getElementById("visitOutNotes")?.value.trim() || "";
+  const notes = document.getElementById("visitOutNotes")?.value.trim() || "";
 
   const btn = document.getElementById("visitOutBtn");
   btn.classList.add("loading");
@@ -997,7 +972,6 @@ window.submitVisitOut = async function () {
   try {
     const visitOutTime = new Date();
 
-    // ✅ CORRECT HOLD TIME = visit in time to visit out time only
     const diffMs = visitOutTime.getTime() - visitStartMs;
     const totalSeconds = Math.floor(diffMs / 1000);
     const hours = Math.floor(totalSeconds / 3600);
@@ -1005,11 +979,11 @@ window.submitVisitOut = async function () {
     const holdTime = String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0");
 
     const { error } = await supabase.from("visits").update({
-  visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
-  rating: selectedRating,
-  hold_time: holdTime,
-  visit_out_notes: notes
-}).eq("id", currentVisitId);
+      visit_out_time: visitOutTime.toLocaleTimeString("en-IN"),
+      rating: selectedRating,
+      hold_time: holdTime,
+      visit_out_notes: notes
+    }).eq("id", currentVisitId);
 
     if (error) {
       toast("Visit out error: " + error.message, "error");
@@ -1031,7 +1005,6 @@ window.submitVisitOut = async function () {
 
     toast("Visit out ho gaya! ✓ Hold time: " + holdTime, "success");
 
-    // ✅ Refresh hold time display on dashboard
     loadTodayHoldTime();
   } catch (err) {
     toast("Error: " + err.message, "error");
@@ -1043,9 +1016,7 @@ window.submitVisitOut = async function () {
 window.closeVisitOutModal = function () {
   if (visitDurationInt) { clearInterval(visitDurationInt); visitDurationInt = null; }
   document.getElementById("visitOutModal").classList.remove("show");
-
-     document.getElementById("visitOutNotes").value = "";
-
+  document.getElementById("visitOutNotes").value = "";
 };
 
 /* ════════════════════════════════════════════════════════════════
@@ -1289,7 +1260,7 @@ window.addEventListener("load", () => {
     showScreen("s-dash");
     startClock();
     refreshDash();
-    loadDashboardRoutes(); // ✅ Load routes when returning to dashboard
+    loadDashboardRoutes();
   } else {
     showScreen("s-land");
   }
