@@ -1,13 +1,11 @@
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  NAMEFAME ADMIN PANEL — admin.js
 //  Supabase direct REST API
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 
-// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
-// ── CONFIG ── (apna Supabase URL aur anon key yahan daalo)
+// ── CONFIG ──
 var SUPABASE_URL  = "https://qhikqbrfojdlmdwsdota.supabase.co";
 var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWtxYnJmb2pkbG1kd3Nkb3RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MjcxMDgsImV4cCI6MjA5MDMwMzEwOH0.lYiBLoXPdNO_kfilcbX-OfbvJcXsjM841HG2ffwQT3Y";
-
 
 // ── STATE ──
 var allEmps       = [];
@@ -15,6 +13,33 @@ var allRoutes     = [];
 var allAttRows    = [];
 var allVisits     = [];
 var activeAttEmp  = "all";
+
+// DEFAULT BRANDING CONFIG
+var brandingConfig = {
+  appName: "NAMEFAME",
+  appDesc: "Field Attendance & Visit Tracking",
+  appIcon: "🏢",
+  companyName: "NAMEFAME",
+  supportEmail: "support@namefame.com",
+  primaryColor: "#6c63ff",
+  secondaryColor: "#8b83ff"
+};
+
+// ══════════════════════════════
+// LOAD BRANDING ON INIT
+// ══════════════════════════════
+function loadBrandingConfig() {
+  var saved = localStorage.getItem("nf_branding");
+  if (saved) {
+    try {
+      brandingConfig = JSON.parse(saved);
+    } catch(e) {}
+  }
+}
+
+function saveBrandingConfig() {
+  localStorage.setItem("nf_branding", JSON.stringify(brandingConfig));
+}
 
 // ══════════════════════════════
 // AUTH
@@ -26,18 +51,17 @@ function doLogin() {
 
   btn.textContent = "⏳ Checking..."; btn.disabled = true;
 
-  // AdminConfig table se password read karo
   sbGet("admin_config", "select=value&name=eq.admin_password&limit=1")
     .then(function(rows) {
       btn.textContent = "🔓 Login Karo"; btn.disabled = false;
       var correct = rows && rows[0] ? rows[0].value : null;
       if (!correct) {
-        // Table nahi hai ya row nahi — default 'admin1234'
         correct = "admin1234";
       }
       if (p === correct) {
         sessionStorage.setItem("nf_admin", "1");
         sessionStorage.setItem("nf_pass", p);
+        loadBrandingConfig();
         showApp();
       } else {
         toast("Galat password!", "err");
@@ -46,8 +70,11 @@ function doLogin() {
     })
     .catch(function() {
       btn.textContent = "🔓 Login Karo"; btn.disabled = false;
-      // Fallback: agar table nahi to default pass se login karo
-      if (p === "admin1234") { sessionStorage.setItem("nf_admin","1"); showApp(); }
+      if (p === "admin1234") { 
+        sessionStorage.setItem("nf_admin","1"); 
+        loadBrandingConfig();
+        showApp(); 
+      }
       else toast("Network error ya galat password", "err");
     });
 }
@@ -76,7 +103,6 @@ function changePass() {
   if (nw.length < 4)  { toast("Password kam se kam 4 characters ka hona chahiye", "err"); return; }
   if (nw !== conf)    { toast("Passwords match nahi kar rahe", "err"); return; }
 
-  // Upsert admin_config
   sbUpsert("admin_config", { name: "admin_password", value: nw })
     .then(function() {
       sessionStorage.setItem("nf_pass", nw);
@@ -97,9 +123,40 @@ function resetEmpPin() {
 }
 
 // ══════════════════════════════
+// BRANDING SETTINGS
+// ══════════════════════════════
+function openBrandingSettings() {
+  document.getElementById("brandAppName").value = brandingConfig.appName || "";
+  document.getElementById("brandAppDesc").value = brandingConfig.appDesc || "";
+  document.getElementById("brandAppIcon").value = brandingConfig.appIcon || "";
+  document.getElementById("brandCompany").value = brandingConfig.companyName || "";
+  document.getElementById("brandEmail").value = brandingConfig.supportEmail || "";
+  document.getElementById("brandPrimary").value = brandingConfig.primaryColor || "#6c63ff";
+  document.getElementById("brandSecondary").value = brandingConfig.secondaryColor || "#8b83ff";
+  openModal("brandingModal");
+}
+
+function saveBrandingSettings() {
+  brandingConfig.appName = document.getElementById("brandAppName").value.trim();
+  brandingConfig.appDesc = document.getElementById("brandAppDesc").value.trim();
+  brandingConfig.appIcon = document.getElementById("brandAppIcon").value.trim();
+  brandingConfig.companyName = document.getElementById("brandCompany").value.trim();
+  brandingConfig.supportEmail = document.getElementById("brandEmail").value.trim();
+  brandingConfig.primaryColor = document.getElementById("brandPrimary").value;
+  brandingConfig.secondaryColor = document.getElementById("brandSecondary").value;
+  
+  if (!brandingConfig.appName) { toast("App name zaroori hai", "err"); return; }
+  
+  saveBrandingConfig();
+  closeModal("brandingModal");
+  toast("Branding settings save ho gaya ✓", "ok");
+}
+
+// ══════════════════════════════
 // INIT
 // ══════════════════════════════
 function initApp() {
+  loadBrandingConfig();
   var now = new Date();
   document.getElementById("dashDate").textContent = fmtDateLong(now);
   setToday("attFrom", "attTo");
@@ -155,7 +212,6 @@ function loadDashboard() {
       statCard("🗺️","—","Routes","yellow");
   });
 
-  // Today's attendance cards
   sbGet("attendance", "select=*&attendance_date=eq." + today + "&order=attendance_open_time.desc&limit=20")
     .then(function(rows) {
       renderTodayCards(rows || []);
@@ -289,7 +345,33 @@ function exportAttCSV() {
     return [r.employee_name, r.employee_contact, r.attendance_date, r.working_route, r.attendance_open_time, r.attendance_closed_time, r.working_hours, r.odometer_start, r.odometer_end, r.distance_km, r.map_link, r.notes]
       .map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
   });
-  downloadCSV([hdr.join(",")].concat(data).join("\n"), "NAMEFAME_Attendance_" + new Date().toISOString().split("T")[0]);
+  downloadCSV([hdr.join(",")].concat(data).join("\n"), "Attendance_" + new Date().toISOString().split("T")[0]);
+}
+
+function exportAttPDF() {
+  var rows = activeAttEmp === "all" ? allAttRows : allAttRows.filter(function(r) { return r.employee_name === activeAttEmp; });
+  if (!rows.length) { toast("Koi data nahi PDF ke liye", "err"); return; }
+  
+  var docContent = "<h1>" + brandingConfig.appName + " - Attendance Report</h1>";
+  docContent += "<p><strong>Date Range:</strong> " + document.getElementById("attFrom").value + " to " + document.getElementById("attTo").value + "</p>";
+  docContent += "<p><strong>Employee:</strong> " + (activeAttEmp === "all" ? "All" : activeAttEmp) + "</p>";
+  docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
+  docContent += "<tr style='background:#f0f0f0;'><th>Name</th><th>Date</th><th>Route</th><th>Check-In</th><th>Check-Out</th><th>Hrs</th><th>Distance</th></tr>";
+  
+  rows.forEach(function(r) {
+    docContent += "<tr>";
+    docContent += "<td>" + esc(r.employee_name || "—") + "</td>";
+    docContent += "<td>" + r.attendance_date + "</td>";
+    docContent += "<td>" + esc(r.working_route || "—") + "</td>";
+    docContent += "<td>" + (r.attendance_open_time || "—") + "</td>";
+    docContent += "<td>" + (r.attendance_closed_time || "—") + "</td>";
+    docContent += "<td>" + (r.working_hours || "—") + "</td>";
+    docContent += "<td>" + (r.distance_km || "—") + "</td>";
+    docContent += "</tr>";
+  });
+  
+  docContent += "</table>";
+  downloadPDF(docContent, "Attendance_" + new Date().toISOString().split("T")[0]);
 }
 
 // ══════════════════════════════
@@ -390,8 +472,6 @@ function saveEmployee() {
 
   var payload = { name: name, emp_id: empId, pin: pin, contact: contact, designation: desig, district: dist, state: state, address: addr };
   if (joining) payload.joining_date = joining;
-  // employee_logout ko KABHI payload mein mat daalo edit ke waqt
-  // taki existing lock/unlock state preserve rahe
 
   var p = uid
     ? sbPatch("employees", "user_id=eq." + uid, payload)
@@ -541,6 +621,39 @@ function deleteRoute(id, name) {
   });
 }
 
+function exportRouteCSV() {
+  if (!allRoutes.length) { toast("Koi data nahi CSV ke liye", "err"); return; }
+  var hdr = ["State","District","Route","Area","Shop","Shopkeeper","Contact"];
+  var data = allRoutes.map(function(r) {
+    return [r.state, r.district, r.working_route, r.area, r.shop, r.shopkeeper_name, r.shopkeeper_contact]
+      .map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
+  });
+  downloadCSV([hdr.join(",")].concat(data).join("\n"), "Routes_" + new Date().toISOString().split("T")[0]);
+}
+
+function exportRoutePDF() {
+  if (!allRoutes.length) { toast("Koi data nahi PDF ke liye", "err"); return; }
+  
+  var docContent = "<h1>" + brandingConfig.appName + " - Routes Report</h1>";
+  docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
+  docContent += "<tr style='background:#f0f0f0;'><th>State</th><th>District</th><th>Route</th><th>Area</th><th>Shop</th><th>Shopkeeper</th><th>Contact</th></tr>";
+  
+  allRoutes.forEach(function(r) {
+    docContent += "<tr>";
+    docContent += "<td>" + esc(r.state || "—") + "</td>";
+    docContent += "<td>" + esc(r.district || "—") + "</td>";
+    docContent += "<td>" + esc(r.working_route || "—") + "</td>";
+    docContent += "<td>" + esc(r.area || "—") + "</td>";
+    docContent += "<td>" + esc(r.shop || "—") + "</td>";
+    docContent += "<td>" + esc(r.shopkeeper_name || "—") + "</td>";
+    docContent += "<td>" + esc(r.shopkeeper_contact || "—") + "</td>";
+    docContent += "</tr>";
+  });
+  
+  docContent += "</table>";
+  downloadPDF(docContent, "Routes_" + new Date().toISOString().split("T")[0]);
+}
+
 // ══════════════════════════════
 // VISITS
 // ══════════════════════════════
@@ -583,14 +696,12 @@ function renderVisitsTable(visits) {
     return;
   }
 
-  // Cards view for better mobile readability
   var html = "";
   visits.forEach(function(v) {
     var ratingStars = v.rating ? "⭐".repeat(Math.min(v.rating, 5)) : "—";
     var holdTime    = v.hold_time || "—";
 
     html += '<div class="card" style="margin-bottom:10px;">'
-      // Header
       + '<div class="card-head">'
       + '<div class="avatar" style="background:var(--orange-dim);color:var(--orange);">🏪</div>'
       + '<div style="flex:1">'
@@ -600,7 +711,6 @@ function renderVisitsTable(visits) {
       + '<span class="badge ' + (v.visit_out_time ? "out" : "in") + '">' + (v.visit_out_time ? "✅ Done" : "🟢 Active") + '</span>'
       + '</div>'
 
-      // Employee + Shopkeeper
       + '<div class="info-grid">'
       + infoItem("👤 Employee",    v.employee_name     || "—", "")
       + infoItem("📱 Emp Contact", v.employee_contact  || "—", "")
@@ -608,7 +718,6 @@ function renderVisitsTable(visits) {
       + infoItem("📞 Shop Contact", v.shopkeeper_contact|| "—", "")
       + '</div>'
 
-      // Timing
       + '<div class="info-grid">'
       + infoItem("🕐 Visit In",   v.visit_in_time  || "—", v.visit_in_time  ? "g" : "")
       + infoItem("🕔 Visit Out",  v.visit_out_time || "—", v.visit_out_time ? "" : "o")
@@ -616,7 +725,6 @@ function renderVisitsTable(visits) {
       + infoItem("⭐ Rating",      ratingStars,            "")
       + '</div>'
 
-      // Notes
       + (v.visit_out_notes
         ? '<div style="padding:10px 14px;border-top:1px solid var(--border);font-size:12.5px;color:var(--text2);">'
           + '<span style="font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">📝 Visit Notes</span>'
@@ -624,7 +732,6 @@ function renderVisitsTable(visits) {
           + '</div>'
         : "")
 
-      // Photo + Map
       + '<div style="display:flex;border-top:1px solid var(--border);">'
       + (v.visit_photo
         ? '<a href="' + v.visit_photo + '" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:12px;font-weight:700;color:var(--accent2);text-decoration:none;border-right:1px solid var(--border);">📸 Photo</a>'
@@ -647,7 +754,32 @@ function exportVisitsCSV() {
     return [v.visit_date, v.employee_name, v.employee_contact, v.area, v.shop_name, v.shopkeeper_name, v.shopkeeper_contact, v.visit_in_time, v.visit_out_time, v.hold_time, v.visit_out_notes, v.rating, v.map_link]
       .map(function(x) { return '"' + String(x || "").replace(/"/g, '""') + '"'; }).join(",");
   });
-  downloadCSV([hdr.join(",")].concat(data).join("\n"), "NAMEFAME_Visits_" + new Date().toISOString().split("T")[0]);
+  downloadCSV([hdr.join(",")].concat(data).join("\n"), "Visits_" + new Date().toISOString().split("T")[0]);
+}
+
+function exportVisitsPDF() {
+  if (!allVisits.length) { toast("Koi data nahi PDF ke liye", "err"); return; }
+  
+  var docContent = "<h1>" + brandingConfig.appName + " - Visits Report</h1>";
+  docContent += "<p><strong>Date Range:</strong> " + document.getElementById("visFrom").value + " to " + document.getElementById("visTo").value + "</p>";
+  docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
+  docContent += "<tr style='background:#f0f0f0;'><th>Date</th><th>Employee</th><th>Shop</th><th>Area</th><th>In Time</th><th>Out Time</th><th>Rating</th></tr>";
+  
+  allVisits.forEach(function(v) {
+    var stars = v.rating ? "⭐".repeat(Math.min(v.rating, 5)) : "—";
+    docContent += "<tr>";
+    docContent += "<td>" + v.visit_date + "</td>";
+    docContent += "<td>" + esc(v.employee_name || "—") + "</td>";
+    docContent += "<td>" + esc(v.shop_name || "—") + "</td>";
+    docContent += "<td>" + esc(v.area || "—") + "</td>";
+    docContent += "<td>" + (v.visit_in_time || "—") + "</td>";
+    docContent += "<td>" + (v.visit_out_time || "—") + "</td>";
+    docContent += "<td>" + stars + "</td>";
+    docContent += "</tr>";
+  });
+  
+  docContent += "</table>";
+  downloadPDF(docContent, "Visits_" + new Date().toISOString().split("T")[0]);
 }
 
 // ══════════════════════════════
@@ -690,13 +822,11 @@ function toggleLogoutDirect(uid, name, el) {
   sbPatch("employees", "user_id=eq." + uid, { employee_logout: newState })
     .then(function() {
       toast(name + (newState ? " locked ✓" : " unlocked ✓"), "ok");
-      // Update local state
       var emp = allEmps.find(function(e) { return e.user_id === uid; });
       if (emp) emp.employee_logout = newState;
-      // Re-render subtitles
       renderEmpLogoutToggles();
     }).catch(function() {
-      el.checked = !newState; // revert
+      el.checked = !newState;
       toast("Error. Dobara try karo.", "err");
     });
 }
@@ -768,7 +898,6 @@ function checkSbResp(r) {
 function openModal(id) { document.getElementById(id).classList.add("show"); }
 function closeModal(id) { document.getElementById(id).classList.remove("show"); }
 
-// Close modal on overlay click
 document.querySelectorAll && document.addEventListener("DOMContentLoaded", function() {
   document.querySelectorAll(".modal-ov").forEach(function(ov) {
     ov.addEventListener("click", function(e) {
@@ -791,6 +920,30 @@ function confirmDialog(title, msg, onYes) {
   document.getElementById("confirmNo").onclick = function() {
     document.getElementById("confirmOv").classList.remove("show");
   };
+}
+
+// ══════════════════════════════
+// DOWNLOAD HELPERS
+// ══════════════════════════════
+function downloadCSV(csv, filename) {
+  var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename + ".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast("CSV download ho raha hai ✓", "ok");
+}
+
+function downloadPDF(html, filename) {
+  var printWindow = window.open('', '', 'height=600,width=800');
+  printWindow.document.write('<html><head><title>' + filename + '</title>');
+  printWindow.document.write('<style>body{font-family:Arial,sans-serif;margin:20px;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} h1{color:#333;}</style>');
+  printWindow.document.write('</head><body>');
+  printWindow.document.write(html);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+  printWindow.print();
+  toast("PDF download ready ✓", "ok");
 }
 
 // ══════════════════════════════
@@ -840,15 +993,6 @@ function toast(msg, type) {
   el.className   = "toast show" + (type ? " " + type : "");
   if (_tt) clearTimeout(_tt);
   _tt = setTimeout(function() { el.classList.remove("show"); }, 3200);
-}
-
-function downloadCSV(csv, filename) {
-  var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename + ".csv";
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  toast("CSV download ho raha hai ✓", "ok");
 }
 
 // ══════════════════════════════
