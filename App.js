@@ -32,6 +32,7 @@ let visitCdInt = null;
 let visitDurationInt = null;
 let selectedRating = 0;
 let currentShopsData = [];
+let currentAreasData = [];
 
 const GPS_INTERVAL = 5 * 60 * 1000;
 const MIN_SHOP_CHECKOUT = 10 * 1000;
@@ -165,54 +166,6 @@ window.loadDistricts = async function () {
 
 window.loadDistricts_done = function () { /* Nothing needed */ };
 
-
-// async function loadDashboardRoutes() {
-//   const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
-
-//   const state = savedRouteData.state;
-//   const district = savedRouteData.district;
-
-//   if (!state || !district) {
-//     toast("State/District info nahi mili", "error");
-//     return;
-//   }
-
-//   const { data, error } = await supabase
-//     .from("routes")
-//     .select("working_route")
-//     .eq("state", state)
-//     .eq("district", district);
-
-//   if (error) {
-//     toast("Routes load nahi ho sake", "error");
-//     return;
-//   }
-
-//   const routeMap = {};
-
-//   data.forEach(r => {
-//     const key = r.working_route.toUpperCase().trim();
-//     if (!routeMap[key]) {
-//       routeMap[key] = r.working_route;
-//     }
-//   });
-
-//   const routes = Object.values(routeMap).sort();
-
-//   console.log("Routes:", routes);
-
-//   const sel = document.getElementById("dashRouteSelect");
-
-//   sel.innerHTML = '<option value="">-- Route chunein --</option>';
-
-//   routes.forEach(route => {
-//     const opt = document.createElement("option");
-//     opt.value = route;
-//     opt.textContent = route;
-//     sel.appendChild(opt);
-//   });
-// }
-//ye sahi chal raha hai bs minow console error hai ye baad mein chala sakte hao.
 async function loadDashboardRoutes() {
   const savedRouteData = JSON.parse(localStorage.getItem("routeData") || "{}");
 
@@ -250,7 +203,6 @@ async function loadDashboardRoutes() {
 
   const sel = document.getElementById("dashRouteSelect");
 
-  // ✅ FIX
   if (!sel) {
     console.log("dashRouteSelect not found");
     return;
@@ -265,7 +217,6 @@ async function loadDashboardRoutes() {
     sel.appendChild(opt);
   });
 }
-
 
 /* ════════════════════════════════════════════════════════════════
    LOGIN
@@ -348,26 +299,7 @@ window.doLogin = async function () {
   }
 };
 
-// window.doLogout = function () {
-//   stopCam();
-//   stopVCam();
-//   stopGps();
-//   if (timerInterval) clearInterval(timerInterval);
-
-//   currentEmp = null;
-//   currentAttendanceId = null;
-//   currentVisitId = null;
-
-//   localStorage.removeItem("emp");
-//   localStorage.removeItem("checkin");
-//   localStorage.removeItem("visit");
-//   localStorage.removeItem("routeData");
-
-//   showScreen("s-land");
-//   toast("Logged out", "info");
-// };
 window.doLogout = function () {
-  // Pehle check karo ki admin ne logout allow kiya hai ya nahi
   if (currentEmp && currentEmp.user_id) {
     fetch(SUPABASE_URL + "/rest/v1/employees?select=employee_logout&user_id=eq." + currentEmp.user_id, {
       headers: {
@@ -380,13 +312,11 @@ window.doLogout = function () {
       var isLocked = rows && rows[0] && rows[0].employee_logout === true;
       if (isLocked) {
         toast("Logout allowed nahi hai. Admin se contact karo.", "err");
-        return; // logout NAHI hoga
+        return;
       }
-      // Locked nahi hai — normal logout karo
       performLogout();
     })
     .catch(function() {
-      // Network error pe bhi logout allow karo
       performLogout();
     });
   } else {
@@ -534,6 +464,7 @@ function refreshDash() {
 /* ════════════════════════════════════════════════════════════════
    CHECK-IN
    ════════════════════════════════════════════════════════════════ */
+
 window.doCheckin = function () {
   if (!currentEmp) { toast("Login karo", "error"); return; }
  
@@ -677,6 +608,183 @@ window.closeCheckoutModal = function () {
 };
 
 /* ════════════════════════════════════════════════════════════════
+   ADD NEW AREA FUNCTIONS (Same logic as Add New Shop)
+   ════════════════════════════════════════════════════════════════ */
+
+window.loadAreas = async function () {
+  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+  const { state, district, route } = routeData;
+
+  document.getElementById("visitAreaSelect").innerHTML = '<option value="">-- Area chunein --</option>';
+
+  if (!state || !district || !route) {
+    console.error("Route data missing in localStorage");
+    return;
+  }
+
+  try {
+    const { data: allData, error } = await supabase
+      .from("routes")
+      .select("state, district, working_route, area")
+      .order("area", { ascending: true });
+
+    if (error) {
+      console.error("Area load error:", error);
+      return;
+    }
+
+    const stateUpper = state.toUpperCase().trim();
+    const districtUpper = district.toUpperCase().trim();
+    const routeUpper = route.toUpperCase().trim();
+
+    const filtered = allData.filter(r =>
+      r.state && r.district && r.working_route && r.area &&
+      r.state.toUpperCase().trim() === stateUpper &&
+      r.district.toUpperCase().trim() === districtUpper &&
+      r.working_route.toUpperCase().trim() === routeUpper
+    );
+
+    const areaSet = new Set();
+    filtered.forEach(r => {
+      if (r.area) areaSet.add(r.area.toUpperCase().trim());
+    });
+
+    currentAreasData = Array.from(areaSet).map(area => ({
+      area: filtered.find(r => r.area.toUpperCase().trim() === area).area
+    }));
+
+    const sel = document.getElementById("visitAreaSelect");
+    sel.innerHTML = '<option value="">-- Area chunein --</option>';
+    
+    currentAreasData
+      .sort((a, b) => a.area.localeCompare(b.area))
+      .forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.area;
+        opt.textContent = item.area;
+        sel.appendChild(opt);
+      });
+
+    const addNewOpt = document.createElement("option");
+    addNewOpt.value = "add-new";
+    addNewOpt.textContent = "--Add New Area--";
+    sel.appendChild(addNewOpt);
+
+  } catch (err) {
+    console.error("Exception in loadAreas:", err);
+  }
+};
+
+window.toggleAddNewArea = function () {
+  const form = document.getElementById("addNewAreaForm");
+  const areaSel = document.getElementById("visitAreaSelect");
+
+  if (form.style.display === "none") {
+    form.style.display = "block";
+    areaSel.style.display = "none";
+
+    const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+    document.getElementById("newAreaStateDisplay").value = routeData.state || "-- State pehle select karo --";
+    document.getElementById("newAreaDistrictDisplay").value = routeData.district || "-- District pehle select karo --";
+
+    document.getElementById("newAreaName").value = "";
+    document.getElementById("newAreaName").focus();
+  } else {
+    cancelAddNewArea();
+  }
+};
+
+window.cancelAddNewArea = function () {
+  document.getElementById("addNewAreaForm").style.display = "none";
+  document.getElementById("visitAreaSelect").style.display = "block";
+  document.getElementById("visitAreaSelect").value = "";
+};
+
+window.addNewAreaToDB = async function () {
+  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
+  const { state, district, route } = routeData;
+  const areaName = document.getElementById("newAreaName").value.trim();
+
+  if (!areaName) {
+    toast("Area ka naam daalo", "error");
+    return;
+  }
+
+  if (!state || !district || !route) {
+    toast("Route data missing", "error");
+    return;
+  }
+
+  const btn = event.target;
+  btn.textContent = "Adding...";
+  btn.disabled = true;
+
+  try {
+    const { data: existingArea, error: checkError } = await supabase
+      .from("routes")
+      .select("area")
+      .eq("state", state)
+      .eq("district", district)
+      .eq("working_route", route)
+      .eq("area", areaName)
+      .limit(1);
+
+    if (checkError) {
+      toast("Error checking area: " + checkError.message, "error");
+      btn.textContent = "✓ Add Area to Database";
+      btn.disabled = false;
+      return;
+    }
+
+    if (existingArea && existingArea.length > 0) {
+      toast("Ye area pehle se hai", "warning");
+      btn.textContent = "✓ Add Area to Database";
+      btn.disabled = false;
+      return;
+    }
+
+    const { error } = await supabase.from("routes").insert([{
+      state: state,
+      district: district,
+      working_route: route,
+      area: areaName,
+      shop: "Pending",
+      shopkeeper_name: null,
+      shopkeeper_contact: null
+    }]);
+
+    if (error) {
+      toast("Area add error: " + error.message, "error");
+      btn.textContent = "✓ Add Area to Database";
+      btn.disabled = false;
+      return;
+    }
+
+    toast("Area add ho gaya ✓", "success");
+
+    currentAreasData.push({ area: areaName });
+
+    const sel = document.getElementById("visitAreaSelect");
+    const opt = document.createElement("option");
+    opt.value = areaName;
+    opt.textContent = areaName;
+    sel.insertBefore(opt, sel.querySelector('option[value="add-new"]'));
+
+    cancelAddNewArea();
+    sel.value = areaName;
+
+    loadShops();
+
+    btn.textContent = "✓ Add Area to Database";
+    btn.disabled = false;
+  } catch (err) {
+    toast("Error: " + err.message, "error");
+    btn.textContent = "✓ Add Area to Database";
+    btn.disabled = false;
+  }
+};
+
+/* ════════════════════════════════════════════════════════════════
    VISITS — FIXED FLOW (with .trim() fix)
    ════════════════════════════════════════════════════════════════ */
 
@@ -691,64 +799,19 @@ window.doNewVisit = function () {
   selectors.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
 
   document.getElementById("addNewShopForm").style.display = "none";
+  document.getElementById("addNewAreaForm").style.display = "none";
   document.getElementById("shopkeeperSection").style.display = "none";
   document.getElementById("visitPhotoWrap").style.display = "none";
   document.getElementById("visitPhotoBtn").style.display = "flex";
   document.getElementById("visitModal").classList.add("show");
 
-  loadVisitAreas();
+  loadAreas();
   getGps();
 
   visitStartMs = Date.now();
   localStorage.setItem("visitActive", JSON.stringify({ startTime: visitStartMs }));
   startVisitCD();
 };
-
-async function loadVisitAreas() {
-  const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
-  const { state, district, route } = routeData;
-
-  if (!state || !district || !route) {
-    toast("Route select nahi hai — dashboard pe route chunein", "error");
-    return;
-  }
-
-  try {
-    const { data: allData, error } = await supabase.from("routes").select("state, district, working_route, area");
-    if (error) { toast("Areas load nahi ho sake", "error"); return; }
-
-    // ✅ FIX: Add .trim() for proper matching
-    const stateUpper = state.toUpperCase().trim();
-    const districtUpper = district.toUpperCase().trim();
-    const routeUpper = route.toUpperCase().trim();
-
-    const filtered = allData.filter(r =>
-      r.state && r.district && r.working_route && r.area &&
-      r.state.toUpperCase().trim() === stateUpper &&
-      r.district.toUpperCase().trim() === districtUpper &&
-      r.working_route.toUpperCase().trim() === routeUpper
-    );
-
-    const areaMap = {};
-    filtered.forEach(r => { 
-      const k = r.area.toUpperCase().trim(); 
-      if (!areaMap[k]) areaMap[k] = r.area; 
-    });
-    
-    const areas = Object.values(areaMap).sort();
-
-    const sel = document.getElementById("visitAreaSelect");
-    sel.innerHTML = '<option value="">-- Area chunein --</option>';
-    areas.forEach(area => {
-      const opt = document.createElement("option");
-      opt.value = area;
-      opt.textContent = area;
-      sel.appendChild(opt);
-    });
-  } catch (err) {
-    toast("Error: " + err.message, "error");
-  }
-}
 
 window.loadShops = async function () {
   const routeData = JSON.parse(localStorage.getItem("routeData") || "{}");
@@ -760,7 +823,7 @@ window.loadShops = async function () {
   document.getElementById("mShopkeeperContact").value = "";
   document.getElementById("mShopName").innerHTML = '<option value="">-- Shop chunein --</option>';
 
-  if (!area) return;
+  if (!area || area === "add-new") return;
 
   const areaDisplay = document.getElementById("newShopAreaDisplay");
   if (areaDisplay) areaDisplay.value = area;
@@ -772,7 +835,6 @@ window.loadShops = async function () {
 
     if (error) { console.error("Shop load error:", error); return; }
 
-    // ✅ FIX: Add .trim() for proper matching
     const stateUpper = state.toUpperCase().trim();
     const districtUpper = district.toUpperCase().trim();
     const routeUpper = route.toUpperCase().trim();
