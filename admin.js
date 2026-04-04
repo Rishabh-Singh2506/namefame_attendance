@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════════
-//  NAMEFAME ADMIN PANEL — admin.js
+//  NAMEFAME ADMIN PANEL — admin.js (UPDATED)
 //  Supabase direct REST API
 // ══════════════════════════════════════════════════
 
@@ -15,7 +15,10 @@ var allVisits     = [];
 var allCustomers  = [];
 var activeAttEmp  = "all";
 
-// Route dropdown data (areas, shops, shopkeepers)
+// Route dropdown data
+var routeStates   = [];
+var routeDistricts = [];
+var routeWorkingRoutes = [];
 var routeAreas    = [];
 var routeShops    = [];
 var routeShopkeepers = [];
@@ -220,9 +223,26 @@ function loadDashboard() {
       statCard("🗺️","—","Routes","yellow");
   });
 
-  sbGet("attendance", "select=*&attendance_date=eq." + today + "&order=attendance_open_time.desc&limit=20")
+  // Load today's attendance - remove duplicates
+  sbGet("attendance", "select=*&attendance_date=eq." + today + "&order=attendance_open_time.desc")
     .then(function(rows) {
-      renderTodayCards(rows || []);
+      if (!rows || !rows.length) {
+        document.getElementById("todayCards").innerHTML = '<div class="empty"><span class="empty-ico">📭</span><div class="empty-txt">Aaj koi attendance nahi</div></div>';
+        return;
+      }
+      
+      // Remove duplicates - keep latest record per employee
+      var seen = {};
+      var unique = [];
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        var key = r.employee_name || "unknown";
+        if (!seen[key]) {
+          seen[key] = true;
+          unique.push(r);
+        }
+      }
+      renderTodayCards(unique.slice(0, 5));
     }).catch(function() {
       document.getElementById("todayCards").innerHTML = '<div class="empty"><span class="empty-ico">⚠️</span><div class="empty-txt">Load nahi hua</div></div>';
     });
@@ -242,7 +262,7 @@ function renderTodayCards(rows) {
     return;
   }
   var html = "";
-  rows.slice(0, 5).forEach(function(r) {
+  rows.forEach(function(r) {
     var init = initials(r.employee_name || "?");
     var isIn = r.attendance_open_time && !r.attendance_closed_time;
     html += '<div class="card">'
@@ -267,10 +287,34 @@ function renderTodayCards(rows) {
 function loadAllCustomers() {
   sbGet("routes", "select=*&order=state.asc,district.asc,working_route.asc,area.asc")
     .then(function(rows) {
-      allCustomers = rows || [];
+      // Filter only routes with both shop_name and shopkeeper_name
+      allCustomers = (rows || []).filter(function(r) {
+        return r.shop && r.shopkeeper_name;
+      });
+      renderCustomersPreview();
     }).catch(function() {
       allCustomers = [];
+      document.getElementById("customersPreview").innerHTML = '<div class="empty" style="grid-column:1/-1;">⚠️ Load nahi hua</div>';
     });
+}
+
+function renderCustomersPreview() {
+  var preview = document.getElementById("customersPreview");
+  if (!allCustomers.length) {
+    preview.innerHTML = '<div class="empty" style="grid-column:1/-1;"><span class="empty-ico">🏪</span><div class="empty-txt">Koi customer with shop nahi</div></div>';
+    return;
+  }
+
+  var html = "";
+  allCustomers.slice(0, 12).forEach(function(c) {
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-size:11px;">'
+      + '<div style="font-weight:800;color:var(--accent2);margin-bottom:4px;">🏪 ' + esc(c.shop || "—") + '</div>'
+      + '<div style="color:var(--text2);margin-bottom:2px;"><strong>🧑:</strong> ' + esc(c.shopkeeper_name || "—") + '</div>'
+      + '<div style="color:var(--text2);margin-bottom:2px;"><strong>📍:</strong> ' + esc(c.area || "—") + '</div>'
+      + '<div style="color:var(--text3);"><strong>📞:</strong> ' + esc(c.shopkeeper_contact || "—") + '</div>'
+      + '</div>';
+  });
+  preview.innerHTML = html || '<div class="empty">Koi customer nahi</div>';
 }
 
 function exportCustomersCSV() {
@@ -624,18 +668,30 @@ function loadRoutes() {
 }
 
 function buildRouteDropdowns() {
+  var states = [];
+  var districts = [];
+  var workingRoutes = [];
   var areas = [];
   var shops = [];
   var keepers = [];
   var contacts = [];
   
   allRoutes.forEach(function(r) {
+    if (r.state && states.indexOf(r.state) < 0) states.push(r.state);
+    if (r.district && districts.indexOf(r.district) < 0) districts.push(r.district);
+    if (r.working_route && workingRoutes.indexOf(r.working_route) < 0) workingRoutes.push(r.working_route);
     if (r.area && areas.indexOf(r.area) < 0) areas.push(r.area);
-    if (r.shop && shops.indexOf(r.shop) < 0) shops.push(r.shop);
-    if (r.shopkeeper_name && keepers.indexOf(r.shopkeeper_name) < 0) keepers.push(r.shopkeeper_name);
-    if (r.shopkeeper_contact && contacts.indexOf(r.shopkeeper_contact) < 0) contacts.push(r.shopkeeper_contact);
+    // Only include shop/shopkeeper if both exist
+    if (r.shop && r.shopkeeper_name) {
+      if (shops.indexOf(r.shop) < 0) shops.push(r.shop);
+      if (keepers.indexOf(r.shopkeeper_name) < 0) keepers.push(r.shopkeeper_name);
+      if (contacts.indexOf(r.shopkeeper_contact) < 0) contacts.push(r.shopkeeper_contact);
+    }
   });
   
+  routeStates = states.sort();
+  routeDistricts = districts.sort();
+  routeWorkingRoutes = workingRoutes.sort();
   routeAreas = areas.sort();
   routeShops = shops.sort();
   routeShopkeepers = keepers.sort();
@@ -700,13 +756,45 @@ function openEditRoute(id) {
 }
 
 function initRouteDropdowns(mode, routeData) {
+  // State dropdown
+  var stateSelect = document.getElementById("mRState");
+  stateSelect.innerHTML = '<option value="">Select/Enter State</option>';
+  routeStates.forEach(function(s) {
+    stateSelect.innerHTML += '<option value="' + esc(s) + '">' + esc(s) + '</option>';
+  });
+  if (mode === "edit" && routeData && routeData.state) {
+    stateSelect.value = routeData.state;
+  }
+  stateSelect.setAttribute("list", "stateList");
+
+  // District dropdown
+  var distSelect = document.getElementById("mRDistrict");
+  distSelect.innerHTML = '<option value="">Select/Enter District</option>';
+  routeDistricts.forEach(function(d) {
+    distSelect.innerHTML += '<option value="' + esc(d) + '">' + esc(d) + '</option>';
+  });
+  if (mode === "edit" && routeData && routeData.district) {
+    distSelect.value = routeData.district;
+  }
+  distSelect.setAttribute("list", "districtList");
+
+  // Working Route dropdown
+  var routeSelect = document.getElementById("mRRoute");
+  routeSelect.innerHTML = '<option value="">Select/Enter Route</option>';
+  routeWorkingRoutes.forEach(function(rt) {
+    routeSelect.innerHTML += '<option value="' + esc(rt) + '">' + esc(rt) + '</option>';
+  });
+  if (mode === "edit" && routeData && routeData.working_route) {
+    routeSelect.value = routeData.working_route;
+  }
+  routeSelect.setAttribute("list", "routeList");
+
   // Area dropdown
   var areaSelect = document.getElementById("mRArea");
   areaSelect.innerHTML = '<option value="">Select Area</option>';
   routeAreas.forEach(function(a) {
     areaSelect.innerHTML += '<option value="' + esc(a) + '">' + esc(a) + '</option>';
   });
-  areaSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Area --</option>';
   if (mode === "edit" && routeData && routeData.area) {
     areaSelect.value = routeData.area;
   }
@@ -717,7 +805,6 @@ function initRouteDropdowns(mode, routeData) {
   routeShops.forEach(function(s) {
     shopSelect.innerHTML += '<option value="' + esc(s) + '">' + esc(s) + '</option>';
   });
-  shopSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Shop --</option>';
   if (mode === "edit" && routeData && routeData.shop) {
     shopSelect.value = routeData.shop;
   }
@@ -728,7 +815,6 @@ function initRouteDropdowns(mode, routeData) {
   routeShopkeepers.forEach(function(k) {
     keeperSelect.innerHTML += '<option value="' + esc(k) + '">' + esc(k) + '</option>';
   });
-  keeperSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Shopkeeper --</option>';
   if (mode === "edit" && routeData && routeData.shopkeeper_name) {
     keeperSelect.value = routeData.shopkeeper_name;
   }
@@ -739,7 +825,6 @@ function initRouteDropdowns(mode, routeData) {
   routeShopkeeperContacts.forEach(function(c) {
     contactSelect.innerHTML += '<option value="' + esc(c) + '">' + esc(c) + '</option>';
   });
-  contactSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Contact --</option>';
   if (mode === "edit" && routeData && routeData.shopkeeper_contact) {
     contactSelect.value = routeData.shopkeeper_contact;
   }
@@ -757,7 +842,7 @@ function saveRoute() {
 
   if (!state || !dist || !route || !area) { toast("State, District, Route, Area zaroori hai", "err"); return; }
 
-  // Normalize case (no uppercase/lowercase issue)
+  // Normalize case (uppercase)
   state = state.toUpperCase();
   dist = dist.toUpperCase();
   route = route.toUpperCase();
@@ -769,7 +854,7 @@ function saveRoute() {
   if (kc) {
     var isDuplicate = false;
     allRoutes.forEach(function(r) {
-      if (id && r.id === id) return; // Skip current route when editing
+      if (id && r.id === id) return;
       if (r.shopkeeper_contact && r.shopkeeper_contact.toLowerCase() === kc.toLowerCase()) {
         isDuplicate = true;
       }
