@@ -313,11 +313,11 @@ input:checked+.toggle-track::before{transform:translateX(20px);background:#fff;}
     <div class="modal-drag"></div>
     <div class="modal-title" id="routeModalTitle">Route Add Karo</div>
     <div class="fld-grid">
-      <div class="fld"><label>State *</label><input type="text" id="mRState" placeholder="e.g. U.P."></div>
-      <div class="fld"><label>District *</label><input type="text" id="mRDistrict" placeholder="e.g. Prayagraj"></div>
+      <div class="fld"><label>State *</label><input type="text" id="mRState" placeholder="e.g. U.P." list="stateList"></div>
+      <div class="fld"><label>District *</label><input type="text" id="mRDistrict" placeholder="e.g. Prayagraj" list="districtList"></div>
     </div>
     <div class="fld-grid">
-      <div class="fld"><label>Working Route *</label><input type="text" id="mRRoute" placeholder="e.g. Prayagraj to Jagatpur"></div>
+      <div class="fld"><label>Working Route *</label><input type="text" id="mRRoute" placeholder="e.g. Prayagraj to Jagatpur" list="routeList"></div>
       <div class="fld"><label>Area *</label><select id="mRArea"><option>Select Area</option></select></div>
     </div>
     <div class="fld-grid">
@@ -332,6 +332,10 @@ input:checked+.toggle-track::before{transform:translateX(20px);background:#fff;}
     </div>
   </div>
 </div>
+
+<datalist id="stateList"></datalist>
+<datalist id="districtList"></datalist>
+<datalist id="routeList"></datalist>
 
 <!-- LOGIN -->
 <div id="loginScreen">
