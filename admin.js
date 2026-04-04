@@ -12,7 +12,14 @@ var allEmps       = [];
 var allRoutes     = [];
 var allAttRows    = [];
 var allVisits     = [];
+var allCustomers  = [];
 var activeAttEmp  = "all";
+
+// Route dropdown data (areas, shops, shopkeepers)
+var routeAreas    = [];
+var routeShops    = [];
+var routeShopkeepers = [];
+var routeShopkeeperContacts = [];
 
 // DEFAULT BRANDING CONFIG
 var brandingConfig = {
@@ -162,6 +169,7 @@ function initApp() {
   setToday("attFrom", "attTo");
   setToday("visFrom", "visTo");
   loadDashboard();
+  loadAllCustomers();
 }
 
 // ══════════════════════════════
@@ -251,6 +259,51 @@ function renderTodayCards(rows) {
       + '</div>';
   });
   document.getElementById("todayCards").innerHTML = html;
+}
+
+// ══════════════════════════════
+// LOAD ALL CUSTOMERS (for dashboard)
+// ══════════════════════════════
+function loadAllCustomers() {
+  sbGet("routes", "select=*&order=state.asc,district.asc,working_route.asc,area.asc")
+    .then(function(rows) {
+      allCustomers = rows || [];
+    }).catch(function() {
+      allCustomers = [];
+    });
+}
+
+function exportCustomersCSV() {
+  if (!allCustomers.length) { toast("Koi customer data nahi", "err"); return; }
+  var hdr = ["State","District","Area","Shop","Shopkeeper","Contact"];
+  var data = allCustomers.map(function(c) {
+    return [c.state, c.district, c.area, c.shop, c.shopkeeper_name, c.shopkeeper_contact]
+      .map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
+  });
+  downloadCSV([hdr.join(",")].concat(data).join("\n"), "Customers_" + new Date().toISOString().split("T")[0]);
+}
+
+function exportCustomersPDF() {
+  if (!allCustomers.length) { toast("Koi customer data nahi", "err"); return; }
+  
+  var docContent = "<h1>" + brandingConfig.appName + " - Customers Report</h1>";
+  docContent += "<p><strong>Generated on:</strong> " + new Date().toLocaleDateString("en-IN") + "</p>";
+  docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
+  docContent += "<tr style='background:#f0f0f0;'><th>State</th><th>District</th><th>Area</th><th>Shop</th><th>Shopkeeper</th><th>Contact</th></tr>";
+  
+  allCustomers.forEach(function(c) {
+    docContent += "<tr>";
+    docContent += "<td>" + esc(c.state || "—") + "</td>";
+    docContent += "<td>" + esc(c.district || "—") + "</td>";
+    docContent += "<td>" + esc(c.area || "—") + "</td>";
+    docContent += "<td>" + esc(c.shop || "—") + "</td>";
+    docContent += "<td>" + esc(c.shopkeeper_name || "—") + "</td>";
+    docContent += "<td>" + esc(c.shopkeeper_contact || "—") + "</td>";
+    docContent += "</tr>";
+  });
+  
+  docContent += "</table>";
+  downloadPDF(docContent, "Customers_" + new Date().toISOString().split("T")[0]);
 }
 
 // ══════════════════════════════
@@ -425,6 +478,10 @@ function renderEmpList() {
       + '</div>'
       + '</div>';
   });
+  html += '<div style="text-align:center;padding:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">'
+    + '<button class="btn-green" onclick="exportEmpCSV()">⬇ CSV</button>'
+    + '<button class="btn-green" onclick="exportEmpPDF()">📄 PDF</button>'
+    + '</div>';
   document.getElementById("empListWrap").innerHTML = html;
 }
 
@@ -514,19 +571,75 @@ function populatePinSelect() {
   });
 }
 
+function exportEmpCSV() {
+  if (!allEmps.length) { toast("Koi employee data nahi", "err"); return; }
+  var hdr = ["Name","EmpID","PIN","Contact","Designation","District","State","Address","Joining Date","Status"];
+  var data = allEmps.map(function(e) {
+    return [e.name, e.emp_id, e.pin, e.contact, e.designation, e.district, e.state, e.address, e.joining_date, e.employee_logout ? "Locked" : "Active"]
+      .map(function(v) { return '"' + String(v || "").replace(/"/g, '""') + '"'; }).join(",");
+  });
+  downloadCSV([hdr.join(",")].concat(data).join("\n"), "Employees_" + new Date().toISOString().split("T")[0]);
+}
+
+function exportEmpPDF() {
+  if (!allEmps.length) { toast("Koi employee data nahi", "err"); return; }
+  
+  var docContent = "<h1>" + brandingConfig.appName + " - Employees Report</h1>";
+  docContent += "<p><strong>Generated on:</strong> " + new Date().toLocaleDateString("en-IN") + "</p>";
+  docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
+  docContent += "<tr style='background:#f0f0f0;'><th>Name</th><th>EmpID</th><th>PIN</th><th>Contact</th><th>Designation</th><th>District</th><th>State</th><th>Joining</th><th>Status</th></tr>";
+  
+  allEmps.forEach(function(e) {
+    docContent += "<tr>";
+    docContent += "<td>" + esc(e.name || "—") + "</td>";
+    docContent += "<td>" + esc(e.emp_id || "—") + "</td>";
+    docContent += "<td>" + esc(e.pin || "—") + "</td>";
+    docContent += "<td>" + esc(e.contact || "—") + "</td>";
+    docContent += "<td>" + esc(e.designation || "—") + "</td>";
+    docContent += "<td>" + esc(e.district || "—") + "</td>";
+    docContent += "<td>" + esc(e.state || "—") + "</td>";
+    docContent += "<td>" + fmtDate(e.joining_date) + "</td>";
+    docContent += "<td>" + (e.employee_logout ? "Locked" : "Active") + "</td>";
+    docContent += "</tr>";
+  });
+  
+  docContent += "</table>";
+  downloadPDF(docContent, "Employees_" + new Date().toISOString().split("T")[0]);
+}
+
 // ══════════════════════════════
-// ROUTES
+// ROUTES WITH DROPDOWNS
 // ══════════════════════════════
 function loadRoutes() {
   document.getElementById("routeTableWrap").innerHTML = '<div class="loading"><div class="spin"></div>Loading...</div>';
   sbGet("routes", "select=*&order=state.asc,district.asc,working_route.asc")
     .then(function(rows) {
       allRoutes = rows || [];
+      buildRouteDropdowns();
       document.getElementById("routeSubLbl").textContent = allRoutes.length + " routes";
       renderRouteTable(allRoutes);
     }).catch(function() {
       document.getElementById("routeTableWrap").innerHTML = '<div class="empty"><span class="empty-ico">⚠️</span><div class="empty-txt">Load nahi hua</div></div>';
     });
+}
+
+function buildRouteDropdowns() {
+  var areas = [];
+  var shops = [];
+  var keepers = [];
+  var contacts = [];
+  
+  allRoutes.forEach(function(r) {
+    if (r.area && areas.indexOf(r.area) < 0) areas.push(r.area);
+    if (r.shop && shops.indexOf(r.shop) < 0) shops.push(r.shop);
+    if (r.shopkeeper_name && keepers.indexOf(r.shopkeeper_name) < 0) keepers.push(r.shopkeeper_name);
+    if (r.shopkeeper_contact && contacts.indexOf(r.shopkeeper_contact) < 0) contacts.push(r.shopkeeper_contact);
+  });
+  
+  routeAreas = areas.sort();
+  routeShops = shops.sort();
+  routeShopkeepers = keepers.sort();
+  routeShopkeeperContacts = contacts.sort();
 }
 
 function filterRoutes() {
@@ -566,9 +679,10 @@ function renderRouteTable(routes) {
 
 function openAddRoute() {
   document.getElementById("routeModalTitle").textContent = "➕ Route Add Karo";
-  ["mRState","mRDistrict","mRRoute","mRArea","mRShop","mRKeeper","mRKContact"].forEach(function(id) {
+  ["mRState","mRDistrict","mRRoute"].forEach(function(id) {
     document.getElementById(id).value = "";
   });
+  initRouteDropdowns("add");
   document.getElementById("mRId").value = "";
   openModal("routeModal");
 }
@@ -580,12 +694,55 @@ function openEditRoute(id) {
   document.getElementById("mRState").value    = r.state || "";
   document.getElementById("mRDistrict").value = r.district || "";
   document.getElementById("mRRoute").value    = r.working_route || "";
-  document.getElementById("mRArea").value     = r.area || "";
-  document.getElementById("mRShop").value     = r.shop || "";
-  document.getElementById("mRKeeper").value   = r.shopkeeper_name || "";
-  document.getElementById("mRKContact").value = r.shopkeeper_contact || "";
+  initRouteDropdowns("edit", r);
   document.getElementById("mRId").value = id;
   openModal("routeModal");
+}
+
+function initRouteDropdowns(mode, routeData) {
+  // Area dropdown
+  var areaSelect = document.getElementById("mRArea");
+  areaSelect.innerHTML = '<option value="">Select Area</option>';
+  routeAreas.forEach(function(a) {
+    areaSelect.innerHTML += '<option value="' + esc(a) + '">' + esc(a) + '</option>';
+  });
+  areaSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Area --</option>';
+  if (mode === "edit" && routeData && routeData.area) {
+    areaSelect.value = routeData.area;
+  }
+
+  // Shop dropdown
+  var shopSelect = document.getElementById("mRShop");
+  shopSelect.innerHTML = '<option value="">Select Shop</option>';
+  routeShops.forEach(function(s) {
+    shopSelect.innerHTML += '<option value="' + esc(s) + '">' + esc(s) + '</option>';
+  });
+  shopSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Shop --</option>';
+  if (mode === "edit" && routeData && routeData.shop) {
+    shopSelect.value = routeData.shop;
+  }
+
+  // Shopkeeper dropdown
+  var keeperSelect = document.getElementById("mRKeeper");
+  keeperSelect.innerHTML = '<option value="">Select Shopkeeper</option>';
+  routeShopkeepers.forEach(function(k) {
+    keeperSelect.innerHTML += '<option value="' + esc(k) + '">' + esc(k) + '</option>';
+  });
+  keeperSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Shopkeeper --</option>';
+  if (mode === "edit" && routeData && routeData.shopkeeper_name) {
+    keeperSelect.value = routeData.shopkeeper_name;
+  }
+
+  // Shopkeeper Contact dropdown
+  var contactSelect = document.getElementById("mRKContact");
+  contactSelect.innerHTML = '<option value="">Select Contact</option>';
+  routeShopkeeperContacts.forEach(function(c) {
+    contactSelect.innerHTML += '<option value="' + esc(c) + '">' + esc(c) + '</option>';
+  });
+  contactSelect.innerHTML += '<option value="" style="border-top:1px solid #ccc;">-- Enter New Contact --</option>';
+  if (mode === "edit" && routeData && routeData.shopkeeper_contact) {
+    contactSelect.value = routeData.shopkeeper_contact;
+  }
 }
 
 function saveRoute() {
@@ -599,6 +756,26 @@ function saveRoute() {
   var id      = document.getElementById("mRId").value;
 
   if (!state || !dist || !route || !area) { toast("State, District, Route, Area zaroori hai", "err"); return; }
+
+  // Normalize case (no uppercase/lowercase issue)
+  state = state.toUpperCase();
+  dist = dist.toUpperCase();
+  route = route.toUpperCase();
+  area = area.toUpperCase();
+  shop = shop.toUpperCase();
+  keeper = keeper.toUpperCase();
+  
+  // Check for duplicate shopkeeper contact
+  if (kc) {
+    var isDuplicate = false;
+    allRoutes.forEach(function(r) {
+      if (id && r.id === id) return; // Skip current route when editing
+      if (r.shopkeeper_contact && r.shopkeeper_contact.toLowerCase() === kc.toLowerCase()) {
+        isDuplicate = true;
+      }
+    });
+    if (isDuplicate) { toast("Yeh contact pehle se exist hai. Dusra number daalo.", "err"); return; }
+  }
 
   var payload = { state: state, district: dist, working_route: route, area: area, shop: shop, shopkeeper_name: keeper, shopkeeper_contact: kc };
 
@@ -763,7 +940,7 @@ function exportVisitsPDF() {
   var docContent = "<h1>" + brandingConfig.appName + " - Visits Report</h1>";
   docContent += "<p><strong>Date Range:</strong> " + document.getElementById("visFrom").value + " to " + document.getElementById("visTo").value + "</p>";
   docContent += "<table border='1' cellpadding='8' style='width:100%;border-collapse:collapse;'>";
-  docContent += "<tr style='background:#f0f0f0;'><th>Date</th><th>Employee</th><th>Shop</th><th>Area</th><th>In Time</th><th>Out Time</th><th>Rating</th></tr>";
+  docContent += "<tr style='background:#f0f0f0;'><th>Date</th><th>Employee</th><th>Shop</th><th>Area</th><th>In Time</th><th>Out Time</th><th>Hold Time</th><th>Rating</th></tr>";
   
   allVisits.forEach(function(v) {
     var stars = v.rating ? "⭐".repeat(Math.min(v.rating, 5)) : "—";
@@ -774,6 +951,7 @@ function exportVisitsPDF() {
     docContent += "<td>" + esc(v.area || "—") + "</td>";
     docContent += "<td>" + (v.visit_in_time || "—") + "</td>";
     docContent += "<td>" + (v.visit_out_time || "—") + "</td>";
+    docContent += "<td>" + (v.hold_time || "—") + "</td>";
     docContent += "<td>" + stars + "</td>";
     docContent += "</tr>";
   });
