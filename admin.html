@@ -318,13 +318,13 @@ input:checked+.toggle-track::before{transform:translateX(20px);background:#fff;}
     </div>
     <div class="fld-grid">
       <div class="fld"><label>Working Route *</label><input type="text" id="mRRoute" placeholder="e.g. Prayagraj to Jagatpur"></div>
-      <div class="fld"><label>Area *</label><input type="text" id="mRArea" placeholder="e.g. Jagatpur"></div>
+      <div class="fld"><label>Area *</label><select id="mRArea"><option>Select Area</option></select></div>
     </div>
     <div class="fld-grid">
-      <div class="fld"><label>Shop Name</label><input type="text" id="mRShop" placeholder="Shop name"></div>
-      <div class="fld"><label>Shopkeeper</label><input type="text" id="mRKeeper" placeholder="Name"></div>
+      <div class="fld"><label>Shop Name</label><select id="mRShop"><option>Select Shop</option></select></div>
+      <div class="fld"><label>Shopkeeper</label><select id="mRKeeper"><option>Select Shopkeeper</option></select></div>
     </div>
-    <div class="fld"><label>Shopkeeper Contact</label><input type="tel" id="mRKContact" placeholder="Contact number" maxlength="10"></div>
+    <div class="fld"><label>Shopkeeper Contact</label><select id="mRKContact"><option>Select Contact</option></select></div>
     <input type="hidden" id="mRId">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('routeModal')">Cancel</button>
@@ -381,6 +381,17 @@ input:checked+.toggle-track::before{transform:translateX(20px);background:#fff;}
         <div class="sec-hdr-action" onclick="goScreen('att')">Sab dekho →</div>
       </div>
       <div id="todayCards"><div class="loading"><div class="spin"></div>Loading...</div></div>
+
+      <div class="sec-hdr" style="margin-top:24px;">
+        <div class="sec-hdr-title">👥 Sabhi Customers</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="btn-green" onclick="exportCustomersCSV()">⬇ CSV</button>
+        <button class="btn-green" onclick="exportCustomersPDF()">📄 PDF</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px;" id="customersPreview">
+        <div class="loading" style="grid-column:1/-1;"><div class="spin"></div>Loading...</div>
+      </div>
     </div>
   </div>
 
